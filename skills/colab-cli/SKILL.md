@@ -16,20 +16,17 @@ Google Colab CLI (`google-colab-cli`) connects local terminals and autonomous ag
 - **Use [Colab-Secrets-and-Credentials]** for getting API keys onto the VM: Colab UI secrets vs an uploaded `.env` for CLI runs.
 - **Use [Colab-Notebook-Bootstrapping]** for self-cloning, secret loading, and setting up repository dependencies in Colab web-UI notebooks.
 - **Use [Training-Runs]** for long model training from the CLI: background launch, polling, checkpoints, and result download.
+- **Use [Remote-Machines]** to drive Colab from a browserless machine (Claude Code cloud, CI, VMs).
 - **Use [Agent-Automation-Patterns]** for headless scripts, stdout/stderr streams, error codes, and session isolation.
 - **Use [Anti-Patterns-and-Common-Mistakes]** to avoid auth traps, scope errors, missing secrets, and idle resource costs.
 - **Use [Examples]** for practical, end-to-end interactive and batch recipes.
-- Reference [Command Reference](references/command-reference.md), [Secrets Guide](references/secrets-and-credentials.md), and [Agent Workflows](references/agent-workflows.md) for full details.
+- Reference [Command Reference](references/command-reference.md), [Secrets Guide](references/secrets-and-credentials.md), [Agent Workflows](references/agent-workflows.md), and [Remote Machines](references/remote-machines.md) for full details.
 
 </colab-cli>
 
 <Installation-and-Auth>
 
-### Package Installation
-```bash
-# Recommended installation via uv
-uv tool install google-colab-cli
-```
+Install: `uv tool install google-colab-cli` (upgrade: `colab update --install`).
 
 ### Authentication Strategies
 The CLI supports two authentication modes via the global flag `--auth={oauth2,adc}` (default is `oauth2`, a one-time browser login cached locally). Both work headless once logged in; check with `colab whoami`. The user logs in, never the agent — no token needs to be handed to the agent.
@@ -91,9 +88,7 @@ colab run --gpu T4 --timeout 600 smoke_test.py
 
 <Interactive-Exploration>
 
-Colab CLI bridges autonomous agents and human researchers across two complementary modalities:
-- **For Agents (CLI/REPL Execution)**: `colab exec` and `colab repl` provide the fastest, headless vehicle to execute cells, inspect persistent in-memory variables, stream logs, and verify code directly on cloud GPUs without browser overhead.
-- **For Humans (Visual Web Notebooks)**: `colab url -s <name> --open` connects the browser Web UI directly to that same persistent VM and kernel, allowing humans to visually inspect interactive HTML diffs, markdown narrative, and tables.
+Agents probe headless with `colab exec` / `colab repl` (piped stdin); humans attach the browser to the same kernel with `colab url -s <name> --open`.
 - **Interactive Probing Modes**:
   - **Interactive Python REPL (`colab repl`)**: Live Python shell on remote VM keeping variables/data in kernel memory: `colab repl -s explore --output-image ./plot.png`
   - **Remote Shell Console (`colab console`)**: Interactive tmux/bash session in `/content`: `colab console -s explore`
@@ -225,6 +220,12 @@ Rules for training runs:
 
 </Training-Runs>
 
+<Remote-Machines>
+
+On a machine without a browser (Claude Code cloud, CI, a VM), the user stores two kinds of secrets in the platform's secret store: `COLAB_TOKEN_JSON` (the contents of a logged-in `~/.config/colab-cli/token.json`) and the project's `.env.example` names. Each session restores the login file, checks `colab whoami`, writes the env vars into a `.env` (never echoed), and then follows [Training-Runs] unchanged. The platform must allow network access to the Colab hosts. Full steps, revocation, and failure handling: [Remote Machines](references/remote-machines.md). *Not yet verified end-to-end.*
+
+</Remote-Machines>
+
 <Agent-Automation-Patterns>
 
 1. **Stream Separation**: `colab run` logs CLI status to **stderr** and program output to **stdout**:
@@ -289,9 +290,8 @@ colab stop -s probe
 </Examples>
 
 <References>
-
-- [Command Reference](references/command-reference.md): Complete list of flags, subcommands, accelerators, and options.
-- [Secrets Guide](references/secrets-and-credentials.md): Managing Colab secrets (`google.colab.userdata`), permissions, and API key syncing.
-- [Agent Workflows](references/agent-workflows.md): Unattended pipeline scripts, error recovery, and batch recipes.
-
+- [Command Reference](references/command-reference.md): all flags, subcommands, accelerators.
+- [Secrets Guide](references/secrets-and-credentials.md): UI secrets vs uploaded `.env`, error handling.
+- [Agent Workflows](references/agent-workflows.md): unattended pipelines, error recovery, batch recipes.
+- [Remote Machines](references/remote-machines.md): running from Claude Code cloud, CI, or VMs.
 </References>
