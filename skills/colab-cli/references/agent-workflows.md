@@ -28,7 +28,7 @@ import subprocess
 import sys
 
 def setup():
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "torch", "transformers", "datasets"])
+    subprocess.check_call(["uv", "pip", "install", "--system", "-q", "torch", "transformers", "datasets"])
 
 if __name__ == "__main__":
     setup()
@@ -55,12 +55,12 @@ When an agent needs to perform multiple iterative actions (e.g. uploading datase
    ```
 2. **Upload Assets**:
    ```bash
-   colab upload -s agent-exp-01 ./local_dataset /content/dataset
+   tar czf dataset.tgz -C ./local_dataset . && colab upload -s agent-exp-01 dataset.tgz /content/dataset.tgz   # upload takes files, not dirs; untar on the VM
    ```
 3. **Execute Iterations**:
    ```bash
-   # First iteration: install dependencies
-   colab exec -s agent-exp-01 "pip install -q -r /content/dataset/requirements.txt"
+   # First iteration: install dependencies with uv
+   colab install -s agent-exp-01 -r /content/dataset/requirements.txt
 
    # Second iteration: run phase 1
    colab exec -s agent-exp-01 -f phase1_probe.py
@@ -133,7 +133,7 @@ echo "Provisioning session $SESSION_NAME with GPU $ACCELERATOR..."
 colab new -s "$SESSION_NAME" --gpu "$ACCELERATOR"
 
 echo "Uploading files..."
-colab upload -s "$SESSION_NAME" ./src /content/src
+tar czf src.tgz src && colab upload -s "$SESSION_NAME" src.tgz /content/src.tgz   # then untar on the VM
 
 echo "Executing job..."
 colab exec -s "$SESSION_NAME" "python /content/src/main.py"

@@ -13,8 +13,9 @@ Google Colab CLI (`google-colab-cli`) connects local terminals and autonomous ag
 - **Use [Interactive-Exploration]** for interactive data probing via REPL, console shell, and Colab web UI attachment (`url`).
 - **Use [Execution-Modes]** for ephemeral jobs (`run`), persistent kernel execution (`exec`), and shebang scripts.
 - **Use [File-and-Package-Management]** for transferring datasets, editing remote files (`edit`), and installing packages (`install`).
-- **Use [Colab-Secrets-and-Credentials]** for accessing Colab userdata secrets (`google.colab.userdata`) and syncing keys into `os.environ`.
-- **Use [Colab-Notebook-Bootstrapping]** for self-cloning, secret loading, and setting up repository dependencies in Colab kernels.
+- **Use [Colab-Secrets-and-Credentials]** for getting API keys onto the VM: Colab UI secrets vs an uploaded `.env` for CLI runs.
+- **Use [Colab-Notebook-Bootstrapping]** for self-cloning, secret loading, and setting up repository dependencies in Colab web-UI notebooks.
+- **Use [Training-Runs]** for long model training from the CLI: background launch, polling, checkpoints, and result download.
 - **Use [Agent-Automation-Patterns]** for headless scripts, stdout/stderr streams, error codes, and session isolation.
 - **Use [Anti-Patterns-and-Common-Mistakes]** to avoid auth traps, scope errors, missing secrets, and idle resource costs.
 - **Use [Examples]** for practical, end-to-end interactive and batch recipes.
@@ -31,10 +32,10 @@ uv tool install google-colab-cli
 ```
 
 ### Authentication Strategies
-The CLI supports two authentication modes via the global flag `--auth={adc,oauth2}` (default is `adc`).
+The CLI supports two authentication modes via the global flag `--auth={oauth2,adc}` (default is `oauth2`, a one-time browser login cached locally). Both work headless once logged in; check with `colab whoami`. The user logs in, never the agent — no token needs to be handed to the agent.
 
-1. **Application Default Credentials (ADC) — Recommended for Headless & Agents**:
-   Log in once with `gcloud` providing the 4 required Colab scopes:
+1. **Application Default Credentials (ADC) — alternative for machines with `gcloud`**:
+   Log in once with `gcloud` providing the 4 required Colab scopes, then pass `--auth=adc`:
    ```bash
    gcloud auth application-default login \
      --scopes=openid,\
@@ -75,10 +76,16 @@ colab stop -s explore
 Supported accelerators: `--gpu` (`T4`, `L4`, `G4`, `A100`, `H100`), `--tpu` (`v5e1`, `v6e1`).
 
 ### 2. Ephemeral Job Runner (`colab run`)
-Provisions a fresh VM, runs the script/notebook, streams output, and automatically terminates the VM:
+Provisions a fresh VM, runs the script, streams output, and terminates the VM (everything on it is lost unless `--keep`):
 ```bash
-colab run --gpu T4 train.py
+colab run --gpu T4 --timeout 600 smoke_test.py
 ```
+`colab run` has no upload step, so the script gets **no secrets** and no repo files. Use it only for short, self-contained, secret-free jobs; train with the session flow in [Training-Runs].
+
+### 3. Timeouts and Limits
+- `--timeout` on `run`/`exec` defaults to **30 s**. When it expires the CLI exits with `TimeoutError`, but the code **keeps running** on the kernel. Never rely on a huge `--timeout` for training — launch it in the background (see [Training-Runs]).
+- A session lives at most **24 h** (keep-alive cap); idle sessions still burn compute units until `colab stop`.
+- GPU availability depends on the Colab subscription tier; `colab new` fails if the tier lacks the accelerator.
 
 </Runtime-Management>
 
@@ -116,10 +123,11 @@ Working directory on remote VMs is always `/content`.
 # Install packages using high-performance uv inside VM
 colab install -s explore torch transformers datasets
 colab install -s explore -r requirements.txt
-# Upload local files or directories
-colab upload -s explore ./local_dir /content/remote_dir
+# Upload single files only — directories fail ("Local file not found"); tar them first
+tar czf code.tgz -C ./local_dir . && colab upload -s explore code.tgz /content/code.tgz
+echo 'import subprocess; subprocess.run("mkdir -p /content/code && tar xzf /content/code.tgz -C /content/code", shell=True, check=True)' | colab exec -s explore
 # Download remote artifacts or checkpoints
-colab download -s explore /content/checkpoint.pt ./checkpoints/
+colab download -s explore /content/checkpoint.pt ./checkpoints/checkpoint.pt
 # List and delete remote files
 colab ls -s explore /content
 colab rm -s explore /content/temp_data.csv
@@ -129,81 +137,93 @@ colab rm -s explore /content/temp_data.csv
 
 <Colab-Secrets-and-Credentials>
 
-### Accessing Colab Secrets (`google.colab.userdata`)
+Secrets reach the VM by one of two paths, depending on who started the kernel. Secret names follow the project's `.env.example` (e.g. `HF_TOKEN`, `WANDB_API_KEY`, `ANTHROPIC_API_KEY`).
 
-Google Colab provides a secure key store via the **🔑 Secrets** tab in the notebook UI. In Python, secrets are read with `google.colab.userdata.get('KEY_NAME')`.
+| Started from | Secret source | How |
+|---|---|---|
+| **Colab web UI** (browser notebook) | 🔑 Secrets tab → `google.colab.userdata` | Bootstrap cell syncs `userdata` into `os.environ` |
+| **CLI** (`colab new`/`exec`, agents) | Local gitignored `.env` | `colab upload` the file, load it on the VM |
 
-Because third-party libraries (`huggingface_hub`, `litellm`, `openai`, `wandb`) look for API keys in `os.environ`, automatically sync Colab secrets into `os.environ` during initialization:
+**`userdata` does not work for CLI-started code.** `userdata.get()` raises `TimeoutException: ... Secrets can only be fetched when running from the Colab UI` (verified on CLI 0.6.0). `colab run` has no upload step, so it gets no secrets at all.
 
-```python
-import os
-import sys
-
-# Auto-sync Colab Secrets to os.environ
-try:
-    from google.colab import userdata
-    for key in ["HF_TOKEN", "GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY", "WANDB_API_KEY"]:
-        try:
-            val = userdata.get(key)
-            if val and key not in os.environ:
-                os.environ[key] = val
-        except Exception:
-            pass
-except ImportError:
-    pass  # Local workspace - environment variables or .env will be used
+### CLI path: upload `.env`, load it on the VM
+```bash
+colab upload -s exp01 .env /content/.env      # the log records only the path, not the contents
 ```
+```python
+# first lines of the training script (or a separate load step via `colab exec -f`)
+import os
+if os.path.exists("/content/.env"):
+    for line in open("/content/.env"):
+        k, _, v = line.strip().partition("=")
+        if k and v and not k.startswith("#"):
+            os.environ.setdefault(k, v)
+missing = [k for k in ("HF_TOKEN",) if not os.environ.get(k)]
+if missing:
+    raise SystemExit(f"missing secrets: {missing}")   # an infra failure, not a result
+```
+**Never put a secret value in code sent to `colab exec`** (`echo "os.environ['HF_TOKEN']='$HF_TOKEN'" | colab exec ...`): `colab log` stores every executed snippet verbatim in `~/.config/colab-cli/`. Never `print` a secret either — stdout is logged too.
 
-**Key Secret Names:**
-- `HF_TOKEN`: Hugging Face Hub write/read token for datasets and models.
-- `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `DEEPSEEK_API_KEY`: Generator/Auditor LLM API keys.
-- `WANDB_API_KEY`: Weights & Biases logging token.
-
-Reference [Secrets Guide](references/secrets-and-credentials.md) for permission error handling and CLI patterns.
+Reference [Secrets Guide](references/secrets-and-credentials.md) for error handling and the provider map.
 
 </Colab-Secrets-and-Credentials>
 
 <Colab-Notebook-Bootstrapping>
 
-### Self-Bootstrapping with Secrets & Repository Setup
-
-When a notebook is opened in Colab, include this combined bootstrap & secrets cell at the top:
+When a notebook is opened in the **Colab web UI**, put this cell first. It clones the repo, installs it, and syncs UI secrets (the browser path only — CLI runs use the `.env` path above):
 
 ```python
-import os
-import sys
-
-# 1. Detect Colab environment
+import os, sys
 IN_COLAB = "google.colab" in sys.modules or os.path.exists("/content")
-
 if IN_COLAB:
-    print("🚀 Running on Google Colab. Setting up repository and secrets...")
     REPO_DIR = "/content/<repo-name>"
     if not os.path.exists(REPO_DIR):
         !git clone https://github.com/<owner>/<repo-name>.git {REPO_DIR}
     %cd {REPO_DIR}
-    !pip install -q -e .
-    if REPO_DIR not in sys.path:
-        sys.path.insert(0, REPO_DIR)
-    
-    # 2. Sync Colab Secrets to os.environ
-    try:
-        from google.colab import userdata
-        for k in ["HF_TOKEN", "GEMINI_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY", "WANDB_API_KEY"]:
-            try:
-                val = userdata.get(k)
-                if val and k not in os.environ:
-                    os.environ[k] = val
-            except Exception:
-                pass
-        print("🔑 Colab secrets loaded into os.environ.")
-    except ImportError:
-        pass
-    print("✅ Environment ready!")
-else:
-    print("💻 Running in local workspace.")
+    !uv pip install --system -q -e .
+    from google.colab import userdata
+    for k in ["HF_TOKEN", "WANDB_API_KEY", "ANTHROPIC_API_KEY"]:  # match .env.example
+        try:
+            os.environ.setdefault(k, userdata.get(k))
+        except Exception:
+            print(f"secret {k} not set or not granted in the Secrets tab")
 ```
 
 </Colab-Notebook-Bootstrapping>
+
+<Training-Runs>
+
+Training outlives any `--timeout` and the VM is disposable, so a training run is: **upload → launch in background → poll → download → stop**. Verified on CLI 0.6.0: background processes survive between `exec` calls; directory upload does not work.
+
+```bash
+S=exp-007-train
+trap "colab stop -s $S || true" EXIT                    # guaranteed teardown
+colab new -s $S --gpu L4
+git -C .targets/worktrees/EXP-007 archive -o /tmp/code.tgz HEAD   # committed code only, no .env
+colab upload -s $S /tmp/code.tgz /content/code.tgz
+colab upload -s $S .env /content/.env
+echo 'import subprocess; subprocess.run("mkdir -p /content/code && tar xzf /content/code.tgz -C /content/code && cd /content/code && uv sync -q", shell=True, check=True)' \
+  | colab exec -s $S --timeout 900
+# launch detached; the script loads /content/.env itself (see [Colab-Secrets-and-Credentials])
+echo 'import subprocess; subprocess.Popen("cd /content/code && nohup uv run python train.py --out /content/out > /content/train.log 2>&1 & echo $! > /content/train.pid", shell=True)' \
+  | colab exec -s $S
+# poll (repeat until the process is gone)
+echo 'import subprocess; print(subprocess.run("tail -5 /content/train.log; kill -0 $(cat /content/train.pid) && echo RUNNING || echo EXITED", shell=True, capture_output=True, text=True).stdout)' \
+  | colab exec -s $S
+colab download -s $S /content/out/metrics.json ./experiments/EXP-007/metrics.json  # destination is a file path, not a dir
+colab download -s $S /content/train.log ./experiments/EXP-007/train.log
+```
+
+Rules for training runs:
+- **`uv sync` builds a fresh venv** and re-downloads large wheels like torch (several minutes on first run). If it exceeds `--timeout`, the install keeps going on the VM — poll for `/content/code/.venv` before launching. Pin a CUDA build that matches the Colab GPU.
+- **Checkpoint often and push off the VM.** A VM can be reclaimed mid-run (24 h cap, quota, preemption). Save checkpoints every N steps and push them to the Hugging Face Hub (`HF_TOKEN` with write access) so a new session can resume with `resume_from_checkpoint`. `colab drivemount` needs a human at a TTY, so agents cannot use Drive.
+- **Small files home, large files to the Hub.** `colab download` takes one file at a time — bring back metrics, logs, and `results.json`; leave weights on the Hub.
+- **Track live with W&B** (`WANDB_API_KEY` in `.env`); use the `wandb-for-trl` skill for TRL/SFTTrainer setup.
+- **Smoke-test first**: run 20 steps on the cheapest GPU (`T4`) before renting `A100`/`H100`.
+- **Record the run**: GPU type, wall-clock, CLI version, and the Hub checkpoint revision go into the experiment's `results.json` / `execution.md`.
+- A missing secret, OOM, or reclaimed VM is an infra failure (`INFRA_INCONCLUSIVE`), never evidence against the hypothesis.
+
+</Training-Runs>
 
 <Agent-Automation-Patterns>
 
@@ -217,7 +237,7 @@ else:
    SESSION="job-$(date +%s)"
    trap "colab stop -s $SESSION || true" EXIT
    colab new -s "$SESSION" --gpu T4
-   colab exec -s "$SESSION" -f train.py
+   colab exec -s "$SESSION" -f eval.py --timeout 600   # short jobs only; training → [Training-Runs]
    colab download -s "$SESSION" /content/model.pt ./model.pt
    ```
 
@@ -226,7 +246,8 @@ else:
 <Connecting-Skills>
 
 - **Prerequisites**: Use `coding-principles` for clean code structure.
-- **Companions**: Use `code-as-tools` to author modular tools before dispatching to Colab runtimes, and `create-qa-spectrum` for dataset curation.
+- **Companions**: Use `code-as-tools` to author modular tools before dispatching to Colab runtimes, and `wandb-for-trl` to track training metrics.
+- **Lab loop**: Inside an experiment lab, `experiment-lab-loop` decides *what* to train; this skill runs it, and the downloaded metrics feed that experiment's `results.json`.
 - **Successors**: Use `manage-skills` when updating or extending skill definitions.
 
 </Connecting-Skills>
@@ -235,8 +256,11 @@ else:
 
 | Anti-Pattern | Root Cause | Correct Approach |
 |---|---|---|
-| Relying only on `os.environ` in Colab | Colab secrets are stored in `userdata`, not `os.environ` | Use `userdata.get(...)` and sync to `os.environ` |
-| Running `colab auth` to fix local CLI 401/403 | Confusing VM GCP auth with CLI auth | Use `gcloud auth application-default login` with all 4 scopes |
+| Calling `userdata.get()` in a CLI-started run | Colab secrets only work from the web UI | Upload `.env` and load it on the VM |
+| Passing a secret inline to `colab exec` | `colab log` stores executed code verbatim | Upload `.env`; never print secrets |
+| Training in the foreground with a big `--timeout` | CLI times out (default 30 s) while the kernel keeps going | Background launch + poll ([Training-Runs]) |
+| Keeping checkpoints only on the VM | VM is wiped on stop, reclaim, or `colab run` exit | Push checkpoints to the HF Hub during training |
+| Running `colab auth` to fix local CLI 401/403 | Confusing VM GCP auth with CLI auth | Re-login (`colab whoami` to check); for ADC use all 4 scopes |
 | Missing `-s <name>` on `colab new` | Auto-generates random 6-hex ID | Always name sessions explicitly (e.g. `-s exp01`) |
 | Missing self-bootstrapping in Colab notebooks | `ModuleNotFoundError` when opened on Colab | Include the `IN_COLAB` git clone & editable install block in cell 1 |
 | Leaving persistent VMs running | Incurring compute quota burn | Use `colab run` (auto-teardown) or bash `trap "colab stop" EXIT` |
@@ -252,7 +276,8 @@ colab new -s probe --gpu T4
 # 2. Install dependencies using uv inside VM
 colab install -s probe datasets transformers torch litellm
 # 3. Upload project modules
-colab upload -s probe ./src /content/src
+tar czf src.tgz src && colab upload -s probe src.tgz /content/src.tgz   # files only, no dirs
+echo 'import subprocess; subprocess.run("tar xzf /content/src.tgz -C /content", shell=True, check=True)' | colab exec -s probe
 # 4. Probing via REPL or sequential exec
 echo "import sys; sys.path.append('/content'); import src" | colab exec -s probe
 colab repl -s probe

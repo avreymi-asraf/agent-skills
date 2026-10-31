@@ -111,11 +111,8 @@ except userdata.NotebookAccessError:
 
 ## 5. Secrets in Headless & CLI Execution (`colab-cli`)
 
-When running via `colab run` or `colab exec` from the CLI:
-1. **VM-Side Execution**: Code executed via `colab exec` or `colab run` inside the VM can access `userdata` if the runtime session is linked to an authorized user profile.
-2. **Avoid Looping Over Missing Keys**: When `userdata.get('NON_EXISTENT_KEY')` is called, Colab attempts to request authorization interactively via `stdin`. In headless CLI execution (where no user is present to respond), this can cause the kernel to hang waiting for `stdin` until timeout. Always prioritize `.env` loading and avoid querying arbitrary missing secret keys in unattended workflows.
-3. **CLI Variable Passing**: You can also pass environment variables during remote execution by setting them in your execution commands or script headers:
-   ```bash
-   echo "import os; os.environ['HF_TOKEN'] = '$HF_TOKEN'; ..." | colab exec -s exp01
-   ```
-
+Verified on CLI 0.6.0:
+1. **`userdata` is unavailable to CLI-started code.** In `colab run` / `colab exec`, `userdata.get(key)` raises `TimeoutException: Requesting secret <key> timed out. Secrets can only be fetched when running from the Colab UI.` Do not call it in unattended runs.
+2. **Upload a `.env` file instead.** `colab upload -s <name> .env /content/.env`, then parse it into `os.environ` at the top of the script (loader in SKILL.md → Colab-Secrets-and-Credentials). The session log records the upload path only, not the file contents.
+3. **Never inline a secret into code sent to `colab exec`.** `colab log` stores every executed snippet verbatim (`event_type: execution`, `code: ...`) under `~/.config/colab-cli/`, so `echo "os.environ['HF_TOKEN']='$HF_TOKEN'" | colab exec` writes the token to disk. Never print secret values either; outputs are logged too.
+4. **`colab run` cannot receive secrets**, because it creates a fresh VM with no upload step. Use `colab new` → `upload` → `exec` → `stop` whenever a job needs a key.
