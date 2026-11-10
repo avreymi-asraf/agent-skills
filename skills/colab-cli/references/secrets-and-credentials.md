@@ -1,121 +1,92 @@
-# Google Colab Secrets and Credentials Management
+# Secrets and Credentials on Colab
 
-This guide details how to securely access, manage, and inject credentials and API keys in Google Colab environments across interactive notebooks, CLI sessions, and autonomous agent workflows.
+How API keys (Hugging Face, W&B, LLM providers, GitHub) reach code running on a Colab VM. Which path works depends on **who started the kernel**:
 
----
-
-## 1. Google Colab Secrets Architecture (`google.colab.userdata`)
-
-Google Colab provides a secure Secrets store accessible via the **🔑 Secrets** tab in the notebook sidebar. When secrets are stored:
-1. They are encrypted and associated with the user's Google account.
-2. Notebooks request access per secret via the "Notebook access" toggle.
-3. In Python, secrets are accessed through the `google.colab.userdata` module.
-
-### Core Retrieval Pattern in Python
-```python
-import os
-
-# Standard pattern: try Colab userdata first, then fall back to os.environ / .env
-def get_secret(key: str, default: str | None = None) -> str | None:
-    try:
-        from google.colab import userdata
-        try:
-            val = userdata.get(key)
-            if val:
-                return val
-        except Exception:
-            pass
-    except ImportError:
-        pass
-    return os.environ.get(key, default)
-```
-
----
-
-## 2. Syncing Colab Secrets to `os.environ` for Third-Party Libraries
-
-Most LLM and ML libraries (`litellm`, `huggingface_hub`, `openai`, `google-genai`, `wandb`, `transformers`) read API keys directly from `os.environ`. Colab secrets are **not** automatically injected into `os.environ`.
-
-### Automatic Environment Synchronization
-Run this snippet during initialization in Colab notebooks or remote scripts:
-
-```python
-import os
-import sys
-
-IN_COLAB = "google.colab" in sys.modules or os.path.exists("/content")
-
-if IN_COLAB:
-    try:
-        from google.colab import userdata
-        # Common AI/ML secrets to auto-sync
-        SYNC_KEYS = [
-            "HF_TOKEN",
-            "HUGGINGFACE_TOKEN",
-            "GEMINI_API_KEY",
-            "OPENAI_API_KEY",
-            "ANTHROPIC_API_KEY",
-            "DEEPSEEK_API_KEY",
-            "MISTRAL_API_KEY",
-            "WANDB_API_KEY",
-            "GITHUB_TOKEN",
-        ]
-        for k in SYNC_KEYS:
-            try:
-                val = userdata.get(k)
-                if val and k not in os.environ:
-                    os.environ[k] = val
-            except Exception:
-                pass
-        print("🔑 Colab secrets synchronized to os.environ.")
-    except ImportError:
-        pass
-```
-
----
-
-## 3. Common Secret Keys & Provider Map
-
-| Secret Name | Intended Service | Used By |
+| Kernel started from | Works | Does not work |
 |---|---|---|
-| `HF_TOKEN` / `HUGGINGFACE_TOKEN` | Hugging Face Hub | `huggingface_hub`, `transformers`, `datasets` |
-| `GEMINI_API_KEY` | Google Gemini API | `google-genai`, `litellm` |
-| `OPENAI_API_KEY` | OpenAI API | `openai`, `litellm` |
-| `ANTHROPIC_API_KEY` | Anthropic Claude API | `anthropic`, `litellm` |
-| `DEEPSEEK_API_KEY` | DeepSeek API | `litellm`, `openai` |
-| `WANDB_API_KEY` | Weights & Biases | `wandb`, `transformers.Trainer` |
-| `GITHUB_TOKEN` | GitHub Personal Access Token | `git clone`, repository operations |
+| Colab web UI (browser notebook) | 🔑 Secrets tab → `google.colab.userdata` | — |
+| CLI (`colab new`/`exec`/`run`/`ssh`) | Uploaded `.env` file | `userdata`, `--env` for secrets (logged) |
+
+This is separate from the CLI's own Google login (SKILL.md → Installation-and-Auth, and [Remote Machines](remote-machines.md) for headless machines).
 
 ---
 
-## 4. Handling Missing Secrets Gracefully
+## 1. CLI runs: upload a `.env`
 
-When a secret is missing or access is not granted in the Colab UI:
-- `userdata.get(key)` raises `google.colab.userdata.SecretNotFoundError` or `google.colab.userdata.NotebookAccessError`.
-- Catching general `Exception` or `userdata.SecretNotFoundError` ensures execution proceeds cleanly with local environment variables or prompts the user with an actionable message.
+Verified on CLI 0.8.0:
+
+1. **`userdata` is unavailable.** From `colab exec`/`run`, `userdata.get("HF_TOKEN")` raises `TimeoutException: Requesting secret HF_TOKEN timed out. Secrets can only be fetched when running from the Colab UI.` It takes several seconds to fail, so never call it in unattended runs.
+2. **Upload the project's gitignored `.env`:**
+   ```bash
+   colab upload -s <session> .env /content/.env
+   ```
+   The history records the upload as a file operation with paths only, not the contents.
+3. **Load it at the top of the job** (loader in SKILL.md → Secrets), or with `python-dotenv` if the project already uses it: `load_dotenv("/content/.env")`.
+4. **Fail fast** when a required key is missing: raise with the key *names*, never the values. A missing key is a setup failure.
+5. **`colab run` cannot receive secrets**: it creates a fresh VM with no upload step. Use `colab new` → `upload .env` → `exec`/`ssh` → `stop`.
+6. **Delete it when done** if the session is kept: `colab rm -s <session> /content/.env`. `colab stop` destroys the VM and the file with it.
+
+### What never to do
+
+| Pattern | What leaks |
+|---|---|
+| `colab exec --env HF_TOKEN=$HF_TOKEN` / `colab run --env ...` | Value written into the code block stored in `~/.config/colab-cli/history/<session>.jsonl`; also visible in `ps` and shell history |
+| `echo "os.environ['HF_TOKEN']='$HF_TOKEN'" \| colab exec` | Same history file, verbatim |
+| `print(os.environ["HF_TOKEN"])`, logging config dumps | Outputs are stored in the history file and in exported logs (`colab log -o`) |
+| Committing `.env` or baking it into `git archive` | Repo history |
+
+`--env` is fine for non-secret settings (`--env MODE=smoke`).
+
+---
+
+## 2. Web UI notebooks: `google.colab.userdata`
+
+The 🔑 Secrets tab stores secrets per Google account; each notebook must be granted access per secret ("Notebook access" toggle). Libraries read keys from `os.environ`, so copy them over (bootstrap cell in SKILL.md → Notebook-Bootstrapping).
 
 ```python
+import os
 from google.colab import userdata
 
 try:
-    hf_token = userdata.get('HF_TOKEN')
+    os.environ.setdefault("HF_TOKEN", userdata.get("HF_TOKEN"))
 except userdata.SecretNotFoundError:
-    print("⚠️ 'HF_TOKEN' not found in Colab Secrets. Set it under the 🔑 Secrets tab.")
-    hf_token = os.environ.get('HF_TOKEN')
+    print("HF_TOKEN not set: add it in the Secrets tab")
 except userdata.NotebookAccessError:
-    print("⚠️ Notebook access not granted for 'HF_TOKEN'. Enable toggle in Secrets tab.")
-    hf_token = None
+    print("HF_TOKEN not granted: enable notebook access in the Secrets tab")
 ```
+
+A helper that works in both places (web UI first, then environment / `.env`):
+
+```python
+import os
+
+def get_secret(key: str, default: str | None = None) -> str | None:
+    if os.environ.get(key):
+        return os.environ[key]
+    try:
+        from google.colab import userdata
+        return userdata.get(key)
+    except Exception:          # not on Colab, not in the UI, missing, or not granted
+        return default
+```
+
+Check `os.environ` first: in CLI runs the `.env` loader has already filled it, so the slow-failing `userdata` call is skipped.
 
 ---
 
-## 5. Secrets in Headless & CLI Execution (`colab-cli`)
+## 3. Common secret names
 
-When running via `colab run` or `colab exec` from the CLI:
-1. **VM-Side Execution**: Code executed via `colab exec` or `colab run` inside the VM can access `userdata` if the runtime session is linked to an authorized user profile.
-2. **Avoid Looping Over Missing Keys**: When `userdata.get('NON_EXISTENT_KEY')` is called, Colab attempts to request authorization interactively via `stdin`. In headless CLI execution (where no user is present to respond), this can cause the kernel to hang waiting for `stdin` until timeout. Always prioritize `.env` loading and avoid querying arbitrary missing secret keys in unattended workflows.
-3. **CLI Variable Passing**: You can also pass environment variables during remote execution by setting them in your execution commands or script headers:
-   ```bash
-   echo "import os; os.environ['HF_TOKEN'] = '$HF_TOKEN'; ..." | colab exec -s exp01
-   ```
+Use the names the project already lists (e.g. in `.env.example`). Typical ones:
 
+| Name | Service | Read by |
+|---|---|---|
+| `HF_TOKEN` | Hugging Face Hub | `huggingface_hub`, `transformers`, `datasets` |
+| `WANDB_API_KEY` | Weights & Biases | `wandb`, `transformers.Trainer` |
+| `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` | LLM APIs | provider SDKs, `litellm` |
+| `GITHUB_TOKEN` | GitHub | `git clone` of private repos |
+
+---
+
+## 4. GCP credentials on the VM
+
+For BigQuery/GCS from code on the VM, `colab auth -s <session>` runs `google.colab.auth.authenticate_user()` in the kernel. It needs a human at a TTY, so agents use a service-account key uploaded like `.env` (and `GOOGLE_APPLICATION_CREDENTIALS=/content/sa.json` in `.env`) instead. *(Service-account path: standard Google auth behavior, not tested on Colab.)*
