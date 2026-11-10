@@ -1,156 +1,132 @@
-# Google Colab CLI: Agent Automation Workflows & Best Practices
+# Agent Workflows with the Colab CLI
 
-This guide covers patterns for autonomous agents and automated pipelines using the Google Colab CLI.
+Patterns for agents and unattended pipelines. All commands are CLI 0.8.0. `<run-name>` is whatever the project calls a run (`bert-lr-sweep`, `0a-myrepo-rl/grpo`, `run-2026-01-15` are only examples); `S` is the session name derived from it with only `[a-z0-9-]`.
 
 ---
 
-## 1. Ephemeral Task Execution (Fire-and-Forget)
+## 1. Pick the shape of the job
 
-For automated pipelines (e.g. running evaluations, synthetic data generation, or training jobs), use `colab run`. It provisions a remote VM, installs dependencies, executes the job, streams logs back to stdout/stderr, and immediately deallocates the instance to avoid compute charges.
+| Job | Use | Why |
+|---|---|---|
+| Short, self-contained, no secrets, one script | `colab run` | One command, VM always released |
+| Needs secrets, repo code, or several steps | `colab new` → `upload`/`ssh` → `exec` → `download` → `stop` | Only a session can receive `.env` and files |
+| Longer than a few minutes of silence, or hours | Session + background launch + poll (SKILL.md → Training-Runs) | Survives idle timeouts and dropped connections |
+| Iterative probing of in-memory state | Session + repeated `colab exec` | Kernel state persists between calls |
 
-### Pattern: Self-Contained Batch Job
+---
+
+## 2. Fire-and-forget: `colab run`
+
 ```bash
-# 1. Run job with specified accelerator
-colab run --gpu A100 batch_eval.py
-
-# 2. Check exit code: colab run propagates the script's exit status
-if [ $? -ne 0 ]; then
-  echo "Job failed on remote Colab instance"
-fi
+colab run --gpu T4 --timeout 600 batch_eval.py --limit 100 > ./outputs/<run-name>/eval.json 2> ./outputs/<run-name>/run.log
+status=$?        # the script's own exit code
 ```
 
-### Self-Bundling Remote Script
-In agent workflows, create a standalone execution script that installs requirements and outputs artifacts to a known directory:
+The script installs what it needs itself, because the VM is fresh:
 
 ```python
-# run_agent_job.py
-import subprocess
-import sys
-
-def setup():
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "torch", "transformers", "datasets"])
-
-if __name__ == "__main__":
-    setup()
-    import torch
-    print("CUDA available:", torch.cuda.is_available())
-    # Perform evaluation/training here...
+import subprocess, sys
+subprocess.check_call(["uv", "pip", "install", "--system", "-q", "transformers", "datasets"])
 ```
 
-Run directly:
+Nothing on the VM survives: print the result to stdout (as JSON) or push it to remote storage. Use `--keep -s <name>` to inspect afterwards, then `colab stop -s <name>`.
+
+---
+
+## 3. Persistent session
+
 ```bash
-colab run --gpu L4 run_agent_job.py
+S=eval-$(date +%Y%m%d-%H%M)
+trap 'colab stop -s "$S" || true' EXIT
+colab new -s "$S" --gpu T4
+
+tar cz -C ./data . | colab ssh -s "$S" -- 'mkdir -p /content/data && tar xz -C /content/data'
+colab install -s "$S" -r requirements.txt
+colab upload -s "$S" .env /content/.env
+
+colab exec -s "$S" -f phase1_load.py --timeout 300      # loads model/data into kernel memory
+colab exec -s "$S" -f phase2_probe.py --timeout 300     # reuses phase-1 variables
+echo 'print(len(dataset), dataset[0])' | colab exec -s "$S"
+
+colab download -s "$S" /content/results.json ./outputs/<run-name>/results.json
 ```
 
----
-
-## 2. Persistent Iterative Experimentation Workflow
-
-When an agent needs to perform multiple iterative actions (e.g. uploading datasets, testing several variations in a REPL, probing intermediate layer weights), use a named persistent session.
-
-### Lifecycle Pattern:
-1. **Provision Session**:
-   ```bash
-   colab new --session agent-exp-01 --gpu T4
-   ```
-2. **Upload Assets**:
-   ```bash
-   colab upload -s agent-exp-01 ./local_dataset /content/dataset
-   ```
-3. **Execute Iterations**:
-   ```bash
-   # First iteration: install dependencies
-   colab exec -s agent-exp-01 "pip install -q -r /content/dataset/requirements.txt"
-
-   # Second iteration: run phase 1
-   colab exec -s agent-exp-01 -f phase1_probe.py
-
-   # Third iteration: run phase 2 (reuses phase 1 state in memory if needed)
-   colab exec -s agent-exp-01 -f phase2_prune.py
-   ```
-4. **Retrieve Results**:
-   ```bash
-   colab download -s agent-exp-01 /content/results ./local_results
-   ```
-5. **Always Clean Up / Deallocate**:
-   ```bash
-   colab stop agent-exp-01
-   ```
-
-> **IMPORTANT**: In agent workflows, always implement a `try...finally` or cleanup trap in bash scripts to ensure `colab stop <session>` is called, even on failure or unexpected termination.
+`colab exec -f` sends the local file each time, so edit locally and re-run without uploading.
 
 ---
 
-## 3. Interactive Notebook Cell Execution & In-Memory Probing
+## 4. Notebooks against a persistent kernel
 
-When an agent needs to test a Jupyter notebook or run exploratory code iteratively:
+```bash
+colab exec -s "$S" -f notebooks/01_explore.ipynb --timeout 300
+# writes notebooks/01_explore_output.ipynb with all outputs
+colab url -s "$S"            # a human can attach the browser to the same kernel
+```
 
-### Pattern: Live Cell Execution & In-Memory Probing
-1. **Provision persistent session**:
-   ```bash
-   colab new -s agent-probe --gpu T4
-   ```
-2. **Execute Full Notebook against Persistent Kernel**:
-   `colab exec` can take whole `.ipynb` files directly, run every cell sequentially, format markdown tables/outputs in terminal streams, and write out the executed notebook:
-   ```bash
-   colab exec -s agent-probe -f notebooks/01_explore_pruning.ipynb --timeout 300
-   ```
-   > **Note on Timeouts**: The default timeout for `colab exec` is `30.0` seconds. For tasks making LLM API calls or dataset downloads, always specify `--timeout 300` or higher.
-
-3. **Ad-hoc REPL In-Memory Probing**:
-   Because the kernel is persistent, all variables (datasets, models, traces) stay in remote GPU memory. An agent can immediately run one-liners or interactive verification blocks without re-running data ingestion:
-   ```bash
-   cat << 'EOF' | colab exec -s agent-probe
-   # Probe variables created in earlier cells:
-   print("In-memory dataset count:", len(hf_dataset))
-   print("Sample target continuation:", hf_dataset[0]["target_y"])
-   EOF
-   ```
-
-4. **Connect Web UI for User Inspection**:
-   ```bash
-   colab url -s agent-probe --open
-   ```
+Cells that call slow APIs or download data stay silent for a while: raise `--timeout` (idle limit) or use `0`.
 
 ---
 
-## 4. Automation Script Template (Bash Trap for Cleanup)
+## 5. Bash template
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
-SESSION_NAME="agent-run-$(date +%s)"
-ACCELERATOR="T4"
+RUN=${1:?usage: $0 <run-name>}
+S=$(printf '%s' "$RUN" | tr -c 'a-z0-9-' '-')
+OUT=./outputs/$RUN
+GPU=${GPU:-T4}
+mkdir -p "$OUT"
 
-cleanup() {
-    echo "Deallocating Colab instance: $SESSION_NAME..."
-    colab stop "$SESSION_NAME" || true
-}
+cleanup() { colab stop -s "$S" >/dev/null 2>&1 || true; }
 trap cleanup EXIT
 
-echo "Provisioning session $SESSION_NAME with GPU $ACCELERATOR..."
-colab new -s "$SESSION_NAME" --gpu "$ACCELERATOR"
+colab new -s "$S" --gpu "$GPU"
+git archive HEAD | gzip | colab ssh -s "$S" -- 'mkdir -p /content/code && tar xz -C /content/code'
+colab upload -s "$S" .env /content/.env
+colab ssh -s "$S" -- 'cd /content/code && uv sync -q' </dev/null
+colab ssh -s "$S" -- 'cd /content/code && nohup uv run python train.py --out /content/out > /content/train.log 2>&1 & echo $! > /content/train.pid' </dev/null
 
-echo "Uploading files..."
-colab upload -s "$SESSION_NAME" ./src /content/src
+while colab ssh -s "$S" -- 'kill -0 $(cat /content/train.pid) 2>/dev/null' </dev/null; do
+  colab ssh -s "$S" -- 'tail -1 /content/train.log' </dev/null || true
+  sleep 60
+done
 
-echo "Executing job..."
-colab exec -s "$SESSION_NAME" "python /content/src/main.py"
-
-echo "Downloading results..."
-colab download -s "$SESSION_NAME" /content/output ./output
-
-echo "Job completed successfully."
+colab ssh -s "$S" -- 'tar cz -C /content/out .' </dev/null | tar xz -C "$OUT"
+colab download -s "$S" /content/train.log "$OUT/train.log"
 ```
+
+Notes:
+- The poll loop ends when the process exits *or* the VM is gone; check that the expected outputs exist before trusting the run.
+- Pull only small files (metrics, logs, result JSON) back; push checkpoints and weights to the Hub from the training script.
+- With no local `ssh` client, replace each `colab ssh -s "$S" -- 'X'` with `echo '!X' | colab exec -s "$S"` and the tar streams with `upload`/`download` of a `.tgz`. `exec` does not return the shell command's exit code, so print a marker (`&& echo OK`) and grep for it.
 
 ---
 
-## 4. Troubleshooting Agent Execution
+## 6. Parallel runs
 
-| Symptom | Root Cause | Fix |
+```bash
+colab --config /tmp/colab-a.json new -s sweep-lr-1e-4 --gpu T4
+colab --config /tmp/colab-b.json new -s sweep-lr-3e-4 --gpu T4
+```
+
+Separate `--config` files keep session state apart; names must still be distinct because history is shared in `~/.config/colab-cli/history/`. Check `colab usage` for the compute-unit burn rate before launching many.
+
+---
+
+## 7. Troubleshooting
+
+| Symptom | Cause | Fix |
 |---|---|---|
-| `QuotaExceeded` / `ResourceExhausted` | GPU tier quota is depleted or unavailable | Fallback to `--gpu T4` or run standard CPU |
-| Session left running indefinitely | No teardown trap on script crash | Wrap in `trap cleanup EXIT` or use `colab run` |
-| Missing files in remote session | Remote path assumed local current directory | All remote files reside under `/content/` |
-| `OAuth Error: No browser detected` | Headless server cannot open local OAuth URL | Use `colab auth login --auth=adc` or pre-authenticate session |
+| `Backend rejected accelerator ...` (400) | No quota/entitlement for that GPU/TPU | `--gpu T4` or CPU |
+| `Allocation refused (precondition failed)` | Too many sessions or temporary capacity limit | `colab sessions`, stop old ones, retry later |
+| `TimeoutError: ... no message from the kernel for Ns` | Silent code longer than `--timeout` | Raise `--timeout`, `0`, or background launch |
+| `Session ... appears to be lost (404/401)` | VM reclaimed | `colab new`, resume from the last pushed checkpoint |
+| `colab ssh` 400 | No ed25519/ecdsa key, or RSA key | `ssh-keygen -t ed25519`, or `-i KEY` |
+| `colab ssh` 404 | Runtime created without SSH support | New session |
+| `colab ssh` 429 | SSH session limit (another shell/IDE attached) | Disconnect it, or use `!` lines via `exec` |
+| `Local file 'dir' not found` on upload | Directories are not supported | tar stream over ssh |
+| `Could not read the OAuth token from the OS keyring` | No keyring backend (headless Linux) | Harmless if commands work; or use ADC |
+| CLI waits for `Enter the authorization code:` | Not logged in | A human logs in; headless: [Remote Machines](remote-machines.md) |
+| Files missing on the VM | Relative path resolved elsewhere | Use absolute `/content/...` paths |
