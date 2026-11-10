@@ -53,6 +53,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | :--- | :--- |
 | [`agent-and-skill-improvement`](skills/agent-and-skill-improvement) | Maintains and improves agent files (identity, memory, tools) and skill files (`SKILL.md`). Load when completing tasks that produce learnings, updating agent behavior, or refining domain knowledge. |
 | [`architecture-map`](skills/architecture-map) | Generates production-quality interactive self-contained HTML architecture diagrams and agent-ready JSON from codebases. |
+| [`audit-consistency`](skills/audit-consistency) | Audits how well a repo's instructions, docs, and comments support an agent: Sonnet subagents collect all semantic data, Opus reports problems, fixes, workflow gaps, and missing data. |
 | [`chatreplay`](skills/chatreplay) | Parses and interprets `.chatreplay.json` session logs capturing interactions between users, AI agents (VS Code / Copilot), and tools. |
 | [`code-as-tools`](skills/code-as-tools) | Guides writing research and exploratory code as small, composable, notebook-friendly tools rather than rigid pipelines. |
 | [`coding-principles`](skills/coding-principles) | Fundamental principles for code clarity, naming uniformity, live execution, and clean architecture without unnecessary refactoring. |
