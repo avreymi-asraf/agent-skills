@@ -70,13 +70,4 @@ if [ "$n_code" -gt 0 ]; then
 fi
 echo
 
-echo "### Comment markers in code (TODO/FIXME/HACK/XXX/NOTE) by top-level directory"
-if [ "$n_code" -gt 0 ]; then
-  printf '%s\n' "$code" | while IFS= read -r f; do
-    [ -f "$f" ] || continue
-    c=$(grep -Ec '\b(TODO|FIXME|HACK|XXX|NOTE)\b' "$f" 2>/dev/null || true)
-    [ "${c:-0}" -gt 0 ] && printf '%s\t%s\n' "$c" "${f%%/*}"
-  done | awk -F'\t' '{ m[$2] += $1 } END { for (d in m) printf "%6d  %s\n", m[d], d }' | sort -nr | head -n 50
-fi
-
 exit 0
