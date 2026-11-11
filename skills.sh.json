@@ -16,9 +16,9 @@
     },
     {
       "title": "Research & Knowledge Synthesis",
-      "description": "Skills for scientific experiments, dataset curation, deep research, and compounding LLM wikis.",
+      "description": "Skills for scientific experiments, dataset curation, deep research, and compounding knowledge bases.",
       "skills": [
-        "wiki-llm",
+        "cortex",
         "experiment-lab",
         "create-qa-spectrum",
         "gemini-deep-research",

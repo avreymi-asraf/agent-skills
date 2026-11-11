@@ -11,4 +11,4 @@
 * **Run plan:** [Written before the run: the question it answers, what to watch while it runs, what would stop it early. Settings, where it ran.]
 * **Saw:** [What came back: numbers, and the cases or traces behind them. Run files: `runs/01-<short-name>/`.]
 * **Decided:** [What this changes. Plan updated? Next step?]
-* **Told the lab:** [Nothing | the lesson, and the wiki page it was written to | final conclusion: closing.]
+* **Told the lab:** [Nothing | the claim written (`cortex/claims/<claim>`, provisional) and the findings page that now cites it | final conclusion: closing.]

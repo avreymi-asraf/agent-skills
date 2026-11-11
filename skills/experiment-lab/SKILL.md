@@ -1,6 +1,6 @@
 ---
 name: experiment-lab
-description: Build and maintain a research lab repository - an autonomous system that runs experiments on external target repos, with a wiki, a journal, isolated git worktrees and a small CLI, all serving one loop (find a direction, plan, work in rounds, conclude). Use when the user wants to create a new lab, rebuild one, add a target repo to it, change how the lab works, or find out why it is not serving the experiment loop. Ships a scaffold (AGENTS.md, the lab's own experiment-lab-loop skill, templates, lab.py). Not for running an experiment inside an existing lab - the lab's own AGENTS.md and its experiment-lab-loop skill direct that work.
+description: Build and maintain a research lab repository - an autonomous system that runs experiments on external target repos, with a cortex (its memory: claims anchored to experiments and to outside sources, and findings on top), a journal, isolated git worktrees and a small CLI, all serving one loop (find a direction, plan, work in rounds, conclude). Use when the user wants to create a new lab, rebuild one, add a target repo to it, change how the lab works, or find out why it is not serving the experiment loop. Ships a scaffold (AGENTS.md, the lab's own experiment-lab-loop skill, templates, lab.py). Not for running an experiment inside an existing lab - the lab's own AGENTS.md and its experiment-lab-loop skill direct that work.
 ---
 
 <experiment-lab>
@@ -20,13 +20,13 @@ This skill is for the person or agent who **builds or changes** such a lab. It i
 - **[Check-a-lab]**: finding out whether the lab serves the loop.
 - **[Scripts-and-scaffold]**, **[References]**, **[Example]**.
 
-Companion skills: `grow-autonomy` is the method behind this skill (how to change what agents understand, at the root); use it for every change and every reject. `wiki-llm` for the wiki's own mechanics. `manage-skills` when editing the lab's skills.
+Companion skills: `grow-autonomy` is the method behind this skill (how to change what agents understand, at the root); use it for every change and every reject. [Growing a lab](references/growing-a-lab.md) is that method in a lab's own terms. `cortex` is the skill the lab's memory is built with: the lab is one cortex, and its `cortex/profile.md` says what is particular to it. `manage-skills` when editing the lab's skills.
 
 </experiment-lab>
 
 <The-autonomy-we-build-for>
 
-The user wants to hand this lab requests of any size, at any moment, in any order: "fix this wiki line", "analyze the last run", "think of a new direction and run it to a conclusion". The last kind is the point. The lab is built so that a wide request comes back done well, with nobody watching the steps.
+The user wants to hand this lab requests of any size, at any moment, in any order: "fix this line in the cortex", "analyze the last run", "think of a new direction and run it to a conclusion". The last kind is the point. The lab is built so that a wide request comes back done well, with nobody watching the steps.
 
 What that takes:
 
@@ -49,7 +49,7 @@ All experiments on one target repo are written in one shared code language and b
 **What it is.** For one target repo, recorded once on its system page:
 
 - the mental model: what a run is, what an idea is allowed to change, what stays as it is;
-- the vocabulary: one name per concept, used in code, plans, logs and the wiki alike;
+- the vocabulary: one name per concept, used in code, plans, logs and the cortex alike;
 - the **shared components** every experiment uses and none reimplements: loading and splitting data, the run entry point and its config object, the runner that sends a run to a machine and brings the results back, the tools for watching and analyzing a run, the final evaluation;
 - the **extension points**: the few named places where an idea goes in;
 - the shape of what a run leaves behind (folder, file names, key names).
@@ -59,10 +59,10 @@ All experiments on one target repo are written in one shared code language and b
 - *Results can be attributed.* When two experiments share everything except the idea, a difference between them is about the idea. When each brings its own loader, loop and metrics code, a difference is about nothing in particular.
 - *Experiments can be read.* Someone who understood experiment `0a` opens `0b` and sees only what changed. On a wide request nobody reads every step, so this is how the user, and the next agent, can check the work at all.
 - *Tools carry over.* The observation and analysis tools written for one experiment work on the next, so each round is cheaper than the last and rounds can be compared.
-- *Knowledge carries over.* A finding in the wiki is stated in the shared terms, so it applies to the next experiment without translation.
+- *Knowledge carries over.* A finding in the cortex is stated in the shared terms, so it applies to the next experiment without translation.
 - *An agent can start.* A fresh agent with a new idea does not design a codebase. It finds the extension point and writes the idea.
 
-Without it, the lab is a pile of unrelated branches, and no amount of wiki or journal turns them into research that compounds.
+Without it, the lab is a pile of unrelated branches, and no cortex or journal turns them into research that compounds.
 
 **How it works in practice.**
 
@@ -88,13 +88,15 @@ For a new or empty target, the language does not exist yet. The first experiment
 
 <What-the-loop-needs>
 
-Three more ideas shape the rest. Each was learned from a lab that had it wrong; the mistake is noted so it can be recognized.
+Four more ideas shape the rest. Each was learned from a lab that had it wrong; the mistake is noted so it can be recognized.
 
 1. **An experiment is a line of inquiry, not a single gated test.** One idea, as many rounds as it takes. So the plan is a living page, rewritten in place as rounds teach something, and it carries a stopping point in free text that marks a moment to decide, not an automatic stop. *The mistake:* a signed plan, scope lists and guard/verify commands that check an experiment once. Agents then stop after one failed run, refuse to touch the plan, and invent their own folders for the rounds the design had no place for.
 
 2. **How far to go comes with the request.** See [The-autonomy-we-build-for]. *The mistake:* a lab-wide level in an always-loaded file. Agents then ask for approval at each step of a wide request, or redesign the lab when asked to rename a function.
 
-3. **An experiment has two memories, for two readers.** Its own working memory (plan, round log, run files) lives next to the code, on the experiment's branch in the target repo, for whoever continues *this* experiment. What it tells the lab (wiki, journal, postmortem) is for whoever does a *different* experiment and will never open that branch. The question that separates them: would someone working on a different idea do their work differently if they knew this? *The mistake:* one kind of memory. Either every round's settings land in the wiki and bury what matters, or a lesson everyone needs stays in a branch nobody opens.
+3. **An experiment has two memories, for two readers.** Its own working memory (plan, round log, run files) lives next to the code, on the experiment's branch in the target repo, for whoever continues *this* experiment. What it tells the lab (cortex, journal, postmortem) is for whoever does a *different* experiment and will never open that branch. The question that separates them: would someone working on a different idea do their work differently if they knew this? *The mistake:* one kind of memory. Either every round's settings land in the cortex and bury what matters, or a lesson everyone needs stays in a branch nobody opens.
+
+4. **What the lab saw and what the lab read are different kinds of knowledge, and both come in.** Ideas arrive from the lab's own rounds and from outside: papers, other fields, a discussion. The lab needs both, and needs to tell them apart at a glance. So its memory is a cortex: every claim is one sentence with an anchor, either an experiment round with its commit (the lab saw it) or the words of a source (someone reports it, and here it is a hypothesis). Findings pages are written on top of claims and rewritten freely; claims are only added, confirmed, withdrawn or superseded. Reading from outside starts from an open gap, like an experiment does, and ends by updating it. *The mistake:* one kind of page for everything. A survey of the literature gets filed as a "finding" the lab never tested and no experiment ever rests on it, while a paper that says the lab's next idea is known to collapse sits in another folder where the agent planning that idea never looks.
 
 Some things are **this lab's own decisions**, and the skill only keeps a place for them: how a result is measured when an experiment closes and how cheap that has to be, what counts as a good result, where heavy runs go, which data may leave the machine. The scaffold ships a working default for the final evaluation (one script in the target repo, its version recorded with every number). Keep it, change it or replace it according to what this lab measures; do not treat it as part of the method.
 
@@ -106,14 +108,15 @@ An agent acts on what reaches its context, and most of a repo never does. So eac
 
 | Part | Arrives | Carries |
 |---|---|---|
-| `AGENTS.md` | Always | What the lab is, how far to go, the vocabulary (one concept, one name), where things live, the few things that always hold with their reasons, how to brief a subagent. Short. No procedure. |
-| `wiki-llm/purpose.md` | Pointed to from `AGENTS.md` for any task with a choice of direction | What the lab is for, the far goal, how results are judged here |
+| `AGENTS.md` | Always | What the lab is, how far to go, the vocabulary (one concept, one name), where things live, the few things that always hold with their reasons, how to brief a subagent, where what was learned is written. Short. No procedure. |
+| `cortex/purpose.md` | Pointed to from `AGENTS.md` for any task with a choice of direction | What the lab is for, the far goal, how results are judged here |
 | `experiment-lab-loop` skill, inside the lab | When the task is about an experiment | The loop, written once: direction, plan, rounds, what to tell the lab, conclusions, closing |
 | Templates (`plan.md`, `log.md`, `postmortem.md`) | When an experiment is opened or closed | The behaviors themselves: a stopping point section, a "Told the lab" line per round, a line per provisional claim. A template outweighs a sentence. |
 | `scripts/lab.py` | When used | The mechanical steps, so names, folders and environments come out right without being remembered |
-| System page per target (`wiki-llm/systems/`) | When working on that target | The Experiment Language: shared components, extension points, vocabulary. Also data rules and known limits |
-| `JOURNAL.md`, the rest of the wiki | When choosing a direction | What is best, what is next, what not to repeat, what was learned |
-| `review-wiki` skill, inside the lab | From time to time, and before a wide request that chooses a direction | The pass that keeps that knowledge well built, well linked and still true |
+| System page per target (`cortex/systems/`) | When working on that target | The Experiment Language: shared components, extension points, vocabulary. Also data rules and known limits |
+| `JOURNAL.md`, the rest of the cortex | When choosing a direction | What is best, what is next, what not to repeat, what was learned: findings pages on top of claims, each claim anchored to an experiment round or to an outside source |
+| `cortex/profile.md` | Before any write to the cortex | What this cortex is for, its layout, what each kind of anchor earns here, when claims are written and settled, what a review checks |
+| `cortex` skill, copied into the lab | When the task is on the lab's memory outside an experiment | The operations: add a source, investigate a gap from outside, answer from what the lab knows, review. The forms of a claim and a page. A script that checks anchors and links |
 | `.grow-autonomy/rejects.md` | Never, for working agents | The record of rejects, for the user and whoever maintains the lab |
 
 Two rules follow. **Say each thing once**: the loop only in the lab's loop skill, a term only in the vocabulary, a rule only where it holds; a second copy drifts and the agent gets both. **What an agent would not know to look for must be given**: an agent asks "how do I open an experiment" by itself, and never asks "may this data leave the machine".
@@ -136,8 +139,8 @@ What each part must hold, and what goes wrong when it does not: [Parts](referenc
    It copies the scaffold and prints the `{{FILL: ...}}` slots.
 3. **Fill the slots** from the user's answers, in their terms. A slot the user has not answered stays visibly open ("Not written yet"), never filled with a guess. Turning a rough answer into fluent text adds meaning the user did not state; say back what an agent will take from the text and let them judge that.
 4. **Register the first target repo** in `repos.yaml`, then `uv run scripts/lab.py init` and `sync-repos`.
-5. **Write the target's system page** from `wiki-llm/systems/_TEMPLATE.md`. If the target is new or empty, the Experiment Language does not exist yet: say so on the page. The first experiment on that target then has one job: connect the pipeline end to end (data in, one short run, results back) and set the frame every later experiment reuses, including the tools for watching a run. Its claim is narrow ("the pipeline is connected"), its numbers are not a baseline, and its Sparks are usually the first real task and the first evaluation.
-6. **Install the companion skills** the lab's content names (`grow-autonomy`, `wiki-llm`, and the ones for where runs go) into the lab's own folders, not the user's home ([Running anywhere](references/running-anywhere.md)).
+5. **Write the target's system page** from `cortex/systems/_TEMPLATE.md`. If the target is new or empty, the Experiment Language does not exist yet: say so on the page. The first experiment on that target then has one job: connect the pipeline end to end (data in, one short run, results back) and set the frame every later experiment reuses, including the tools for watching a run. Its claim is narrow ("the pipeline is connected"), its numbers are not a baseline, and its Sparks are usually the first real task and the first evaluation.
+6. **Check the companion skills.** `new_lab.py` copies `cortex` and `grow-autonomy` into the lab when they are installed next to this skill, and says so when they are not. Install those, and the skills for where runs go, into the lab's own folders, not the user's home ([Running anywhere](references/running-anywhere.md)).
 7. **Check it** ([Check-a-lab]) before the first wide request, and commit.
 
 The scaffold is a starting point. After step 2 the lab's files are its own and will diverge from the scaffold as the lab learns; that is intended.
@@ -146,12 +149,12 @@ The scaffold is a starting point. After step 2 the lab's files are its own and w
 
 <Change-a-lab>
 
-Every change to a lab is a change to what its agents understand, so it goes through `grow-autonomy`: find what the agent believed, change that where it lives, and record a reject in `.grow-autonomy/rejects.md` when there was one.
+Every change to a lab is a change to what its agents understand, so it goes through `grow-autonomy`: find what the agent believed, change that where it lives, and record a reject in `.grow-autonomy/rejects.md` when there was one. [Growing a lab](references/growing-a-lab.md) walks that method through a lab's own parts and words; read it before the first change.
 
 - **Change the part that carries the thing** ([What-carries-the-picture]). A behavior that agents keep missing usually belongs in a template or in the CLI, not in one more sentence of `AGENTS.md`.
-- **Keep one copy.** When a behavior changes, find every place the old one is written or shown: `AGENTS.md`, the loop skill, the templates, `lab.py` help texts, the README, old experiments agents read as examples.
-- **Edit the lab, not this skill.** The lab's loop skill and `AGENTS.md` are the lab's own. Do not re-copy the scaffold over them to "update": that erases what the lab learned. Bring a general lesson back to the scaffold separately, if it holds for any lab.
-- **A new target repo:** an entry in `repos.yaml` with its own `short_name`, a system page with its Experiment Language, and a line in `wiki-llm/index.md`. A later stage of the research is a new target, not a new lab.
+- **Keep one copy.** When a behavior changes, find every place the old one is written or shown: `AGENTS.md`, the loop skill, `cortex/profile.md`, the templates, `lab.py` help texts, the README, old experiments agents read as examples.
+- **Edit the lab, not this skill.** The lab's loop skill and `AGENTS.md` are the lab's own. Do not re-copy the scaffold over them to "update": that erases what the lab learned. Bring a general lesson back to the scaffold separately, if it holds for any lab. The `cortex` skill in the lab is an installed copy of the general skill: what is particular to this lab's memory goes in `cortex/profile.md` and the templates beside it, not into the copy.
+- **A new target repo:** an entry in `repos.yaml` with its own `short_name`, a system page with its Experiment Language, and a line in `cortex/index.md`. A later stage of the research is a new target, not a new lab.
 - **A new stage in the loop, or a new tool:** hold it to the test in [The-autonomy-we-build-for] first.
 
 </Change-a-lab>
@@ -165,14 +168,14 @@ A lab is checked by reading it the way its agents do, not by reading it as its a
 - **A small and a wide request:** the small one stays small; the wide one is carried through and ends with an honest report.
 - **The CLI on a scratch target:** every command runs from a fresh clone.
 
-The full pass, and the signs that show which part is failing: [Checking](references/checking.md). `audit-consistency`, when installed, finds contradictions and stale text across the lab's content.
+The full pass, and the signs that show which part is failing: [Checking](references/checking.md). `audit-agent-context`, when installed, finds contradictions and stale text across the lab's content.
 
 </Check-a-lab>
 
 <Scripts-and-scaffold>
 
-- `uv run scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold. Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
-- `assets/lab/`: the scaffold. `lab-AGENTS.md` (becomes the lab's `AGENTS.md`), `loop-skill.md` and `review-wiki-skill.md` (become the lab's own `experiment-lab-loop` and `review-wiki` skills), `README.md`, `JOURNAL.md`, `repos.yaml`, `pyproject.toml`, `wiki-llm/` (purpose, gap map, index, log, system page template), `experiments/_TEMPLATE/` (plan and log for the worktree, postmortem and results for the lab folder), and `scripts/lab.py`. Read a part here when deciding what a lab's own version should hold; edit it only to change what every new lab starts with.
+- `uv run scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold and copies the `cortex` and `grow-autonomy` skills into it. Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
+- `assets/lab/`: the scaffold. `lab-AGENTS.md` (becomes the lab's `AGENTS.md`), `loop-skill.md` (becomes the lab's own `experiment-lab-loop` skill), `README.md`, `JOURNAL.md`, `repos.yaml`, `pyproject.toml`, `cortex/` (profile, purpose, gap map, index, log, and the templates for a claim, a findings page, a source note and a system page), `experiments/_TEMPLATE/` (plan and log for the worktree, postmortem and results for the lab folder), and `scripts/lab.py`. Read a part here when deciding what a lab's own version should hold; edit it only to change what every new lab starts with.
 - `assets/lab/scripts/lab.py`, in the lab as `uv run scripts/lab.py <command>`: `init`, `sync-repos`, `context-pack`, `check-drift`, `new-exp`, `mount-exp`, `run`, `evaluate`, `record-verdict`, `cleanup-worktree`. Standard library only. What each does and does not do is in the lab's loop skill.
 
 Python in a lab is `uv` only: `uv run`, `uv add`, `uv sync`. No `pip install`, no bare `python`, no hand-made virtual environment, in the lab or in a target repo. One tool means a fresh clone on any machine reaches the same environment with one command.
@@ -183,6 +186,7 @@ Python in a lab is `uv` only: `uv run`, `uv add`, `uv sync`. No `pip install`, n
 
 - [Parts](references/parts.md): each part of a lab, what it must hold, and the failure that shows when it does not. Read it when creating a lab or deciding where a change belongs.
 - [Checking](references/checking.md): the pass that tests whether a lab serves the loop. Read it before the first wide request and after any change of structure.
+- [Growing a lab](references/growing-a-lab.md): `grow-autonomy` in a lab's terms: where a reject is traced, the words that carry judgment here, the beliefs behind the usual failures, and the reject journal. Read it before any change to how a lab works, and at every reject.
 - [Running anywhere](references/running-anywhere.md): what makes a lab work from a fresh clone in a cloud session as well as on a laptop: skills in the repo, secrets, git access, what must be pushed. Read it when creating a lab and when a session elsewhere cannot continue the work.
 
 </References>

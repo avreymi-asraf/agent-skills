@@ -2,7 +2,7 @@
 .targets/
 
 # Rebuilt by `lab.py context-pack`
-wiki-llm/query_pack.md
+cortex/query_pack.md
 
 __pycache__/
 *.py[cod]

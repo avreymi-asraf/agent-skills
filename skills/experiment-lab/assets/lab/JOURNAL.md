@@ -11,7 +11,7 @@
 
 ## 2. Active Sparks (Ideas Waiting to Be Tried)
 
-> `* **[SPARK-nn] (from [[<exp-name>]] or the user, Priority, Gap):** the idea, and why it is worth an experiment.`
+> `* **[SPARK-nn] (from [[<exp-name>]], a claim from outside, or the user; Priority; Gap):** the idea, and why it is worth an experiment.`
 
 ## 3. Experiment Matrix (Chronological Index)
 
@@ -20,4 +20,4 @@
 
 ## 4. Anti-Repeat Banlist
 
-> An idea that ran cleanly and did not work (`HYPOTHESIS_REFUTED`): `[pattern] -> [why it failed] -> [unless condition X changes]`. A crash is never listed here.
+> An idea that ran cleanly and did not work (`HYPOTHESIS_REFUTED`): `[pattern] -> [why it failed] -> [unless condition X changes] ([[claims/<claim>]])`. The claim is the experiment's final conclusion. A crash is never listed here, and neither is something only a paper reports.

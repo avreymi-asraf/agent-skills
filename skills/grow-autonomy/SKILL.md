@@ -31,8 +31,9 @@ You come to this work through one of two entrances: the user wants the system to
 - **[Instilling-a-behavior]**: bringing a way of working into the system through what agents understand.
 - **[Rejects-and-root-causes]**: what to do when the system got something wrong. No plasters.
 - **[Neighbors]**: a change should also cover the cases nobody has seen yet.
+- **[Levels-of-memory]**: for whom a lesson is true decides where it is written: the work's notes, the system's own content, or the source of a skill that came from outside.
 - **[Reject-journal]**: every reject is written down. Not optional.
-- **[With-audit-consistency]**: how this skill and the audit work together.
+- **[With-audit-agent-context]**: how this skill and the audit work together.
 - **[References]** and **[Examples]**: the detail, and three worked cases from different domains.
 
 These are ways of thinking, with some suggested ways of working. Use judgment; it is not a procedure to run step by step. The one fixed step is the reject journal.
@@ -136,7 +137,7 @@ Where the belief usually comes from:
 - The important thing was there, buried under ten unimportant ones.
 - The request itself could be read two ways.
 
-Then fix that, where it lives. Often the fix is rewriting an explanation, deleting a contradiction or replacing an example, and the text gets shorter. Often it is not text at all: a tool whose easy path is the correct one, a template with a place for the thing that was forgotten, a field in a report schema, a different cut of the work between agents. Make the right path the easy path, and no sentence is needed.
+Then fix that, where it lives, and at the level it is true for ([Levels-of-memory]). Often the fix is rewriting an explanation, deleting a contradiction or replacing an example, and the text gets shorter. Often it is not text at all: a tool whose easy path is the correct one, a template with a place for the thing that was forgotten, a field in a report schema, a different cut of the work between agents. Make the right path the easy path, and no sentence is needed.
 
 A good fix leaves no trace of the incident; it reads as if it was always there. And it covers more than the incident ([Neighbors]). If the user asks to "make it stop doing X", or asks for a rule outright ("add a rule that it always cites"), and the cause is not yet clear, say so and look for it before editing anything. Then tell them what you found and what you would change instead. It is their system: if they still want the rule, write it once, with its reason, in the place it belongs.
 
@@ -164,6 +165,28 @@ This is what makes wide requests possible. On a small request the user sees ever
 
 </Neighbors>
 
+<Levels-of-memory>
+
+A system keeps only what gets written down, and there are several places to write, which differ in who they are true for. A lesson at the wrong level is lost or does harm. Too low, and it dies with the session or stays in one task's notes. Too high, and one system's habit is imposed on everyone.
+
+So ask of every lesson, from a reject or from ordinary work: **for whom is this true?**
+
+| True for | Where it is written | How it changes |
+|---|---|---|
+| This session | Nowhere. A conversation is not memory: what stays only there is gone when it ends. | |
+| This piece of work | The work's own notes: a plan, a log, a ticket | By the agent, as it works |
+| This system | The system's own content. How it works: instructions, its own skills, templates, protocols. What it knows about its domain: its knowledge base. | By the agent, at the root, as this skill describes |
+| Anyone who uses a skill or a tool that came from outside | The source of that skill | Proposed to the user with the evidence; changed at the source |
+| The user, in every project | The user's own instructions or memory | By the user, or on their word |
+
+**A skill that came from outside stays general.** Do not edit the installed copy to fit this system. The next update erases the edit, and until then this copy silently means something other than its name says everywhere else. What is particular to this system goes in the system's own content: a profile the skill reads, or a line where that area is described.
+
+**When the lesson is true for everyone who uses the skill, propose the change.** The root of a reject, or a gap met in ordinary work, is sometimes in the skill itself: a step that is wrong, a case it does not cover, a term that misleads. The test: can the fix be said without this system's names, and would it hold in a different system that uses the same skill? If so, tell the user what to change, why it is general, and what happened here that showed it. They decide, and the change is made at the source. Until it arrives, the system's own content carries what it needs. The same holds in the other direction: local content that turns out to be general is a proposal for the source.
+
+This is part of finishing any piece of work, not only of handling a reject. Before closing, go over what was learned and place each thing at its level. Then tell the user what was written where, and what is proposed for a level you do not change yourself.
+
+</Levels-of-memory>
+
 <Reject-journal>
 
 Every reject handled with this skill gets an entry in the system's reject journal, opened when the reject arrives and before anything is fixed, then filled in as the cause is found. The entry holds the request and the reject in the user's own words, what the agent had, the belief, the root, the neighbors, the change, and how the change was checked. "Root: unknown" is an honest entry.
@@ -176,18 +199,18 @@ Format, location and how to read it: [Reject journal](references/reject-journal.
 
 </Reject-journal>
 
-<With-audit-consistency>
+<With-audit-agent-context>
 
-`audit-consistency` is a general tool. It audits the content of any repo for any agent setup: it collects every instruction, doc, comment and prompt, records how an agent gets to each one, and reports contradictions, stale facts and gaps. It knows nothing about this system's far goal. This skill does.
+`audit-agent-context` is a general tool. It audits the content of any repo for any agent setup: it collects every instruction, doc, comment and prompt, records how an agent gets to each one, and reports contradictions, stale facts and gaps. Asked for traces, it also reads past agent sessions and shows what actually reached the agent. It knows nothing about this system's far goal. This skill does.
 
 So the audit measures, and this skill supplies the intent and decides what to do with the findings.
 
-- It is user-invoked. Suggest it with a focus taken from the far goal or from a recent group of rejects: `/audit-consistency how the reason a position is held reaches the agents that judge it`.
+- It is user-invoked. Suggest it with a focus taken from the far goal or from a recent group of rejects: `/audit-agent-context how the reason a position is held reaches the agents that judge it`.
 - Good moments: after the structure changed, when rejects pile up with no clear source, before the user tries a kind of wide request for the first time.
 - Its report lists a fix per problem. Don't apply them one by one. Group the problems by shared root and fix the roots, as with any reject.
 - Its collected data records, per file, how an agent could reach it. That is raw material for [Information flow](references/information-flow.md).
 
-</With-audit-consistency>
+</With-audit-agent-context>
 
 <References>
 
@@ -195,6 +218,8 @@ So the audit measures, and this skill supplies the intent and decides what to do
 - [Information flow](references/information-flow.md): for a given task, map what reaches the agent and how, and test the map with a real agent. Read it when tracing a reject or checking a change.
 - [Reject journal](references/reject-journal.md): the entry format, where the journal lives, how to read it. Read it at the first reject.
 - [Examples](references/examples.md): three worked cases.
+
+For a research lab built with `experiment-lab`: where that skill is installed, its `references/growing-a-lab.md` carries this method in a lab's own terms (which part of a lab carries what, the beliefs behind the failures labs usually show, the journal entry with a lab's fields). Read it when maintaining a lab, and come back here for what it leaves out.
 
 </References>
 

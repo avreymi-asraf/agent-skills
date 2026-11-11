@@ -7,8 +7,9 @@
 
     uv run scripts/new_lab.py <destination> --name "<lab name>"
 
-Copies the scaffold, puts the files that need a dot name or a symlink in place, and lists the
-`{{FILL: ...}}` slots that only the user can answer. It never overwrites an existing file, so it
+Copies the scaffold, puts the files that need a dot name or a symlink in place, gives the lab its own
+copy of the companion skills found next to this one, and lists the `{{FILL: ...}}` slots that only the
+user can answer. It never overwrites an existing file, so it
 is safe to run again on a lab that is partly built. Standard library only.
 """
 
@@ -26,8 +27,10 @@ RENAMED = {
     # Stored under other names so no agent tool mistakes the scaffold for live instructions or a skill.
     "lab-AGENTS.md": "AGENTS.md",
     "loop-skill.md": ".agents/skills/experiment-lab-loop/SKILL.md",
-    "review-wiki-skill.md": ".agents/skills/review-wiki/SKILL.md",
 }
+# Skills the lab's own content depends on. A lab must be whole wherever it is cloned, so it gets its
+# own copy of each one that is installed next to this skill.
+COMPANIONS = ("cortex", "grow-autonomy")
 
 
 def main() -> None:
@@ -50,6 +53,17 @@ def main() -> None:
             dst.write_text(dst.read_text(encoding="utf-8").replace("{{FILL: lab name}}", args.name), encoding="utf-8")
         written.append(dst)
 
+    skills_home = SCAFFOLD.parent.parent.parent  # the folder this skill is installed in
+    missing = []
+    for name in COMPANIONS:
+        src, dst = skills_home / name, lab / ".agents" / "skills" / name
+        if dst.exists():
+            continue
+        if (src / "SKILL.md").exists():
+            shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__"))
+        else:
+            missing.append(name)
+
     for pointer in ("CLAUDE.md", "GEMINI.md"):  # tools that do not read AGENTS.md by themselves
         if not (lab / pointer).exists():
             (lab / pointer).write_text("@AGENTS.md\n", encoding="utf-8")
@@ -65,6 +79,9 @@ def main() -> None:
         subprocess.run(["git", "init", "-q", str(lab)], check=False)
 
     print(f"[OK] Lab at {lab}: {len(written)} file(s) written, {len(kept)} existing file(s) left as they were.")
+    if missing:
+        print(f"[TODO] Not found next to this skill: {', '.join(missing)}. The lab's content relies on them: "
+              "install them into the lab's .agents/skills/ and commit.")
     slots = []
     for path in sorted(lab.rglob("*.md")):
         if {".targets", ".venv"} & set(path.parts):

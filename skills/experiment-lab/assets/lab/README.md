@@ -8,7 +8,7 @@ Python here is `uv` only.
 
 ```bash
 uv sync
-uv run scripts/lab.py init           # create .targets/ and the wiki folders
+uv run scripts/lab.py init           # create .targets/ and the cortex folders
 uv run scripts/lab.py sync-repos     # clone or fetch the repos in repos.yaml
 uv run scripts/lab.py --help         # all commands
 ```
