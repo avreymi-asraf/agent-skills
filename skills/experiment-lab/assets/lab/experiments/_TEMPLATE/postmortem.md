@@ -13,10 +13,10 @@
 [The mechanism. Cite rounds from the experiment log and specific cases or traces.]
 
 ## 3. What Went Into the Cortex and the Journal
-* **Claims from this experiment:** [Each one by file name: confirmed or withdrawn, and why. None may stay provisional. Claims of older experiments that this one superseded.]
+* **Claims from this experiment:** [Each one by file name: confirmed or withdrawn, and why. None may stay provisional. The claim that states the final conclusion, if the idea ran cleanly. Older claims this experiment's result disagrees with, and what happened to each: tension, withdrawn or superseded.]
 * **Experiment Language:** [Unchanged | shared components added or fixed, extension points or vocabulary changed, and where the system page was updated. Does the diff in `patch.diff` read as the idea only? If not, what else is in it and why.]
 * **Other cortex changes:** [`findings/`, `gap_map.md`, the system page's Experiment Language if the frame changed.]
-* **Anti-Repeat Banlist entry (if refuted):** [`[pattern] -> [why it failed] -> [unless condition X changes]`]
+* **Anti-Repeat Banlist entry (if refuted):** [`[pattern] -> [why it failed] -> [unless condition X changes] ([[claims/<claim>]])`]
 
 ## 4. Sparks
 * **[SPARK-NEW]:** [The follow-up idea this experiment makes most worth trying, written while the context is fresh.]

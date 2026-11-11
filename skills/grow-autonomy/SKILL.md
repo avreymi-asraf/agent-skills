@@ -196,7 +196,7 @@ So the audit measures, and this skill supplies the intent and decides what to do
 - [Reject journal](references/reject-journal.md): the entry format, where the journal lives, how to read it. Read it at the first reject.
 - [Examples](references/examples.md): three worked cases.
 
-For a research lab built with `experiment-lab`, that skill carries this method in a lab's own terms (its `references/growing-a-lab.md`): which part of a lab carries what, the beliefs behind the failures labs usually show, and the journal entry with a lab's fields. Use it there, and come back here for what it leaves out.
+For a research lab built with `experiment-lab`: where that skill is installed, its `references/growing-a-lab.md` carries this method in a lab's own terms (which part of a lab carries what, the beliefs behind the failures labs usually show, the journal entry with a lab's fields). Read it when maintaining a lab, and come back here for what it leaves out.
 
 </References>
 

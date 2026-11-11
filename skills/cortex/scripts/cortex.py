@@ -65,6 +65,7 @@ def read_node(path: Path, root: Path) -> Node:
             if ":" in line and not line.lstrip().startswith("#"):
                 key, value = line.split(":", 1)
                 meta[key.strip()] = value.split(" #", 1)[0].strip().strip("\"'")
+    body = re.sub(r"<!--.*?-->", "", body, flags=re.DOTALL)  # template hints left in a node are not content
     lines = body.splitlines()
     title = next((l[2:].strip() for l in lines if l.startswith("# ")), "")
     text = re.sub(r"```.*?```", "", body, flags=re.DOTALL)

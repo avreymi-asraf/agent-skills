@@ -20,3 +20,7 @@ description: <the words someone planning a different experiment would search for
 ## Relations
 - supports::[[claims/<other>]] — <why>
 - contradicts::[[claims/<other>]] — <what exactly disagrees; then write the tension>
+<!-- A claim's sentence, evidence and conditions are never rewritten. When it stops holding, change `status` and add one line here:
+- withdrawn::after `<exp-name>` round <n> — <why it did not hold>
+- superseded_by::[[claims/<newer>]] — <what the newer claim corrects>
+-->

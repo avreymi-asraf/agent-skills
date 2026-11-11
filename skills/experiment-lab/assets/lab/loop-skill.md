@@ -27,7 +27,7 @@ find a direction ─▶ write the plan ─▶ ┌─ implement ─▶ run ─▶
 - **[Commands]**: what `scripts/lab.py` does and does not do.
 - **[Example]**: one experiment from idea to close.
 
-How far to carry a request (one round, or the whole experiment without checking in) is set by the request; see `AGENTS.md` §1. Companion skills: `cortex` for every operation on the lab's memory (the form of a claim and a page, `investigate` for reading from outside, `review` for the periodic check), with this lab's own layout and anchors in `cortex/profile.md`; `iterative-deep-researcher` for a long search inside an investigation; `code-as-tools` when writing experiment code, `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
+How far to carry a request (one round, or the whole experiment without checking in) is set by the request; see `AGENTS.md` §1. Companion skills: `cortex` for the operations on the lab's memory that go beyond writing a claim from its template (`investigate` for reading from outside, `review` for the periodic check); this lab's layout, anchors and statuses are in `cortex/profile.md`, which is what to read before writing a claim; `iterative-deep-researcher` for a long search inside an investigation; `code-as-tools` when writing experiment code, `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
 
 </experiment-lab-loop>
 
@@ -44,12 +44,14 @@ uv run scripts/lab.py context-pack   # writes cortex/query_pack.md: purpose, gap
 - `cortex/purpose.md`: does the idea serve what the lab is for?
 - `cortex/gap_map.md` and `JOURNAL.md` → Active Sparks: is it one of the open questions, or does it open a better one?
 - `JOURNAL.md` → Anti-Repeat Banlist: was it already refuted? Under which conditions?
-- `cortex/findings/`, `cortex/tensions/` and earlier `experiments/*/postmortem.md`: what did earlier rounds learn that changes this idea? Follow a findings page down to the claims it cites: each says whether the lab saw it (`experiment`) or someone else reports it (`quote`), and under which conditions. `uv run .agents/skills/cortex/scripts/cortex.py claims --grep <term>` finds claims no page uses yet.
+- `cortex/findings/`, `cortex/tensions/` and earlier `experiments/*/postmortem.md`: what did earlier rounds learn that changes this idea? Follow a findings page down to the claims it cites: each says whether the lab saw it (`experiment`) or someone else reports it (`quote`), and under which conditions. `uv run .agents/skills/cortex/scripts/cortex.py claims --grep <term>` searches all claims by a word, including those no page cites yet.
 - `cortex/systems/<repo>.md`: can it be said in the repo's Experiment Language? Which extension point does it go into, and which shared components does it use? Creativity belongs in the idea, not in a new vocabulary or a new codebase. If the idea does not fit, that is the first thing to settle: either changing the frame is the idea, or the frame change is an experiment of its own that comes first.
 
-Run `uv run scripts/lab.py check-drift` when the base branch may have moved. It reports whether the code a system page describes has changed since the page was written; it updates nothing.
+Run `uv run scripts/lab.py sync-repos` and then `check-drift` when the base branch may have moved. It reports whether the code a system page describes has changed since the page was written; it updates nothing.
 
 **Going outside is part of this stage.** An open gap is often answered faster by reading than by running. Reading for a gap is `cortex investigate`: it starts from the gap's row, brings back sources and `quote` claims, and ends by updating that row. What comes back is what someone else reports. For this lab it is a hypothesis, and often the best source of the next idea: it can open a Spark and shape a plan, and an experiment is what turns it into something the lab has seen. Reading with no gap behind it is fine too; it leaves claims in the cortex and no findings page.
+
+On a wide request, when experiments have closed since the cortex was last reviewed (`cortex/log.md`), hand a `cortex review` to a subagent before choosing: a direction chosen from a stale cortex is chosen badly.
 
 Ideas you considered and dropped are candidate Sparks; keep them in the plan.
 
@@ -110,7 +112,7 @@ Most of what happens in a round stays in the log. The question for each thing yo
 |---|---|---|
 | The reward parser in this implementation rejects free-text answers | Log only | It is about this experiment's code. |
 | Learning rate 2e-5 diverged, 1e-5 is stable for this recipe | Log only | A setting of this idea. It becomes a lab matter only if it says something about the model or the data in general. |
-| The patient record contains outcome fields, so any prediction trained on it leaks | Lab: a claim, cited from `findings/`, and the gap map | Every experiment that trains on records is affected. |
+| The patient record contains outcome fields, so any prediction trained on it leaks | Lab: a claim, cited from `findings/`; the gap map; the Data section of the system page | Every experiment that trains on records is affected. |
 | Full fine-tuning of the base model does not fit the lab's GPU above batch 4 | Lab: the system page (environment notes) | Every experiment on this repo will hit it. It is a fact about the system, not a research finding. |
 | GRPO did not improve held-out reward in three reward designs | Lab, when the experiment closes: postmortem and Banlist | It decides whether anyone tries it again. One bad round does not say this yet. |
 | The run crashed on a missing token | Log only | A technical failure says nothing about the idea. |
@@ -136,7 +138,7 @@ Then go back to the top of the loop.
 
 **Final conclusion.** There is no point trying further: the result was reached, or the idea is exhausted. Close the experiment ([Close-the-experiment]). If what you found is that a different idea is the right one, that is also a final conclusion: close this experiment and write the new idea as a Spark, or open it as a new experiment.
 
-The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn` (with a `withdrawn::` line that names the round and the reason). An older claim that this experiment overturned is not edited: write the new claim and mark the old one `superseded`. Nothing is deleted, and the findings pages are then rewritten freely to say what the lab now knows.
+The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn` (with a `withdrawn::` line that names the round and the reason). An older claim that this experiment's result disagrees with is never edited. Which of three things happens to it (a tension while it is open which one holds, `withdrawn`, `superseded`) is in `cortex/profile.md` §4. Nothing is deleted, and the findings pages are then rewritten freely to say what the lab now knows.
 
 A technical failure (OOM, missing credential, typo) is never a conclusion about the idea.
 
@@ -151,14 +153,14 @@ A technical failure (OOM, missing credential, typo) is never a conclusion about 
    Compare the metrics with the repo's baseline in `JOURNAL.md` → Current Frontier, and check that both were measured with the same evaluation version (`eval_script_sha` in `results.json`). If the repo has no evaluation yet, the experiment closes with its conclusion and no number; say so in the postmortem.
 2. **Write `postmortem.md`** in the lab folder `experiments/<exp-name>/`: the verdict, why things went the way they did (cite rounds from the log), what happened to each provisional claim, and one or two Sparks.
    - `HYPOTHESIS_SUPPORTED`: the idea worked. The result improved, or it held equal within noise while the code or prompt got simpler (Simplicity Criterion, `cortex/purpose.md`).
-   - `HYPOTHESIS_REFUTED`: the idea ran cleanly and did not work. Add it to the Anti-Repeat Banlist as `[pattern] -> [why it failed] -> [unless condition X changes]`.
-   - `INFRA_INCONCLUSIVE`: a technical blocker prevented a real test. Nothing goes to findings or the Banlist.
+   - `HYPOTHESIS_REFUTED`: the idea ran cleanly and did not work. Add it to the Anti-Repeat Banlist as `[pattern] -> [why it failed] -> [unless condition X changes] ([[claims/<claim>]])`.
+   - `INFRA_INCONCLUSIVE`: a technical blocker prevented a real test. Nothing is written about the idea: no claim, no findings line, no Banlist entry. Claims from earlier rounds that ran cleanly are still settled on their own evidence.
 3. **Record it**:
    ```bash
    uv run scripts/lab.py record-verdict --exp <id> --verdict <VERDICT> --metric-delta "<delta or 'no metric'>" --summary "<one-line lesson>"
    ```
    This adds the row to the experiment matrix and a line to `cortex/log.md`. By hand: copy the Sparks into `JOURNAL.md` → Active Sparks, and update Current Frontier if this is a new best number, with the evaluation version beside it.
-4. **Settle the cortex**: `uv run .agents/skills/cortex/scripts/cortex.py claims --from <exp-name> --status provisional` lists what this experiment still owes. Confirm or withdraw each claim, revise the findings pages that cited a withdrawn one (`cortex.py links claims/<claim>` shows them), update `gap_map.md` and `index.md`, and run the cortex check. Then the Experiment Language: if the experiment is kept and it added a shared component, fixed one, or changed the frame, update the system page (components table, extension points, vocabulary) and point the page at the branch (`> Branch: exp/<exp-name>`, `Fingerprint: git:<sha>`), so the next experiment starts from it. If it left the language as it was, say so in the postmortem.
+4. **Settle the cortex**: `uv run .agents/skills/cortex/scripts/cortex.py claims --from <exp-name> --status provisional` lists what this experiment still owes. Confirm or withdraw each claim, revise the findings pages that cited a withdrawn one (`cortex.py links claims/<claim>` shows them), and drop "provisional" from the citations of the confirmed ones. When the idea ran cleanly, write its final conclusion as a claim as well (`confirmed`, anchored to the closing round): the findings page and the Banlist entry cite it, and without it the experiment's main result is in no page. Update `gap_map.md` and `index.md`, and run the cortex check. Then the Experiment Language: if the experiment is kept and it added a shared component, fixed one, or changed the frame, update the system page (components table, extension points, vocabulary) and point the page at the branch (`> Branch: exp/<exp-name>`, `Fingerprint: git:<sha>`), so the next experiment starts from it. If it left the language as it was, say so in the postmortem.
 5. **Push the branch**, whatever the verdict, with the final plan and log on it, and do not merge it:
    ```bash
    git -C .targets/repos/<repo> push -u origin exp/<exp-name>
@@ -201,6 +203,7 @@ All commands run from the lab root as `uv run scripts/lab.py <command>`.
 
 | Command | Does | Does not |
 |---|---|---|
+| `init` | Creates `.targets/` and the cortex folders (`claims/`, `findings/`, `tensions/`, `systems/`, `sources/text/`) in a fresh lab or clone | |
 | `sync-repos [--repo <name>]` | Clones or fetches the repos in `repos.yaml` into `.targets/repos/` | |
 | `context-pack` | Compiles `cortex/query_pack.md` | Choose a direction |
 | `check-drift` | Reports system pages whose monitored code changed since their `Fingerprint` | Update any page |

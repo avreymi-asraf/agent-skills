@@ -122,6 +122,7 @@ Qwen2.5 3B and 7B, NQ and HotpotQA, training reward (not evaluation EM).
 - **Read before you claim.** A search snippet or an abstract is a lead. A `quote` is taken only from text that is stored under `sources/`, so it can be checked.
 - **Two fields, two questions.** `verified` (`pass`, `partial`, `fail`, `unchecked`): does the evidence say what the sentence says? `status`: how far do we rely on it? `provisional` → `confirmed`, `withdrawn` or `superseded`. A profile says what moves a claim to `confirmed`: a second independent source, a closed experiment, real use.
 - **Edits that are allowed:** `status`, `verified`, a new evidence item for the same statement under the same conditions, a new relation, a typo. Anything else is a new claim.
+- **When a new claim disagrees with an old one**, there are three cases. It is not settled which holds, or both may hold under different conditions: write a tension ([Synthesis]) and leave both claims as they are. The old one did not hold (an error, an artifact): mark it `withdrawn`. The new one says the same thing more exactly or under corrected conditions: mark the old one `superseded`.
 - **Relations** between claims name the relation and the reason: `supports::`, `contradicts::`, `refines::`, `superseded_by::`. A source that repeats another source is not independent support; say so in the reason.
 
 </Claims>
@@ -177,7 +178,7 @@ Return the "Cortex update" report and nothing else.
 3. **Write the claims** that could change what a reader of this cortex understands or decides, as the profile defines its reader. Not one per sentence. For each: is it already there? The same statement under the same conditions gets a new evidence item on the existing claim. A statement that disagrees gets its own claim and a `contradicts::` relation.
 4. **Check.** `cortex.py check` must pass. When the profile asks for a blind verification, hand each new claim to a fresh agent that gets only the sentence and its evidence, not the draft and not your reasoning, and record its answer in `verified`. `partial` or `fail` means the sentence is rewritten to what the evidence carries, as a new claim.
 5. **Fuse.** For each new claim ask: which page does this change? Three honest answers:
-   - *It contradicts a claim we hold.* Write a tension. Always.
+   - *It contradicts a claim we hold.* Write a tension, unless the new evidence settles which one holds ([Claims]).
    - *It changes a page.* Revise the affected part of that page and cite the claim. Keep what is still right.
    - *Nothing yet.* The claim stays a claim. Do not build a page that no question asked for.
 6. **Close.** Update `index.md` for pages, tensions and questions that were added or changed. Commit the whole operation as one commit (`add: <source-id>`), so it can be read, or reverted, as a unit.
@@ -216,14 +217,14 @@ Persist only what is reusable: a recurring explanation, a comparison, a sharpene
 
 `/cortex review`: one pass over the whole cortex, from time to time, after a batch of additions, and before a decision that will lean on it. It runs in a fresh context ([Where-it-runs]).
 
-1. **Mechanical first:** `cortex.py check` and `cortex.py claims --status provisional`.
+1. **Mechanical first:** `cortex.py check` and `cortex.py claims --status provisional`, with the options the profile gives for this cortex.
 2. **Built.** Does every page pass the gate? Is a page one source's summary? Is something stated as seen that is only quoted?
 3. **Linked.** Does `index.md` match the pages on disk? Are there claims no page uses that a page should? Pages that say the same thing in two wordings?
 4. **True.** This is the part that needs judgment: claims left `provisional` after the thing that should have settled them; pages that still lean on a withdrawn or superseded claim (`check` lists them); two pages that disagree with no tension written; a tension that later claims have settled; a question that has been answered.
 
 **Fix** what the evidence in the cortex settles: links, index lines, a status that the record clearly decides, a duplicate (keep the better-anchored wording, link from the other). **Report and leave** what needs a decision: a contradiction with no clear loser, a claim whose anchor cannot be found, anything about what the cortex is for. Never delete a claim. Commit the fixes as one commit.
 
-The full checklist, the profile's own additions to it, and the report format: [Quality gate](references/quality-gate.md).
+The full checklist and the report format: [Quality gate](references/quality-gate.md). A profile may add checks of its own; run them in the same pass.
 
 </Review>
 
