@@ -12,7 +12,8 @@ A research lab is a repository that holds the memory and the tools for experimen
 This skill is for the person or agent who **builds or changes** such a lab. It is not read while an experiment runs. A lab that is built well directs its own agents: its `AGENTS.md` gives the picture, its own `experiment-lab-loop` skill describes the loop, its templates and its CLI carry the rest. If an agent inside the lab would have to come back here to know what to do, the lab is missing something, and the fix goes into the lab.
 
 - **[The-autonomy-we-build-for]**: what the lab must be able to do, and the test every part is held to. Read this first.
-- **[What-the-loop-needs]**: the few ideas the whole design follows from.
+- **[One-code-language-per-target]**: the shared code language and shared components of a target repo. The part of a lab that decides whether its experiments add up. Read this second.
+- **[What-the-loop-needs]**: the other ideas the design follows from.
 - **[What-carries-the-picture]**: the parts of a lab, and how each reaches an agent.
 - **[Create-a-lab]**: from an empty folder to a lab ready for its first experiment.
 - **[Change-a-lab]**: adding a target repo, changing a behavior, handling a reject.
@@ -41,17 +42,59 @@ Wide requests fail quietly. On a small request the user sees every mistake; on a
 
 </The-autonomy-we-build-for>
 
+<One-code-language-per-target>
+
+All experiments on one target repo are written in one shared code language and built from the same shared components. The lab calls this the target's **Experiment Language**. It is the first thing to get right in a lab and the first thing to protect when changing one, because everything the lab promises rests on it.
+
+**What it is.** For one target repo, recorded once on its system page:
+
+- the mental model: what a run is, what an idea is allowed to change, what stays as it is;
+- the vocabulary: one name per concept, used in code, plans, logs and the wiki alike;
+- the **shared components** every experiment uses and none reimplements: loading and splitting data, the run entry point and its config object, the runner that sends a run to a machine and brings the results back, the tools for watching and analyzing a run, the final evaluation;
+- the **extension points**: the few named places where an idea goes in;
+- the shape of what a run leaves behind (folder, file names, key names).
+
+**Why the lab cannot work without it.**
+
+- *Results can be attributed.* When two experiments share everything except the idea, a difference between them is about the idea. When each brings its own loader, loop and metrics code, a difference is about nothing in particular.
+- *Experiments can be read.* Someone who understood experiment `0a` opens `0b` and sees only what changed. On a wide request nobody reads every step, so this is how the user, and the next agent, can check the work at all.
+- *Tools carry over.* The observation and analysis tools written for one experiment work on the next, so each round is cheaper than the last and rounds can be compared.
+- *Knowledge carries over.* A finding in the wiki is stated in the shared terms, so it applies to the next experiment without translation.
+- *An agent can start.* A fresh agent with a new idea does not design a codebase. It finds the extension point and writes the idea.
+
+Without it, the lab is a pile of unrelated branches, and no amount of wiki or journal turns them into research that compounds.
+
+**How it works in practice.**
+
+- An idea goes in at an extension point. A variant is a config value or a flag, not a copied script.
+- A shared component is used as it is. If it is wrong or too narrow, it is fixed as a shared component, the plan says so, and every later experiment inherits the fix. It is never forked into the experiment.
+- Something new that more than this experiment will need (a metric, a plot, a data view) is written as a shared component, in the shared style, and added to the system page when the experiment is kept.
+- The language itself changes only when that change is the idea of an experiment. Then the plan says so, and the system page is updated at close.
+- When an idea does not fit the language, that is a finding, not an obstacle to code around. Stop and decide: either the frame change is the idea, or the frame change is its own experiment first.
+- The test at any moment: read the experiment's diff against its base. It should read as the idea and nothing else.
+
+**How a lab carries it** (so that no agent has to remember it):
+
+- the system page holds it, with a table of shared components and a list of extension points;
+- `AGENTS.md` states it first among the things that always hold, with the reason;
+- the plan template asks which components and extension points the experiment uses, what stays fixed, and what it adds to the shared set;
+- the postmortem template asks what happened to the language;
+- a kept experiment branch carries the code, and later experiments start from it (`new-exp --base-branch`);
+- a subagent's brief includes it, because a subagent that never saw the system page will write its own loader.
+
+For a new or empty target, the language does not exist yet. The first experiment creates it ([Create-a-lab] step 5), and it deserves the care of a design that many experiments will live in.
+
+</One-code-language-per-target>
+
 <What-the-loop-needs>
 
-Four ideas shape everything else. Each was learned from a lab that had it wrong; the mistake is noted so it can be recognized.
+Three more ideas shape the rest. Each was learned from a lab that had it wrong; the mistake is noted so it can be recognized.
 
 1. **An experiment is a line of inquiry, not a single gated test.** One idea, as many rounds as it takes. So the plan is a living page, rewritten in place as rounds teach something, and it carries a stopping point in free text that marks a moment to decide, not an automatic stop. *The mistake:* a signed plan, scope lists and guard/verify commands that check an experiment once. Agents then stop after one failed run, refuse to touch the plan, and invent their own folders for the rounds the design had no place for.
 
 2. **How far to go comes with the request.** See [The-autonomy-we-build-for]. *The mistake:* a lab-wide level in an always-loaded file. Agents then ask for approval at each step of a wide request, or redesign the lab when asked to rename a function.
 
 3. **An experiment has two memories, for two readers.** Its own working memory (plan, round log, run files) lives next to the code, on the experiment's branch in the target repo, for whoever continues *this* experiment. What it tells the lab (wiki, journal, postmortem) is for whoever does a *different* experiment and will never open that branch. The question that separates them: would someone working on a different idea do their work differently if they knew this? *The mistake:* one kind of memory. Either every round's settings land in the wiki and bury what matters, or a lesson everyone needs stays in a branch nobody opens.
-
-4. **Experiments on one target share one Experiment Language.** The concepts, file layout, extension points and names are recorded once per target repo and reused, so a reader of one experiment understands the next and a difference in results can be attributed to the idea. The language changes only when that change is the idea.
 
 Some things are **this lab's own decisions**, and the skill only keeps a place for them: how a result is measured when an experiment closes and how cheap that has to be, what counts as a good result, where heavy runs go, which data may leave the machine. The scaffold ships a working default for the final evaluation (one script in the target repo, its version recorded with every number). Keep it, change it or replace it according to what this lab measures; do not treat it as part of the method.
 
@@ -68,7 +111,7 @@ An agent acts on what reaches its context, and most of a repo never does. So eac
 | `experiment-lab-loop` skill, inside the lab | When the task is about an experiment | The loop, written once: direction, plan, rounds, what to tell the lab, conclusions, closing |
 | Templates (`plan.md`, `log.md`, `postmortem.md`) | When an experiment is opened or closed | The behaviors themselves: a stopping point section, a "Told the lab" line per round, a line per provisional claim. A template outweighs a sentence. |
 | `scripts/lab.py` | When used | The mechanical steps, so names, folders and environments come out right without being remembered |
-| System page per target (`wiki-llm/systems/`) | When working on that target | The Experiment Language, data rules, known limits |
+| System page per target (`wiki-llm/systems/`) | When working on that target | The Experiment Language: shared components, extension points, vocabulary. Also data rules and known limits |
 | `JOURNAL.md`, the rest of the wiki | When choosing a direction | What is best, what is next, what not to repeat, what was learned |
 | `review-wiki` skill, inside the lab | From time to time, and before a wide request that chooses a direction | The pass that keeps that knowledge well built, well linked and still true |
 | `.grow-autonomy/rejects.md` | Never, for working agents | The record of rejects, for the user and whoever maintains the lab |
@@ -88,7 +131,7 @@ What each part must hold, and what goes wrong when it does not: [Parts](referenc
    - Where heavy runs go, and any data rules.
 2. **Scaffold:**
    ```bash
-   python3 <this-skill>/scripts/new_lab.py <lab-folder> --name "<lab name>"
+   uv run <this-skill>/scripts/new_lab.py <lab-folder> --name "<lab name>"
    ```
    It copies the scaffold and prints the `{{FILL: ...}}` slots.
 3. **Fill the slots** from the user's answers, in their terms. A slot the user has not answered stays visibly open ("Not written yet"), never filled with a guess. Turning a rough answer into fluent text adds meaning the user did not state; say back what an agent will take from the text and let them judge that.
@@ -108,7 +151,7 @@ Every change to a lab is a change to what its agents understand, so it goes thro
 - **Change the part that carries the thing** ([What-carries-the-picture]). A behavior that agents keep missing usually belongs in a template or in the CLI, not in one more sentence of `AGENTS.md`.
 - **Keep one copy.** When a behavior changes, find every place the old one is written or shown: `AGENTS.md`, the loop skill, the templates, `lab.py` help texts, the README, old experiments agents read as examples.
 - **Edit the lab, not this skill.** The lab's loop skill and `AGENTS.md` are the lab's own. Do not re-copy the scaffold over them to "update": that erases what the lab learned. Bring a general lesson back to the scaffold separately, if it holds for any lab.
-- **A new target repo:** an entry in `repos.yaml` with its own `short_name`, a system page, and a line in `wiki-llm/index.md`. A later stage of the research is a new target, not a new lab.
+- **A new target repo:** an entry in `repos.yaml` with its own `short_name`, a system page with its Experiment Language, and a line in `wiki-llm/index.md`. A later stage of the research is a new target, not a new lab.
 - **A new stage in the loop, or a new tool:** hold it to the test in [The-autonomy-we-build-for] first.
 
 </Change-a-lab>
@@ -128,9 +171,11 @@ The full pass, and the signs that show which part is failing: [Checking](referen
 
 <Scripts-and-scaffold>
 
-- `scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold. Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
+- `uv run scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold. Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
 - `assets/lab/`: the scaffold. `lab-AGENTS.md` (becomes the lab's `AGENTS.md`), `loop-skill.md` and `review-wiki-skill.md` (become the lab's own `experiment-lab-loop` and `review-wiki` skills), `README.md`, `JOURNAL.md`, `repos.yaml`, `pyproject.toml`, `wiki-llm/` (purpose, gap map, index, log, system page template), `experiments/_TEMPLATE/` (plan and log for the worktree, postmortem and results for the lab folder), and `scripts/lab.py`. Read a part here when deciding what a lab's own version should hold; edit it only to change what every new lab starts with.
 - `assets/lab/scripts/lab.py`, in the lab as `uv run scripts/lab.py <command>`: `init`, `sync-repos`, `context-pack`, `check-drift`, `new-exp`, `mount-exp`, `run`, `evaluate`, `record-verdict`, `cleanup-worktree`. Standard library only. What each does and does not do is in the lab's loop skill.
+
+Python in a lab is `uv` only: `uv run`, `uv add`, `uv sync`. No `pip install`, no bare `python`, no hand-made virtual environment, in the lab or in a target repo. One tool means a fresh clone on any machine reaches the same environment with one command.
 
 </Scripts-and-scaffold>
 
@@ -148,7 +193,7 @@ A user asks: "build me a lab for my retrieval research; in the end I want to giv
 
 1. **Ask.** Target repo: `rag-core`. Far goal, in their words: the lab picks a weakness of the retriever, tries ideas against it and tells them which one to ship. Good result: recall on their held-out question set, cheap enough to run in every round. Runs: one local GPU. Data: the question set never leaves the machine.
 2. **Scaffold** with `new_lab.py`, fill `purpose.md` and the three slots at the end of `AGENTS.md` from those answers, register `rag-core` with `short_name: rag`.
-3. **System page.** `rag-core` has code already, so the Experiment Language is written from it: an idea changes the retriever or the reranker behind their existing interfaces; the indexer and the question loader stay fixed.
+3. **System page.** `rag-core` has code already, so the Experiment Language is written from it. Shared components: the indexer, the question loader, the run entry point with its config, the recall report. Extension points: the retriever and the reranker, behind their existing interfaces. An idea changes one of those two and nothing else.
 4. **Check.** A fresh agent given "see if query rewriting helps" explains it will open an experiment, cross the idea with the gap map and Banlist, and work in rounds until the plan's stopping point. Given "fix the typo in the gap map", it fixes the typo and stops. The CLI runs on a scratch clone.
 5. **Two weeks later, a reject.** The lab closed an experiment as refuted after one run that crashed on a full disk. This is not fixed with "IMPORTANT: never refute after a crash". `grow-autonomy`: the agent believed a failed run is a result. The rule about technical failures was in `AGENTS.md`, but the log template had no place to say which kind of failure a round was. The template gets it, the reject is recorded, and nothing is added to `AGENTS.md`.
 

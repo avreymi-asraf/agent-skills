@@ -22,8 +22,11 @@ data_source: "<repo>@<ref>:<path>"  # e.g. data-repo@main:data/samples/v1 (never
 ## 2. What We Know and How We Will Do It
 [The realisation, as exact as present knowledge allows and no more. May start high-level. Name the files, extension points and settings once they are known.]
 
-* **Experiment Language:** [Which concepts, files and extension points from `wiki-llm/systems/<repo>.md` this experiment reuses. If the frame itself is what changes, say so here.]
-* **What stays fixed:** [So that a difference can be attributed to the idea.]
+* **Experiment Language** (from `wiki-llm/systems/<repo>.md`):
+  * **Extension point:** [Where the idea goes in.]
+  * **Shared components used as they are:** [Data, run entry and config, runner, observation and analysis tools, evaluation.]
+  * **What stays fixed:** [So that a difference can be attributed to the idea.]
+  * **Added to or changed in the shared set:** [None | the new component or the fix, and why every later experiment should inherit it. If the frame itself is what changes, say that this is the idea.]
 
 ## 3. Open Questions
 * [What the next rounds have to find out.]

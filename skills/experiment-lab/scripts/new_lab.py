@@ -1,7 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """Create a research lab repository from this skill's scaffold (assets/lab).
 
-    python3 scripts/new_lab.py <destination> --name "<lab name>"
+    uv run scripts/new_lab.py <destination> --name "<lab name>"
 
 Copies the scaffold, puts the files that need a dot name or a symlink in place, and lists the
 `{{FILL: ...}}` slots that only the user can answer. It never overwrites an existing file, so it

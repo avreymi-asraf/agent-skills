@@ -14,6 +14,7 @@
 
 ## 3. What Went Into the Wiki and the Journal
 * **Provisional claims from this experiment:** [Each one: confirmed or withdrawn, and on which page.]
+* **Experiment Language:** [Unchanged | shared components added or fixed, extension points or vocabulary changed, and where the system page was updated. Does the diff in `patch.diff` read as the idea only? If not, what else is in it and why.]
 * **Other wiki changes:** [`findings/`, `gap_map.md`, the system page's Experiment Language if the frame changed.]
 * **Anti-Repeat Banlist entry (if refuted):** [`[pattern] -> [why it failed] -> [unless condition X changes]`]
 

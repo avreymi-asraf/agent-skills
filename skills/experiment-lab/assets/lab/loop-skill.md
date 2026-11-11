@@ -45,7 +45,7 @@ uv run scripts/lab.py context-pack   # writes wiki-llm/query_pack.md: purpose, g
 - `wiki-llm/gap_map.md` and `JOURNAL.md` → Active Sparks: is it one of the open questions, or does it open a better one?
 - `JOURNAL.md` → Anti-Repeat Banlist: was it already refuted? Under which conditions?
 - `wiki-llm/findings/` and earlier `experiments/*/postmortem.md`: what did earlier rounds learn that changes this idea?
-- `wiki-llm/systems/<repo>.md`: can it be said in the repo's Experiment Language? Creativity belongs in the idea, not in a new vocabulary.
+- `wiki-llm/systems/<repo>.md`: can it be said in the repo's Experiment Language? Which extension point does it go into, and which shared components does it use? Creativity belongs in the idea, not in a new vocabulary or a new codebase. If the idea does not fit, that is the first thing to settle: either changing the frame is the idea, or the frame change is an experiment of its own that comes first.
 
 Run `uv run scripts/lab.py check-drift` when the base branch may have moved. It reports whether the code a system page describes has changed since the page was written; it updates nothing.
 
@@ -73,7 +73,7 @@ The plan holds:
 - **What we know and how we will do it**: the realisation, at whatever level of detail is honest today.
 - **Open questions**: what the next rounds have to find out.
 - **Stopping point**, in free text: what result would be enough, and what would make it not worth continuing (a budget of GPU hours or rounds, a sign that the idea is exhausted). Reaching it does not stop the work mechanically. It is the moment to decide: conclude, or go on with a reason. On a wide request you make that decision and report it; otherwise you bring it to the user.
-- **Experiment language**: which concepts and extension points of the repo this experiment reuses.
+- **Experiment Language**: the extension point the idea goes into, the shared components it uses, what stays fixed, and anything it adds to the shared set.
 - `data_source: <repo>@<ref>:<path>` in the frontmatter, never a local path.
 
 </Write-the-plan>
@@ -82,7 +82,7 @@ The plan holds:
 
 Each round, in the worktree `.targets/worktrees/<exp-name>/` on branch `exp/<exp-name>` (in a new session or a fresh clone, `uv run scripts/lab.py mount-exp --exp <id>` brings the worktree back from the pushed branch):
 
-1. **Implement** the next step of the plan, in the repo's Experiment Language. Commit to the experiment branch; remote runners ship committed code only.
+1. **Implement** the next step of the plan, in the repo's Experiment Language: put the idea in at its extension point, use the shared components as they are, and make a variant a config value, not a copied script. When you need something the shared set lacks (a metric, a view of the data, a plot), write it as a shared component in the shared style, not as a one-off inside the experiment. When a shared component is wrong, fix it there and note it in the plan. Read your diff against the base before committing: it should read as the idea and nothing else. Commit to the experiment branch; remote runners ship committed code only.
 2. **Run** it. During rounds you are free to measure however is useful: a short training run, a probe, a notebook, the repo's own checks. The final evaluation script is not required here. `uv run scripts/lab.py run --exp <id> -- '<command>'` runs a command in the worktree with the lab's `.env`, `$LAB_ROOT` and `$EXP_DIR` set. Heavy runs go where `AGENTS.md` says. Running is the expensive part of a round, so get the most out of each run: before starting, write in the log what question the run answers, what you will look at while it runs, and what would make you stop it early. Then watch it while it runs, with the target's own observation tools (system page), and stop a run that has already answered its question or cannot.
 3. **Analyze** what came back. Look at cases and traces, not only at the number, and ask why it moved or did not.
 4. **Write the round into the experiment log** (`notes/<exp-name>/log.md` in the worktree): what was tried, what was seen, what was decided, and where the run's files are (`notes/<exp-name>/runs/<nn>-<short-name>/`, small files only). A failed round is logged like any other; say whether the failure was technical or a real result.
@@ -155,7 +155,7 @@ A technical failure (OOM, missing credential, typo) is never a conclusion about 
    uv run scripts/lab.py record-verdict --exp <id> --verdict <VERDICT> --metric-delta "<delta or 'no metric'>" --summary "<one-line lesson>"
    ```
    This adds the row to the experiment matrix and a line to `wiki-llm/log.md`. By hand: copy the Sparks into `JOURNAL.md` → Active Sparks, and update Current Frontier if this is a new best number, with the evaluation version beside it.
-4. **Settle the wiki**: confirm or withdraw the provisional claims, update `gap_map.md` and `index.md`. If the experiment is kept and it changed the frame, update the Experiment Language on the system page and point the page at the branch (`> Branch: exp/<exp-name>`, `Fingerprint: git:<sha>`).
+4. **Settle the wiki**: confirm or withdraw the provisional claims, update `gap_map.md` and `index.md`. Then the Experiment Language: if the experiment is kept and it added a shared component, fixed one, or changed the frame, update the system page (components table, extension points, vocabulary) and point the page at the branch (`> Branch: exp/<exp-name>`, `Fingerprint: git:<sha>`), so the next experiment starts from it. If it left the language as it was, say so in the postmortem.
 5. **Push the branch**, whatever the verdict, with the final plan and log on it, and do not merge it:
    ```bash
    git -C .targets/repos/<repo> push -u origin exp/<exp-name>

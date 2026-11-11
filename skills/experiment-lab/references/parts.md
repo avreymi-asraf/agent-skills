@@ -11,7 +11,7 @@ Holds the picture and nothing procedural:
 3. Vocabulary: target repo, experiment, plan, round, experiment log, conclusion, Spark, Experiment Language, experiment name. One meaning each, with an example where a word could be read two ways.
 4. Where things live, as one table.
 5. A pointer to the loop skill, and when not to load it.
-6. What always holds: a short list, each item with its reason. The last items are this lab's own (evaluation, where runs go, data rules).
+6. What always holds: a short list, each item with its reason. The Experiment Language comes first. The last items are this lab's own (evaluation, where runs go, data).
 7. Attention: what to keep in the main context, what to hand to a subagent, what a brief must carry.
 
 Every line here is read on every request, including "fix this label". A line that only matters during an experiment belongs in the loop skill.
@@ -38,9 +38,9 @@ One pass over `wiki-llm/` and `JOURNAL.md`, run from time to time in a fresh con
 
 ## Templates (`experiments/_TEMPLATE/`)
 
-- `notes/plan.md`, copied into the worktree: the idea (stable), what we know and how we will do it (rewritten), open questions, stopping point, and the `data_source` line.
+- `notes/plan.md`, copied into the worktree: the idea (stable), what we know and how we will do it (rewritten), the Experiment Language block (extension point, shared components used, what stays fixed, what is added to the shared set), open questions, stopping point, and the `data_source` line.
 - `notes/log.md`, copied into the worktree: one entry per round with Tried, Run plan, Saw, Decided, Told the lab. The run plan is written before the run, because running is the expensive part of a round.
-- `postmortem.md`, in the lab folder: verdict, the final conclusion and why we stopped, why it went this way, what happened to each provisional claim, Sparks.
+- `postmortem.md`, in the lab folder: verdict, the final conclusion and why we stopped, why it went this way, what happened to each provisional claim, what happened to the Experiment Language, Sparks.
 - `results.json`, in the lab folder: written by the CLI.
 
 A section in a template is a behavior. "Told the lab" in every round entry is what makes the agent ask the question every round. When a behavior is wanted, look for the template field first.
@@ -57,9 +57,9 @@ When adding a command, keep to that line. A command that refuses to continue unt
 
 ## System page per target (`wiki-llm/systems/<repo>.md`)
 
-Overview, the Experiment Language (mental model, vocabulary, structure and extension points, observation tools, commands, data source and rules), checks and measurements, known limits. The header lines (`> Repo: ... | Fingerprint: git:<sha>`, `> Monitored:`, optional `> Branch:`) let `check-drift` report when the code moved since the page was written.
+Overview, then the Experiment Language: the mental model, the vocabulary, a table of shared components (data, run entry and config, runner, observation and analysis, evaluation) with where each lives, the extension points where an idea goes in, what a run leaves behind, commands, data source and rules. Then checks and measurements, and known limits. This is the page a lab's experiments depend on most ([One-code-language-per-target] in the skill); write it with the care of an interface many people will build on, and keep it true to the code. The header lines (`> Repo: ... | Fingerprint: git:<sha>`, `> Monitored:`, optional `> Branch:`) let `check-drift` report when the code moved since the page was written.
 
-*Shows when wrong:* each experiment brings its own file layout and names, and nobody can tell whether a difference in results came from the idea.
+*Shows when wrong:* each experiment brings its own loader, loop and file layout; an experiment's diff is mostly plumbing; the analysis tool from one experiment does not open the runs of another; nobody can tell whether a difference in results came from the idea.
 
 ## `JOURNAL.md`
 

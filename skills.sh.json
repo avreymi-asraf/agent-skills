@@ -10,7 +10,8 @@
         "code-as-tools",
         "notebook-observability",
         "scripts",
-        "tasks"
+        "tasks",
+        "testing"
       ]
     },
     {
@@ -43,7 +44,8 @@
       "skills": [
         "architecture-map",
         "jira-workflow",
-        "colab-cli"
+        "colab-cli",
+        "huji-slurm"
       ]
     }
   ]

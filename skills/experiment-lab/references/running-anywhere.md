@@ -9,6 +9,10 @@ A wide request is often handed to a session that is not the user's laptop: a clo
 - **Worktrees:** `lab.py new-exp` and `mount-exp` copy the lab's skills into each worktree and keep them out of the experiment's diff, so an agent working inside the target repo has them too.
 - **Tool settings** that the lab relies on are committed, not kept in a personal profile.
 
+## One Python tool: `uv`
+
+Every Python command in the lab and in its target repos is `uv run`, `uv add` or `uv sync`. `scripts/lab.py` runs as `uv run scripts/lab.py`, the final evaluation as `uv run evaluate.py`, a round's command as `uv run ...` inside `lab.py run`. No `pip install`, no bare `python`, no hand-made virtual environment. A dependency added with `uv add` is in the lock file and therefore in the next session; one installed by hand exists on one machine until it is recycled.
+
 ## Nothing machine-specific in tracked files
 
 No absolute paths in docs, plans, configs or the wiki. Commands use repo-relative paths and variables: `$LAB_ROOT` and `$EXP_DIR` (set by `lab.py run` and `evaluate`) and the names in `.env.example`. Data is declared as `data_source: <repo>@<ref>:<path>`; the variable that points at a local copy of it is named in `.env.example`.

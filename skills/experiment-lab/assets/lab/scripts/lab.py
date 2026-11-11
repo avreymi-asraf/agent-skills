@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
 """lab.py - the mechanical steps of a research lab, standard library only.
 
 It clones target repos, opens an experiment (branch, worktree, notes, lab folder), runs commands

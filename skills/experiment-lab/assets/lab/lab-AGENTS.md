@@ -24,7 +24,7 @@ Requests of every size arrive here, in any order: "rename this function", "fix t
 - **Final evaluation:** one run of the target repo's `evaluate.py` when the experiment closes. Its number is compared with the baseline.
 - **Baseline:** the best verified number per target repo and task, shared by all experiments. It lives in `JOURNAL.md` → Current Frontier. A repo may have no baseline yet; then experiments close with a conclusion and no number.
 - **Spark:** an idea worth an experiment that has not been opened yet, written down while the context is fresh (`JOURNAL.md`).
-- **Experiment Language:** the concepts, structure and names that all experiments on one target repo share (`wiki-llm/systems/<repo>.md`).
+- **Experiment Language:** the shared code language of one target repo: its concepts and names, its shared components (the code every experiment uses and none reimplements), and its extension points (where an idea goes in). Recorded in `wiki-llm/systems/<repo>.md`. An experiment is a small change on top of it.
 - **Experiment name:** `<id>-<repo-short>-<worktree-name>`, e.g. `0a-model-rl/grpo`. `<id>` is two hex digits, unique in the lab (`new-exp` picks it). `<repo-short>` is `short_name` in `repos.yaml`. `<worktree-name>` is 1-3 short `/`-separated levels, broad to specific. The same name is used for the lab folder `experiments/<exp-name>/`, the notes folder `notes/<exp-name>/`, the worktree `.targets/worktrees/<exp-name>/` and branch `exp/<exp-name>`. Commands take the id (`--exp 0a`) or the full name.
 
 ## 3. Where Things Live
@@ -48,19 +48,27 @@ The wiki is checked from time to time with the `review-wiki` skill: is it well b
 
 Each of these holds for every request, whatever its size.
 
-1. **Experiment code lives in its own worktree and branch.** Never edit `.targets/repos/<repo>` (the base clone). `uv run scripts/lab.py new-exp` creates `.targets/worktrees/<exp-name>/` on branch `exp/<exp-name>`. *Why:* experiments stay independent and each can be reproduced alone.
-2. **Experiment branches are pushed and never merged** into the target's default branch unless the user explicitly asks. An experiment that builds on an earlier one starts from it (`new-exp --base-branch exp/<earlier-exp-name>`). *Why:* every result must survive a fresh clone, and no experiment may silently change the ground under another.
-3. **A technical failure is not a scientific result.** A crash, out-of-memory, missing credential or typo is `INFRA_INCONCLUSIVE`, or simply a round that failed. Never write to `wiki-llm/findings/` or the Anti-Repeat Banlist that an idea failed before it actually ran cleanly. *Why:* a false refutation stops every later agent from trying a good idea.
-4. **Experiments on one repo share one Experiment Language.** Reuse the terms, files, extension points and patterns recorded in `wiki-llm/systems/<repo>.md`, so that someone who understood experiment `0a` opens `0b` and sees that only the idea changed. Change the language only when that change is the idea. Say so in `plan.md`, and update the system page when the experiment is kept. *Why:* readability across experiments, and results that can be attributed to the idea.
+1. **Experiments on one target repo share one code language and one set of components: its Experiment Language** (`wiki-llm/systems/<repo>.md`). Read it before writing any experiment code.
+   - An idea goes in at an extension point named there. A variant is a config value or a flag, not a copied script.
+   - Use the shared components (data loading, run entry and config, runner, observation and analysis tools, evaluation) as they are. Do not reimplement or fork one inside an experiment. If one is wrong or too narrow, fix it as a shared component and say so in `plan.md`: every later experiment inherits it.
+   - Something new that other experiments will need is written as a shared component and added to the system page when the experiment is kept.
+   - Change the language itself only when that change is the idea. If an idea does not fit the language, stop and decide which it is; do not code around it.
+   - The test: the experiment's diff against its base reads as the idea and nothing else.
+
+   *Why:* this is what makes the lab's experiments add up. A difference between two results can be attributed to the idea, someone who understood experiment `0a` opens `0b` and sees only what changed, and the tools and findings of one experiment work for the next.
+2. **Experiment code lives in its own worktree and branch.** Never edit `.targets/repos/<repo>` (the base clone). `uv run scripts/lab.py new-exp` creates `.targets/worktrees/<exp-name>/` on branch `exp/<exp-name>`. *Why:* experiments stay independent and each can be reproduced alone.
+3. **Experiment branches are pushed and never merged** into the target's default branch unless the user explicitly asks. An experiment that builds on an earlier one starts from it (`new-exp --base-branch exp/<earlier-exp-name>`). *Why:* every result must survive a fresh clone, and no experiment may silently change the ground under another.
+4. **A technical failure is not a scientific result.** A crash, out-of-memory, missing credential or typo is `INFRA_INCONCLUSIVE`, or simply a round that failed. Never write to `wiki-llm/findings/` or the Anti-Repeat Banlist that an idea failed before it actually ran cleanly. *Why:* a false refutation stops every later agent from trying a good idea.
 5. **Everything runs from a fresh clone, anywhere** (a laptop, a cloud session, CI, a cluster). Whatever an agent needs is in this repo: instructions, skills, tools. Push an experiment branch after every round that matters; a session elsewhere sees only what is pushed. Never write absolute or machine-specific paths into docs, code, configs, plans or the wiki. Use repo-relative paths, or the variables `lab.py run` and `lab.py evaluate` provide: `$LAB_ROOT`, `$EXP_DIR`, and the `.env` variables. Data is declared in `plan.md` as `data_source: <repo>@<ref>:<path>`.
 6. **Secrets come only from environment variables named in `.env.example`.** Never write a value into git, logs, results or the wiki.
-7. **Never edit a skill for one experiment.** `new-exp` copies the lab's skills into every worktree; a change to a skill is a change to the lab.
-8. **Final evaluation:** {{FILL: how this lab measures an experiment when it closes, and why that way. The scaffold's default: the script `evaluate.py` at the target repo's root, run by `uv run scripts/lab.py evaluate`, which records the script's version with every result so that numbers from different versions are not compared by mistake. Details in the `experiment-lab-loop` skill.}}
-9. **Where heavy runs go:** {{FILL: the machines or services GPU and long runs may use, and the skill for each.}}
-10. **Data:** {{FILL: where the data comes from (repo and path), which data may leave the machine and what may appear in logs, or "in each target's system page".}}
+7. **Python is `uv`, and only `uv`.** `uv run`, `uv add`, `uv sync`, in the lab and in every target repo. Never `pip install`, a bare `python`, or a hand-made virtual environment. *Why:* a fresh clone on any machine reaches the same environment with one command, and a dependency added in one round is there in the next session.
+8. **Never edit a skill for one experiment.** `new-exp` copies the lab's skills into every worktree; a change to a skill is a change to the lab.
+9. **Final evaluation:** {{FILL: how this lab measures an experiment when it closes, and why that way. The scaffold's default: the script `evaluate.py` at the target repo's root, run by `uv run scripts/lab.py evaluate`, which records the script's version with every result so that numbers from different versions are not compared by mistake. Details in the `experiment-lab-loop` skill.}}
+10. **Where heavy runs go:** {{FILL: the machines or services GPU and long runs may use, and the skill for each.}}
+11. **Data:** {{FILL: where the data comes from (repo and path), which data may leave the machine and what may appear in logs, or "in each target's system page".}}
 
 ## 6. Attention
 
 No agent can hold the whole lab in view. Keep your own context for judgment: choosing a direction, reading evidence, deciding what a round taught. Hand heavy-reading work with a small result to subagents: gathering sources, a long implementation or debugging session, working a lesson into the wiki.
 
-A subagent sees none of this conversation. Its brief must carry what the piece is for, what good looks like, the reasons it could not guess (the relevant part of `plan.md`, the Experiment Language, the data rules), what to hand back, and when to stop and flag instead of finishing. Review what comes back; do not redo it.
+A subagent sees none of this conversation. Its brief must carry what the piece is for, what good looks like, the reasons it could not guess (the relevant part of `plan.md`, the data rules), the target's Experiment Language (a subagent that has not seen it will write its own loader and its own loop), what to hand back, and when to stop and flag instead of finishing. Review what comes back; do not redo it.
