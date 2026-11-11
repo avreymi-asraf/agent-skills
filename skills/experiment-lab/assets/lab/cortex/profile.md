@@ -15,7 +15,7 @@ The cortex is the `cortex/` folder. Two of its layers also reach outside it: the
 | Layer | Where | Holds |
 |---|---|---|
 | Sources | `experiments/<exp-name>/` and the experiment's branch | What the lab did. This is what an `experiment` anchor points at. |
-| | `cortex/sources/<source-id>.md`, `cortex/sources/text/` | What was read from outside: the note, and the text that was actually read. The original stays where it was published (the note's `location`); a file that exists nowhere else goes to `cortex/sources/raw/`. |
+| | `cortex/sources/<source-id>.md`, `cortex/sources/text/` | What was read from outside: the note, and the text that was actually read, stored by `cortex.py store` as it was fetched. The original stays where it was published (the note's `location`); a file that exists nowhere else goes to `cortex/sources/raw/`. A source whose text could not be obtained is a note with `read: not obtained`: a lead, with no claims. |
 | Claims | `cortex/claims/` | One claim per file |
 | Synthesis | `cortex/findings/<topic>.md` | What the lab knows about a topic, citing claims |
 | | `cortex/tensions/` | Two claims that disagree, and what would settle it |
@@ -36,12 +36,19 @@ Templates: `claims/_TEMPLATE.md`, `findings/_TEMPLATE.md`, `sources/_TEMPLATE.md
 
 A findings page says which kind it rests on (the first line of its template). "The literature reports" and "we found" are different sentences here.
 
-## 4. Status
+## 4. Status and Corrections
+
+How a claim may be corrected depends on whether it has been checked. This is the rule for every claim in the lab:
+
+- **At its blind verification** (a `quote` claim, §6) it is still a draft, and nothing has been concluded from it yet. A `partial` is narrowed in place to what the stored text carries and verified again; a `fail` is deleted. Whoever does it corrects the pages that cite it in the same commit (`cortex.py links`).
+- **After it passes**, and from the start for an `experiment` or `stated` claim (an interim conclusion is acted on by other experiments as soon as it is written), its sentence, evidence and conditions do not change and it is not deleted, even when a later experiment, source or re-check contradicts it: what the lab once believed, and why it stopped, is part of the record. It changes status instead, as below.
+
+`verified` is never set by the claim's writer. A `quote` claim gets it from a blind verifier. An `experiment` claim gets it from its experiment's close, which is its check.
 
 An `experiment` claim:
 
 - `provisional` while its experiment is open.
-- `confirmed` when the experiment closes and its postmortem confirms it. Set `verified: pass` with it.
+- `confirmed` when the experiment closes and its postmortem confirms it, with `verified: pass`.
 - `withdrawn` when it did not hold: at close, or when a later experiment shows it was an error or an artifact. The `withdrawn::` line names the experiment and round, and says why.
 - `superseded` when a later claim says the same thing more exactly or under corrected conditions (`superseded_by::`).
 
@@ -74,7 +81,7 @@ uv run .agents/skills/cortex/scripts/cortex.py claims --from <exp-name> --status
 uv run .agents/skills/cortex/scripts/cortex.py links claims/<claim>                            # what rests on a claim
 ```
 
-Blind verification: for every `quote` claim, when it is added. A fresh agent runs `cortex.py pairs` and answers from its output alone; a `partial` is narrowed before the claim is committed. An `experiment` claim is checked by the experiment itself, at close.
+Blind verification: for every `quote` claim, when it is added: `/cortex verify`, which says who starts it when the agent that wrote the claims cannot. Until then the claim is `verified: unchecked`, and `check` prints how many claims wait. An `experiment` claim is checked by the experiment itself, at close (§4).
 
 ## 7. Review, in This Lab
 

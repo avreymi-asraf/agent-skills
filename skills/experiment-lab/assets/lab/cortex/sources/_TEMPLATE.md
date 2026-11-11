@@ -5,7 +5,8 @@ origin: "<authors or organization>"
 published: YYYY-MM-DD | unknown
 captured: YYYY-MM-DD
 location: "<URL>"
-read: full | partial (<which parts>) | abstract only
+read: full | partial (<which parts>) | abstract only | not obtained
+route: file | tool file | conversation, compared with a second fetch | none
 reliability: primary | secondary | informal | unknown
 ---
 # <Title>
@@ -17,4 +18,4 @@ reliability: primary | secondary | informal | unknown
 **Read for:** [The gap or Spark that sent us here (`G<n>`, `SPARK-<nn>`), or "added without a question".]
 
 ## Text
-[The text that was read, or: "Full text in `sources/text/<source-id>.md`". Claims can quote only what is stored here or there. For long copyrighted text keep the passages that claims quote, each under its section name.]
+[Stored in `sources/text/<source-id>.md` by `cortex.py store`: the whole text, or for long copyrighted text the passages claims quote, with the sentences that carry their conditions. Claims quote only that file. With `read: not obtained`: each route tried, when, and what stopped it; a lead has no claims.]

@@ -5,6 +5,8 @@
 # ///
 """cortex.py - the mechanical checks of a cortex, standard library only.
 
+    uv run cortex.py store  <source-id> [--file PATH] [--part NAME]   # text from the file, or from stdin
+    uv run cortex.py store  <source-id> --compare [--file PATH]       # a second copy: which stored passages it lacks
     uv run cortex.py check  [--cortex cortex] [--sources DIR] [--also DIR] [--strict]
     uv run cortex.py claims [--status S] [--anchor K] [--from TEXT] [--grep TEXT]
     uv run cortex.py links <node>
@@ -17,6 +19,7 @@ Run it from the folder that contains the cortex. Files whose name starts with "_
 """
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -29,6 +32,7 @@ CLAIM_STATUS = ("provisional", "confirmed", "withdrawn", "superseded")
 VERIFIED = ("pass", "partial", "fail", "unchecked")
 DEAD = ("withdrawn", "superseded")
 
+SOURCE_ID_RE = re.compile(r"^[a-z0-9][a-z0-9.-]*$")
 LINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|[^\]]*)?\]\]")
 ITEM_RE = re.compile(r"^\s*[-*]\s*([a-z_]+)::\s*(.*)$")
 QUOTE_LINE_RE = re.compile(r"^\s*>\s?(.*)$")
@@ -111,8 +115,10 @@ class Cortex:
         inside, beside = self.root / "sources", self.root.parent / "sources"
         self.sources = sources.resolve() if sources else (inside if inside.is_dir() else beside)
         self.also = [Path(a).resolve() for a in also]
+        stored = (self.sources / "raw", self.sources / "text")  # what a source says, not something the cortex wrote
         files = sorted(p for p in self.root.rglob("*.md")
-                       if not any(part.startswith(("_", ".")) for part in p.relative_to(self.root).parts))
+                       if not any(part.startswith(("_", ".")) for part in p.relative_to(self.root).parts)
+                       and not any(p.is_relative_to(d) for d in stored))
         self.nodes = [read_node(p, self.root) for p in files]
         self.by_path = {n.path: n for n in self.nodes}
 
@@ -139,14 +145,18 @@ class Cortex:
         return found
 
     def source_files(self, target: str) -> list:
-        """Where a source's stored text is: its note, plus anything in sources/text/ with the same name."""
-        note = self.resolve(target)
-        files = [note] if note and note.is_file() else []
-        stem = Path(target.strip()).name
+        """A source's stored text: the files `store` wrote to sources/text/ under its id (<id>.md, <id>--<part>.md).
+        The note is not one of them: it is the agent's description of the source, not the source's words."""
+        stem = Path(target.strip().removesuffix(".md")).name
         text_dir = self.sources / "text"
-        if text_dir.is_dir():
-            files += [p for p in sorted(text_dir.iterdir()) if p.is_file() and p.stem == stem]
-        return files
+        if not text_dir.is_dir():
+            return []
+        return [p for p in sorted(text_dir.iterdir())
+                if p.is_file() and (p.stem == stem or p.stem.startswith(stem + "--"))]
+
+    def note_meta(self, target: str) -> dict:
+        note = self.resolve(target)
+        return read_node(note, note.parent).meta if note and note.is_file() else {}
 
     def source_text(self, target: str) -> str | None:
         files = self.source_files(target)
@@ -192,6 +202,16 @@ def quote_lines(quote: str, text: str) -> tuple | None:
     return None if first is None else (first, line_at(position - 1))
 
 
+def not_obtained(meta: dict) -> bool:
+    return meta.get("read", "").startswith("not obtained")
+
+
+def waiting(claim: Node) -> bool:
+    """A live quoted claim that no blind verifier has judged yet: what `pairs` shows and `check` counts."""
+    return (claim.meta.get("status") not in DEAD and claim.meta.get("verified", "unchecked") == "unchecked"
+            and any(ev.kind == "quote" and ev.quotes for ev in claim.evidence))
+
+
 def check_claim(cx: Cortex, node: Node, errors: list, review: list) -> None:
     status = node.meta.get("status", "")
     if status not in CLAIM_STATUS:
@@ -200,9 +220,11 @@ def check_claim(cx: Cortex, node: Node, errors: list, review: list) -> None:
     if verified is not None and verified not in VERIFIED:
         errors.append(f"{node.rel}: verified '{verified}' is not one of {', '.join(VERIFIED)}")
     if verified == "fail" and status not in DEAD:
-        errors.append(f"{node.rel}: verified: fail, so the evidence does not carry the sentence; withdraw or supersede it")
+        errors.append(f"{node.rel}: verified: fail, so the evidence does not carry the sentence; "
+                      "delete it if it never passed verification, withdraw it if it did")
     if verified == "partial" and status not in DEAD:
-        review.append(f"{node.rel}: verified: partial, so the sentence says more than its evidence; narrow it")
+        review.append(f"{node.rel}: verified: partial, so the sentence says more than its evidence; "
+                      "narrow it in place, set it back to unchecked and verify again")
     if not node.title:
         errors.append(f"{node.rel}: no '# ' title; the title is the claim's sentence")
     if not node.evidence:
@@ -215,8 +237,11 @@ def check_claim(cx: Cortex, node: Node, errors: list, review: list) -> None:
                 errors.append(f"{node.rel}: quote:: names no [[source]]")
                 continue
             source = cx.source_text(target.group(1))
-            if source is None:
-                errors.append(f"{node.rel}: source [[{target.group(1)}]] has no stored note or text")
+            if not_obtained(cx.note_meta(target.group(1))):
+                errors.append(f"{node.rel}: quotes [[{target.group(1)}]], whose text was not obtained; a lead yields no claims")
+            elif source is None:
+                errors.append(f"{node.rel}: [[{target.group(1)}]] has no stored text in sources/text/ "
+                              "(store what was fetched with `cortex.py store`)")
             elif not ev.quotes:
                 errors.append(f"{node.rel}: quote:: from [[{target.group(1)}]] has no quoted words under it")
             else:
@@ -280,13 +305,18 @@ def cmd_check(cx: Cortex, args: argparse.Namespace) -> None:
         if changed.returncode == 0:
             errors += [f"sources/{name}: changed or removed after it was committed; sources are never edited"
                        for name in changed.stdout.splitlines() if name.strip()]
-        quoted = set()
-        for claim in cx.claims():
-            for ev in claim.evidence:
-                target = LINK_RE.search(ev.rest) if ev.kind == "quote" else None
-                quoted.update(cx.source_files(target.group(1)) if target else [])
-        review += [f"sources/{note.stem}: no claim quotes it yet"
-                   for note in sorted(cx.sources.glob("*.md")) if not note.name.startswith("_") and note.resolve() not in quoted]
+        quoted = {Path(target.group(1).strip().removesuffix(".md")).name
+                  for claim in cx.claims() for ev in claim.evidence
+                  if ev.kind == "quote" and (target := LINK_RE.search(ev.rest))}
+        for note in sorted(cx.sources.glob("*.md")):
+            if note.name.startswith("_") or note.stem in quoted:
+                continue
+            if not_obtained(read_node(note, note.parent).meta):
+                review.append(f"sources/{note.stem}: text not obtained; a lead, to `add` when a route to its text works")
+            elif not cx.source_files(note.stem):
+                review.append(f"sources/{note.stem}: no stored text in sources/text/ and no claim quotes it")
+            else:
+                review.append(f"sources/{note.stem}: no claim quotes it yet")
 
     for line in errors:
         print(f"ERROR   {line}")
@@ -297,7 +327,10 @@ def cmd_check(cx: Cortex, args: argparse.Namespace) -> None:
         counts[claim.meta.get("status", "?")] = counts.get(claim.meta.get("status", "?"), 0) + 1
     by_status = ", ".join(f"{n} {s}" for s, n in sorted(counts.items())) or "none"
     pages = sum(1 for n in cx.nodes if n.kind and n.kind not in ("claim", "source"))
+    pending = sum(1 for claim in cx.claims() if waiting(claim))
     print(f"{len(cx.claims())} claim(s) ({by_status}), {pages} typed page(s): {len(errors)} error(s), {len(review)} to review.")
+    print(f"{pending} quoted claim(s) wait for blind verification"
+          + (": a fresh agent judges them from `cortex.py pairs` alone (cortex skill, Verify)." if pending else "."))
     if errors or (args.strict and review):
         sys.exit(1)
 
@@ -382,7 +415,7 @@ def cmd_pairs(cx: Cortex, args: argparse.Namespace) -> None:
     shown = 0
     for claim in cx.claims():
         quotes = [ev for ev in claim.evidence if ev.kind == "quote" and ev.quotes]
-        if not quotes or not (args.all or claim.meta.get("verified", "unchecked") == "unchecked"):
+        if not quotes or not (args.all or waiting(claim)):
             continue
         shown += 1
         print(f"=== {claim.rel}\nSTATEMENT: {claim.title}")
@@ -411,6 +444,61 @@ def cmd_pairs(cx: Cortex, args: argparse.Namespace) -> None:
           "Answer one line per claim: file, verdict, a short reason.")
 
 
+def read_input(path: Path | None) -> str:
+    text = path.read_text(encoding="utf-8") if path else sys.stdin.read()
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
+def passages(text: str) -> list:
+    """The stored text in passages: blank-line separated blocks, each heading a passage of its own, omissions dropped."""
+    found, block = [], []
+    for line in text.splitlines() + [""]:
+        heading = re.match(r"^\s*#+\s*(.*)$", line)
+        if heading or not line.strip():
+            if block:
+                found.append(" ".join(block))
+            block = []
+            if heading and heading.group(1).strip():
+                found.append(heading.group(1).strip())
+        else:
+            block.append(line.strip())
+    return [p for p in found if not OMISSION_RE.fullmatch(p)]
+
+
+def cmd_store(cx: Cortex, args: argparse.Namespace) -> None:
+    """Store a source's text exactly as a route delivered it, or compare the stored text with a second copy."""
+    if not SOURCE_ID_RE.match(args.source_id) or "--" in args.source_id:
+        sys.exit(f"[ERROR] '{args.source_id}' is not a source id: lowercase kebab-case, as in [[sources/<source-id>]].")
+    if args.compare:
+        stored = cx.source_files(args.source_id)
+        if not stored:
+            sys.exit(f"[ERROR] Nothing is stored for {args.source_id} in {cx.sources / 'text'}.")
+        second = read_input(args.file)
+        missing = [(path.name, passage) for path in stored
+                   for passage in passages(path.read_text(encoding="utf-8")) if not quote_found(passage, second)]
+        for name, passage in missing:
+            print(f"NOT IN THE SECOND COPY  {name}: \"{passage[:90]}...\"")
+        total = sum(len(passages(path.read_text(encoding="utf-8"))) for path in stored)
+        print(f"{total - len(missing)} of {total} stored passage(s) found in the second copy.")
+        if missing:
+            sys.exit(1)
+        return
+    if args.part and not SOURCE_ID_RE.match(args.part):
+        sys.exit(f"[ERROR] '{args.part}' is not a part name: lowercase kebab-case.")
+    text = read_input(args.file)
+    if not text.strip():
+        sys.exit("[ERROR] No text came in. Give --file, or pipe the text on standard input.")
+    name = args.source_id + (f"--{args.part}" if args.part else "")
+    target = cx.sources / "text" / f"{name}.md"
+    if target.exists():
+        sys.exit(f"[ERROR] {target} exists, and stored text is never edited. "
+                 "Store more of the same source with --part <name>.")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text if text.endswith("\n") else text + "\n", encoding="utf-8")
+    print(f"Stored {len(text)} characters in {os.path.relpath(target)} ({len(passages(text))} passage(s)). "
+          "Record how it arrived in the source note's `route:`.")
+
+
 def main() -> None:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--cortex", type=Path, default=Path("cortex"), help="The cortex folder (default: ./cortex)")
@@ -419,6 +507,13 @@ def main() -> None:
                         help="Another folder that links may point into, e.g. a lab's experiments/ (repeatable)")
     parser = argparse.ArgumentParser(description="Mechanical checks of a cortex (stdlib only)")
     sub = parser.add_subparsers(dest="cmd", required=True)
+
+    p_store = sub.add_parser("store", parents=[common], help="Store a source's fetched text unchanged (from --file or stdin)")
+    p_store.add_argument("source_id", help="The source id, as in [[sources/<source-id>]]")
+    p_store.add_argument("--file", type=Path, help="Read the text from this file instead of standard input")
+    p_store.add_argument("--part", metavar="NAME", help="Store more text of an already stored source as <source-id>--<NAME>.md")
+    p_store.add_argument("--compare", action="store_true",
+                         help="Read a second copy instead, and list the stored passages it does not contain")
 
     p_check = sub.add_parser("check", parents=[common], help="Validate claims, anchors and links; list what a review should look at")
     p_check.add_argument("--strict", action="store_true", help="Fail on the review items too")
@@ -442,7 +537,7 @@ def main() -> None:
 
     args = parser.parse_args()
     cx = Cortex(args.cortex, args.sources, args.also)
-    {"check": cmd_check, "claims": cmd_claims, "links": cmd_links, "similar": cmd_similar, "pairs": cmd_pairs}[args.cmd](cx, args)
+    {"store": cmd_store, "check": cmd_check, "claims": cmd_claims, "links": cmd_links, "similar": cmd_similar, "pairs": cmd_pairs}[args.cmd](cx, args)
 
 
 if __name__ == "__main__":
