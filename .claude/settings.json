@@ -11,7 +11,15 @@
     "anthropic-skills:pptx": "off"
   },
   "allowedMcpServers": [
-    { "serverName": "local-probe" }
+    {
+      "serverName": "local-probe"
+    },
+    {
+      "serverName": "github"
+    },
+    {
+      "serverName": "claude-code-remote"
+    }
   ],
   "autoMemoryEnabled": false,
   "claudeMdExcludes": [
