@@ -165,7 +165,7 @@ Why this source: <the question, gap or request it was brought for, or "no questi
 Return the "Cortex update" report and nothing else.
 ```
 
-"Why this source" is the part a worker cannot guess, and it decides which claims are worth writing. When the user wants the fresh context guaranteed by the tool and not by this instruction, see [Scripts].
+"Why this source" is the part a worker cannot guess, and it decides which claims are worth writing.
 
 </Where-it-runs>
 
@@ -173,10 +173,10 @@ Return the "Cortex update" report and nothing else.
 
 `/cortex add <source>`: one source in, the cortex changed. With no argument, take the next source that has no claims yet. It runs in a fresh context ([Where-it-runs]); the steps below are the worker's.
 
-1. **Orient.** Read `profile.md`, then `index.md`. Search for the source's central terms among claims and pages, so that what is already known is in front of you: `cortex.py claims --grep <term>`.
+1. **Orient.** Read `profile.md`, then `index.md`. Once the source's text is stored (step 2), `cortex.py similar <text file>` lists the claims and pages closest to it; read those, so that what is already known is in front of you. `cortex.py claims --grep <term>` finds more.
 2. **Store the source.** The original goes to `sources/raw/` and its extracted text to `sources/text/` (use `pdf-to-markdown-mcp` for a PDF). Write the source note `sources/<source-id>.md` from the template: what it is, where it came from, how reliable, and **how much of it was actually read**.
 3. **Write the claims** that could change what a reader of this cortex understands or decides, as the profile defines its reader. Not one per sentence. For each: is it already there? The same statement under the same conditions gets a new evidence item on the existing claim. A statement that disagrees gets its own claim and a `contradicts::` relation.
-4. **Check.** `cortex.py check` must pass. When the profile asks for a blind verification, hand each new claim to a fresh agent that gets only the sentence and its evidence, not the draft and not your reasoning, and record its answer in `verified`. `partial` or `fail` means the sentence is rewritten to what the evidence carries, as a new claim.
+4. **Check.** `cortex.py check` must pass. When the profile asks for a blind verification, start a fresh agent with one instruction: run `cortex.py pairs` and answer from its output alone. The script prints each new claim's sentence, its quote and the source text around it, so nothing of your draft or reasoning reaches the verifier. Record each verdict in `verified`. On `partial` or `fail`, narrow the sentence to what the text carries and verify again. A claim leaves an `add` as `pass`, or not at all.
 5. **Fuse.** For each new claim ask: which page does this change? Three honest answers:
    - *It contradicts a claim we hold.* Write a tension, unless the new evidence settles which one holds ([Claims]).
    - *It changes a page.* Revise the affected part of that page and cite the claim. Keep what is still right.
@@ -233,21 +233,20 @@ The full checklist and the report format: [Quality gate](references/quality-gate
 `scripts/cortex.py`, standard library only, run with `uv` from the folder that contains the cortex. It reads the files and decides nothing about content.
 
 ```bash
-uv run <this-skill>/scripts/cortex.py check  [--cortex cortex] [--sources DIR] [--also DIR] [--strict]
-uv run <this-skill>/scripts/cortex.py claims [--status S] [--anchor K] [--from TEXT] [--grep TEXT]
-uv run <this-skill>/scripts/cortex.py links <node>
+uv run <this-skill>/scripts/cortex.py check   [--cortex cortex] [--sources DIR] [--also DIR] [--strict]
+uv run <this-skill>/scripts/cortex.py claims  [--status S] [--anchor K] [--from TEXT] [--grep TEXT]
+uv run <this-skill>/scripts/cortex.py links   <node>
+uv run <this-skill>/scripts/cortex.py similar <text file>
+uv run <this-skill>/scripts/cortex.py pairs   [--all] [--context N]
 ```
 
-- `check` fails on: a claim with no status, no evidence or an unknown anchor; a `quote` whose words are not in the source text (whitespace and typography are ignored, `[...]` marks an omission); an `experiment` anchor without a round and a commit; a `superseded` or `withdrawn` claim that does not say by what or why; a `[[link]]` that leads nowhere. It lists for review, without failing: pages that cite a withdrawn or superseded claim, typed pages that cite no claim, tensions with fewer than two claims, pages missing from `index.md`. `--strict` fails on those too. `--also DIR` adds a folder that links may point into (a lab's `experiments/`).
+- `check` fails on: a claim with no status, no evidence or an unknown anchor; a `quote` whose words are not in the source text (whitespace and typography are ignored, `[...]` marks an omission); an `experiment` anchor without a round and a commit; a `superseded` or `withdrawn` claim that does not say by what or why; a live claim marked `verified: fail`; a file under `sources/raw/` or `sources/text/` that changed after it was committed (git is the record); a `[[link]]` that leads nowhere. It lists for review, without failing: claims marked `verified: partial`, pages that cite a withdrawn or superseded claim, typed pages that cite no claim, tensions with fewer than two claims, pages missing from `index.md`, and sources no claim quotes yet (the backlog of `add`). `--strict` fails on those too. `--also DIR` adds a folder that links may point into (a lab's `experiments/`).
 - `claims` prints the claims as a table, filtered by status, anchor kind, the source or experiment they come from, or a word in the title and description. It is the way to find what is already known before writing, and what is still provisional.
 - `links <node>` prints what a node points to and what points to it. Run it before withdrawing a claim, to see which pages rest on it.
+- `similar <text file>` lists the claims and pages that share a source's most frequent words. It is the orientation step of `add`, done the same way every time.
+- `pairs` prints, for each quoted claim still `unchecked`, the sentence, the quote and the lines of source around it. It is the whole input of a blind verifier.
 
 A typed page that is grounded in something other than claims says so in its frontmatter (`anchor: code` on a page that describes a codebase), and `check` does not ask it for claims.
-
-**Making the fresh context a property of the tool.** This skill asks for a fresh context in words, which works in every agent tool and depends on the agent following it. Claude Code can enforce it, in one of two ways, and both are the owner's choice for their own repo:
-
-- Add `context: fork` to this skill's frontmatter in that repo. Every `/cortex ...` then runs in a subagent that gets this file and the arguments as its task. It suits a repo that is only a knowledge base. It does not suit a repo where an agent writes claims in the middle of other work (a lab), because the skill then never loads into the working agent's own context.
-- Define one subagent in `.claude/agents/` that preloads this skill (`skills: [cortex]`), and delegate `add` and `review` to it. The skill stays as it is.
 
 </Scripts>
 
@@ -269,6 +268,7 @@ A typed page that is grounded in something other than claims says so in its fron
 - **Averaging a disagreement.** "Results are mixed" hides the one thing worth knowing. Write the tension with the conditions on each side.
 - **Skipping fusion.** An `add` that ends at step 4 leaves the cortex larger and no wiser.
 - **Quoting what was not read.** An abstract supports claims about the abstract.
+- **Keeping a `partial`.** A claim known to say more than its evidence, left as it is, gets cited like any other.
 
 </Common-mistakes>
 

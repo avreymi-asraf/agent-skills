@@ -15,7 +15,7 @@ A new claim passes when a reader who sees only the claim file would agree with e
 | Findable | The `description` holds the words someone would search for. |
 | Not a duplicate | `cortex.py claims --grep` shows no claim that already says this under the same conditions. |
 
-A claim that fails "no wider than the anchor" is the common one. Narrow the sentence; do not look for stronger words in the source.
+A claim that fails "no wider than the anchor" is the common one. Narrow the sentence; do not look for stronger words in the source. This is the test a blind verifier applies from the output of `cortex.py pairs`: `partial` means it failed here.
 
 ## The page gate
 

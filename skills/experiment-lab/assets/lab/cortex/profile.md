@@ -74,7 +74,7 @@ uv run .agents/skills/cortex/scripts/cortex.py claims --from <exp-name> --status
 uv run .agents/skills/cortex/scripts/cortex.py links claims/<claim>                            # what rests on a claim
 ```
 
-Blind verification (a fresh agent sees only the sentence and its evidence): for every `quote` claim, when it is added. An `experiment` claim is checked by the experiment itself, at close.
+Blind verification: for every `quote` claim, when it is added. A fresh agent runs `cortex.py pairs` and answers from its output alone; a `partial` is narrowed before the claim is committed. An `experiment` claim is checked by the experiment itself, at close.
 
 ## 7. Review, in This Lab
 

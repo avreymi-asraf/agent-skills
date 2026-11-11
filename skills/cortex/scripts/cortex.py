@@ -8,6 +8,8 @@
     uv run cortex.py check  [--cortex cortex] [--sources DIR] [--also DIR] [--strict]
     uv run cortex.py claims [--status S] [--anchor K] [--from TEXT] [--grep TEXT]
     uv run cortex.py links <node>
+    uv run cortex.py similar <text file>
+    uv run cortex.py pairs [--all]
 
 It reads the files and decides nothing about content: whether a claim is worth writing, whether a
 page explains well and whether a tension is settled are judgments, and stay with the agent.
@@ -16,6 +18,7 @@ Run it from the folder that contains the cortex. Files whose name starts with "_
 
 import argparse
 import re
+import subprocess
 import sys
 import unicodedata
 from dataclasses import dataclass, field
@@ -135,18 +138,19 @@ class Cortex:
             found.append((target.strip(), self.resolve(target)))
         return found
 
-    def source_text(self, target: str) -> str | None:
-        """The stored text of a source: its note plus anything in sources/text/ with the same name."""
+    def source_files(self, target: str) -> list:
+        """Where a source's stored text is: its note, plus anything in sources/text/ with the same name."""
         note = self.resolve(target)
-        parts = []
-        if note and note.is_file():
-            parts.append(note.read_text(encoding="utf-8", errors="replace"))
+        files = [note] if note and note.is_file() else []
         stem = Path(target.strip()).name
         text_dir = self.sources / "text"
         if text_dir.is_dir():
-            parts += [p.read_text(encoding="utf-8", errors="replace")
-                      for p in sorted(text_dir.iterdir()) if p.is_file() and p.stem == stem]
-        return "\n".join(parts) if parts else None
+            files += [p for p in sorted(text_dir.iterdir()) if p.is_file() and p.stem == stem]
+        return files
+
+    def source_text(self, target: str) -> str | None:
+        files = self.source_files(target)
+        return "\n".join(f.read_text(encoding="utf-8", errors="replace") for f in files) if files else None
 
 
 def squash(text: str) -> str:
@@ -168,6 +172,26 @@ def quote_found(quote: str, source: str) -> bool:
     return True
 
 
+def quote_lines(quote: str, text: str) -> tuple | None:
+    """First and last line (0-based) of the text that the quote covers, or None when it is not there."""
+    lines, starts, haystack = text.splitlines(), [], ""
+    for line in lines:
+        starts.append(len(haystack))
+        haystack += squash(line)
+    line_at = lambda pos: max(i for i, start in enumerate(starts) if start <= pos)
+    first, position = None, 0
+    for segment in OMISSION_RE.split(quote):
+        needle = squash(segment)
+        if not needle:
+            continue
+        position = haystack.find(needle, position)
+        if position < 0:
+            return None
+        first = line_at(position) if first is None else first
+        position += len(needle)
+    return None if first is None else (first, line_at(position - 1))
+
+
 def check_claim(cx: Cortex, node: Node, errors: list, review: list) -> None:
     status = node.meta.get("status", "")
     if status not in CLAIM_STATUS:
@@ -175,6 +199,10 @@ def check_claim(cx: Cortex, node: Node, errors: list, review: list) -> None:
     verified = node.meta.get("verified")
     if verified is not None and verified not in VERIFIED:
         errors.append(f"{node.rel}: verified '{verified}' is not one of {', '.join(VERIFIED)}")
+    if verified == "fail" and status not in DEAD:
+        errors.append(f"{node.rel}: verified: fail, so the evidence does not carry the sentence; withdraw or supersede it")
+    if verified == "partial" and status not in DEAD:
+        review.append(f"{node.rel}: verified: partial, so the sentence says more than its evidence; narrow it")
     if not node.title:
         errors.append(f"{node.rel}: no '# ' title; the title is the claim's sentence")
     if not node.evidence:
@@ -244,6 +272,22 @@ def cmd_check(cx: Cortex, args: argparse.Namespace) -> None:
         if index and node.path not in indexed:
             review.append(f"{node.rel}: not in index.md")
 
+    # Sources: a stored original or its extracted text never changes once committed, and a source
+    # that no claim quotes is the backlog of `add`.
+    if cx.sources.is_dir():
+        changed = subprocess.run(["git", "diff", "--name-only", "--relative", "--diff-filter=MDR", "HEAD", "--", "raw", "text"],
+                                 cwd=cx.sources, capture_output=True, text=True, check=False)
+        if changed.returncode == 0:
+            errors += [f"sources/{name}: changed or removed after it was committed; sources are never edited"
+                       for name in changed.stdout.splitlines() if name.strip()]
+        quoted = set()
+        for claim in cx.claims():
+            for ev in claim.evidence:
+                target = LINK_RE.search(ev.rest) if ev.kind == "quote" else None
+                quoted.update(cx.source_files(target.group(1)) if target else [])
+        review += [f"sources/{note.stem}: no claim quotes it yet"
+                   for note in sorted(cx.sources.glob("*.md")) if not note.name.startswith("_") and note.resolve() not in quoted]
+
     for line in errors:
         print(f"ERROR   {line}")
     for line in review:
@@ -304,6 +348,69 @@ def cmd_links(cx: Cortex, args: argparse.Namespace) -> None:
                 print(f"  {other.rel}: {line.strip()[:140]}")
 
 
+STOPWORDS = set("""about above after again also another because been before being between both cannot could does doing
+down during each from further have having here into itself more most only other over same should some such than that
+their them then there these they this those through under until very were what when where which while will with would
+your using used based show shows shown figure table section paper results result model models""".split())
+
+
+def cmd_similar(cx: Cortex, args: argparse.Namespace) -> None:
+    """Claims and pages that share the most frequent words of a text: what to read before writing from it."""
+    words = re.findall(r"[a-z][a-z0-9]{3,}", args.file.read_text(encoding="utf-8", errors="replace").lower())
+    counts = {}
+    for word in words:
+        if word not in STOPWORDS:
+            counts[word] = counts.get(word, 0) + 1
+    top = sorted(counts, key=lambda w: (-counts[w], w))[:40]
+    scored = []
+    for node in cx.nodes:
+        if not node.kind or node.kind == "source":
+            continue
+        text = f"{node.title} {node.meta.get('description', '')}".lower()
+        shared = [w for w in top if re.search(rf"\b{re.escape(w)}", text)]
+        if len(shared) >= 2:
+            scored.append((len(shared), node, shared))
+    if not scored:
+        print("Nothing in the cortex shares this text's main words.")
+        return
+    for count, node, shared in sorted(scored, key=lambda item: (-item[0], item[1].rel))[:args.top]:
+        print(f"{count:>2}  {node.rel} [{node.meta.get('status', '-')}]  {node.title}\n      shares: {', '.join(shared[:8])}")
+
+
+def cmd_pairs(cx: Cortex, args: argparse.Namespace) -> None:
+    """For a blind verifier: each claim's sentence, its quoted words and the source text around them. Nothing else."""
+    shown = 0
+    for claim in cx.claims():
+        quotes = [ev for ev in claim.evidence if ev.kind == "quote" and ev.quotes]
+        if not quotes or not (args.all or claim.meta.get("verified", "unchecked") == "unchecked"):
+            continue
+        shown += 1
+        print(f"=== {claim.rel}\nSTATEMENT: {claim.title}")
+        for ev in quotes:
+            target = LINK_RE.search(ev.rest)
+            for quote in ev.quotes:
+                print(f"QUOTE: {quote}")
+                for path in (cx.source_files(target.group(1)) if target else []):
+                    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+                    span = quote_lines(quote, "\n".join(lines))
+                    if span:
+                        a, b = max(0, span[0] - args.context), min(len(lines), span[1] + 1 + args.context)
+                        print(f"SOURCE CONTEXT ({path.name}, lines {a + 1}-{b}):")
+                        print("\n".join("    " + line for line in lines[a:b]))
+                        break
+                else:
+                    print("SOURCE CONTEXT: the quoted words were not found in the stored text")
+        print()
+    if not shown:
+        print("No quoted claims are waiting for verification.")
+        return
+    print("Judge each claim from what is printed here and nothing else:\n"
+          "  pass     the text states or clearly entails the sentence\n"
+          "  partial  the sentence says more, or is surer, than the text\n"
+          "  fail     the text does not support the sentence\n"
+          "Answer one line per claim: file, verdict, a short reason.")
+
+
 def main() -> None:
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--cortex", type=Path, default=Path("cortex"), help="The cortex folder (default: ./cortex)")
@@ -325,9 +432,17 @@ def main() -> None:
     p_links = sub.add_parser("links", parents=[common], help="What a node points to and what points to it")
     p_links.add_argument("node", help="A node, as in a link: claims/<name>, pages/<name>, or just <name>")
 
+    p_similar = sub.add_parser("similar", parents=[common], help="Claims and pages closest to a text file: read them before writing from it")
+    p_similar.add_argument("file", type=Path, help="The extracted text of a source")
+    p_similar.add_argument("--top", type=int, default=15)
+
+    p_pairs = sub.add_parser("pairs", parents=[common], help="Sentence, quote and source context of each unverified claim, for a blind verifier")
+    p_pairs.add_argument("--all", action="store_true", help="Every quoted claim, not only those still unchecked")
+    p_pairs.add_argument("--context", type=int, default=8, help="Lines of source shown before and after the quote (default 8)")
+
     args = parser.parse_args()
     cx = Cortex(args.cortex, args.sources, args.also)
-    {"check": cmd_check, "claims": cmd_claims, "links": cmd_links}[args.cmd](cx, args)
+    {"check": cmd_check, "claims": cmd_claims, "links": cmd_links, "similar": cmd_similar, "pairs": cmd_pairs}[args.cmd](cx, args)
 
 
 if __name__ == "__main__":
