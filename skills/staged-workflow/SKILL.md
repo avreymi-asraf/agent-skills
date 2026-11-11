@@ -82,9 +82,28 @@ Look for what was missing or wrong in what the agent saw. Typical roots:
 - The ask itself was ambiguous, or bigger than the stage allows.
 
 Fix it where it lives: rewrite the explanation, state the goal, fix the example, remove
-the contradiction. Often the right fix *removes* text. Then check: would this fix also
-prevent the related mistakes the agent hasn't made yet? If not, you haven't found the
-root.
+the contradiction. Often the right fix *removes* text.
+
+### The neighbors test
+
+A mistake is one sample from a family. The wrong belief behind it will produce other
+mistakes in other tasks, and more of them as the agent gets more freedom. A patch
+blocks the one sample; a root fix removes the family. So before accepting a fix:
+
+1. **Name the belief** in one sentence. If you can't, you're still looking at the symptom.
+2. **List its neighbors:** what else would an agent holding this belief get wrong?
+   Look sideways (other tasks, other inputs) and forward (what would it do with the
+   next stage's freedom?). Three or four are enough.
+3. **Read the fix against them.** Would an agent reading the new content avoid each one
+   without being told about it? If the fix only names the original mistake, it's a patch.
+4. **Try a neighbor.** When it's cheap, give the agent a fresh task that invites one of
+   them and see what it does. The rejection was the training example; a fix that only
+   passes it has overfit.
+
+The test cuts the other way too: a good fix doesn't forbid the neighbors that are fine.
+If the new content stops the agent from doing something reasonable, it went too broad.
+The fix should explain *why*, so the agent can tell the cases apart itself, not build
+a bigger fence.
 
 ### Example
 
@@ -92,10 +111,14 @@ An investing agent writes a thesis on a company and leans on the company's own p
 release. Rejected.
 - Patch: "Do not use press releases as sources." Next week it leans on an analyst note
   paid for by the company.
-- Root: the content never explained that a thesis is a claim *against* the market, so
-  evidence counts only if it is independent and not already priced in. Add that idea
-  to the core doc on how theses are built. Press releases, paid notes and hype threads
-  are all covered, and the agent is a step closer to judging sources on its own.
+- Belief: "a published claim about the company is evidence for the thesis".
+- Neighbors: a paid analyst note; a viral thread repeating the company line; good news
+  everyone already knows; and, at the next stage, buying because a story is popular.
+- Root fix: the content never explained that a thesis is a claim *against* the market,
+  so evidence counts only if it is independent and not already priced in. Add that idea
+  to the core doc on how theses are built. Every neighbor is covered, a press release is
+  still fine for checking a launch date, and the agent is a step closer to judging
+  sources on its own.
 
 ## Keeping the content aligned
 
