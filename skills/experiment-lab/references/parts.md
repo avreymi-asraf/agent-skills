@@ -8,7 +8,7 @@ Holds the picture and nothing procedural:
 
 1. What the lab is, in one paragraph, and a pointer to `cortex/purpose.md`.
 2. How far to go comes with the request: small stays small, wide is carried through and ends with a report.
-3. Vocabulary: target repo, experiment, plan, round, experiment log, conclusion, cortex, claim, Spark, Experiment Language, experiment name. One meaning each, with an example where a word could be read two ways.
+3. Vocabulary: target repo, experiment, plan, round, experiment log, conclusion, cortex, claim, final evaluation and evaluation version, baseline, kept, Spark, Experiment Language, experiment name. One meaning each, with an example where a word could be read two ways.
 4. Where things live, as one table.
 5. A pointer to the loop skill, and when not to load it; a pointer to the `cortex` skill for work on the lab's memory outside an experiment.
 6. What always holds: a short list, each item with its reason. The Experiment Language comes first. The last items are this lab's own (evaluation, where runs go, data).
@@ -96,7 +96,7 @@ The folders have different names on purpose, so that `experiments/` means the la
 
 ## `.grow-autonomy/rejects.md`
 
-The reject journal. Nothing in the lab's instructions links to it, and its entries never become rules. Before changing an area of the lab's content, read the entries for that area: they say which paragraphs are there because of a root that was once found.
+The reject journal. Nothing in the lab's instructions links to it, not even by path: an agent reaches it through `grow-autonomy`, which says where it lives. Its entries never become rules. Before changing an area of the lab's content, read the entries for that area: they say which paragraphs are there because of a root that was once found.
 
 ## `repos.yaml`, `.env.example`
 

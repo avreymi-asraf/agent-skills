@@ -86,6 +86,8 @@ def now_iso() -> str:
 
 
 def append_cortex_log(operation: str, target: str, summary: str) -> None:
+    """Add a line to cortex/log.md. Only for what changes the lab's record of an experiment (opened, evaluated,
+    closed): the file is tracked, so a command that only reads or sets up a clone must leave it alone."""
     log_path = CORTEX_DIR / "log.md"
     if not log_path.exists():
         return
@@ -140,7 +142,6 @@ def cmd_init(_args: argparse.Namespace) -> None:
     for layer in ("claims", "findings", "tensions", "systems", "sources/text"):
         (CORTEX_DIR / layer).mkdir(parents=True, exist_ok=True)
     EXPS_DIR.mkdir(parents=True, exist_ok=True)
-    append_cortex_log("init", "workspace", "Verified .targets/repos, .targets/worktrees, cortex, and experiments directories")
     print(f"[OK] Lab workspace initialized at: {LAB_ROOT}")
     print(f"     Target clones dir : {REPOS_DIR}")
     print(f"     Worktrees dir     : {WORKTREES_DIR}")
@@ -181,7 +182,6 @@ def cmd_sync_repos(args: argparse.Namespace) -> None:
             print(f"[CLONE] Cloning {name} from {url} -> {target_path}...")
             subprocess.run(["git", "clone", url, str(target_path)], check=False)
         note_missing_system_page(name)
-    append_cortex_log("sync-repos", args.repo or "all", "Synchronized target repositories")
 
 
 def cmd_check_drift(_args: argparse.Namespace) -> None:
@@ -318,7 +318,6 @@ def cmd_context_pack(_args: argparse.Namespace) -> None:
     out_text = "\n\n".join(sections) + "\n"
     out_path = CORTEX_DIR / "query_pack.md"
     out_path.write_text(out_text, encoding="utf-8")
-    append_cortex_log("context-pack", "cortex/query_pack.md", f"Compiled context pack ({len(out_text)} chars)")
     print(f"[OK] Context pack written to {out_path.relative_to(LAB_ROOT)} ({len(out_text)} chars)")
     if cuts:
         print("[CUT] Not everything fits in the pack; each cut is marked in it. Left out: " + "; ".join(cuts))
@@ -738,7 +737,6 @@ def cmd_cleanup_worktree(args: argparse.Namespace) -> None:
         while parent != WORKTREES_DIR and parent.exists() and not any(parent.iterdir()):
             parent.rmdir()
             parent = parent.parent
-        append_cortex_log("cleanup-worktree", folder_name, "Removed the worktree; the branch and the lab folder stay")
         print(f"[OK] Removed worktree {wt_path.relative_to(LAB_ROOT)}. The branch {fm.get('exp_branch')} and {exp_dir.relative_to(LAB_ROOT)}/ stay.")
     else:
         print(f"[INFO] No worktree at {wt_path.relative_to(LAB_ROOT)}")

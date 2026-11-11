@@ -22,7 +22,7 @@ The cortex is the `cortex/` folder. Two of its layers also reach outside it: the
 | | `cortex/gap_map.md` | The open questions, one row each |
 | | `JOURNAL.md` (lab root) | Frontier, Sparks, Banlist |
 | | `cortex/systems/<repo>.md` | A target's Experiment Language. Anchored to the code (`anchor: code`, `Fingerprint`), not to claims. |
-| Map | `cortex/index.md`, `cortex/log.md` | `index.md`: one line per page, kept by hand. `log.md`: appended by `lab.py` and by a review. |
+| Map | `cortex/index.md`, `cortex/log.md` | `index.md`: one line per page, kept by hand. `log.md`: appended by `lab.py` when an experiment is opened, evaluated or closed, and by a review. |
 
 Templates: `claims/_TEMPLATE.md`, `findings/_TEMPLATE.md`, `sources/_TEMPLATE.md`, `systems/_TEMPLATE.md`. A tension uses the skill's template.
 

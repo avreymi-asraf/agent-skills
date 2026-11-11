@@ -2,7 +2,7 @@
 
 * **Verdict:** `[HYPOTHESIS_SUPPORTED | HYPOTHESIS_REFUTED | INFRA_INCONCLUSIVE]`
 * **Plan and log:** `notes/<exp-name>/` on branch `exp/<exp-name>` of `<target-repo>`, at commit `[sha]`
-* **Branch:** `[Kept: exp/<exp-name> pushed, base for follow-ups via --base-branch | Not kept: exp/<exp-name> pushed as a record]` (never merged into the target's default branch unless the user explicitly asks)
+* **Branch:** `[Kept, because <what later experiments get by starting from it>: exp/<exp-name> is pushed and the system page's "> Branch:" line names it | Not kept, because <why it is no base for others>: exp/<exp-name> is pushed as a record]` (never merged into the target's default branch unless the user explicitly asks)
 
 ## 1. The Final Conclusion
 * **What we conclude about the idea:** [One paragraph.]
