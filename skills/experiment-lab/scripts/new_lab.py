@@ -28,7 +28,7 @@ RENAMED = {
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("destination", type=Path, help="Folder of the new lab (created if missing)")
-    parser.add_argument("--name", required=True, help="Lab name as it appears in AGENTS.md, e.g. 'OncoLens'")
+    parser.add_argument("--name", required=True, help="Lab name as it appears in AGENTS.md, e.g. 'Retrieval'")
     args = parser.parse_args()
     lab = args.destination.resolve()
 
