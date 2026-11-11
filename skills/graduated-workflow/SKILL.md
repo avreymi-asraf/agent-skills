@@ -22,6 +22,7 @@ Your job with this skill is to help the user run that loop while keeping the far
 - **[Rejects-and-root-causes]**: what to do when the agent got something wrong. No plasters.
 - **[Neighboring-mistakes]**: a fix should also prevent the mistakes the agent hasn't made yet.
 - **[Aligning-the-content]**: checking the whole content system, with `audit-consistency`.
+- [Information flow](references/information-flow.md): given a task, map what information reaches the agent and how, then test it.
 - **[Example]**: one reject, handled badly and then well.
 
 These are ways of thinking, with a few suggested ways of working. Use judgment; none of it is a procedure to run step by step.
@@ -101,7 +102,7 @@ A reject is the most valuable thing the loop produces. It shows a gap between wh
 
 The easy response is a plaster: add a sentence that says the thing the user just said. "IMPORTANT: always normalize the data before evaluating." Agents love doing this. It is wrong twice. It is ugly: the content turns into a pile of scars, each one remembering an incident. And it doesn't fix anything: the gap that produced this mistake is still there and will produce its siblings tomorrow.
 
-Instead, treat the agent's action as reasonable given what it read, and ask what it read. What was in its context, and what picture did that give it? Where did the picture differ from the real one? Usual answers:
+Instead, treat the agent's action as reasonable given what it read, and ask what it read. What was in its context, and what picture did that give it? ([Information flow](references/information-flow.md) shows how to establish this as fact.) Where did the picture differ from the real one? Usual answers:
 
 - A concept it needed is explained nowhere, or only somewhere it never loads.
 - Two places say different things and it followed the wrong one.
@@ -148,6 +149,8 @@ The `audit-consistency` skill does the heavy part: it collects every instruction
 - Which plasters have piled up, and what root causes are they covering?
 
 Treat every finding as in [Rejects-and-root-causes]: one cause, fixed in one place.
+
+The audit looks at the repo file by file. For the view from a single task (what the agent is given, what it has to find, what never reaches it) and for ways to test that view with a real agent, read [Information flow](references/information-flow.md). Do this for a task of the current rung and for one of the next.
 
 </Aligning-the-content>
 
