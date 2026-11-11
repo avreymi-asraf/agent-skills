@@ -99,6 +99,8 @@ everything else (docs, READMEs, comments) is seen only if something points to it
 agent opens it.
 ```
 
+That header describes Claude Code. If the repo is used with Antigravity (it has `.agents/`, `GEMINI.md`, or the user says so), add the loading rules from the "How instructions reach an Antigravity agent" section of [references/reading-agent-traces.md](references/reading-agent-traces.md) to the header.
+
 ## Step 2: Observe past sessions (optional, Sonnet subagents)
 
 Step 1 shows what the repo *says*. This step shows what agents *did* with it: which instructions were in context, what they searched for, where they stalled.

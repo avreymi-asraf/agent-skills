@@ -5,6 +5,7 @@ How to read what an agent actually did in a past or running session: the tool ca
 Each fact is marked:
 - **[docs]** stated in the official documentation (checked 2026-11-11).
 - **[seen]** observed directly in a real session, but not documented. Formats marked this way can change between versions.
+- **[reported]** described by third parties who inspected the files; not documented and not checked by us.
 
 ## What to look for in a trace
 
@@ -71,7 +72,73 @@ python3 scripts/trace_digest.py digest <transcript.jsonl> [--out FILE] [--max-ch
 
 ## Antigravity (agy)
 
-Not researched yet; this section is filled in separately.
+Researched from the web on 2026-11-11 (agy 1.1 to 2.0); **nothing here was checked on a real install**. Confirm paths and field names on the machine before relying on them. `[reported]` facts come from people who inspected the files themselves, and the transcript schema in particular has changed between versions.
+
+### Where sessions are stored
+
+- Data root, one per surface: desktop app `~/.gemini/antigravity`, CLI `~/.gemini/antigravity-cli`, IDE `~/.gemini/antigravity-ide`. **[docs]** On Windows the same folders sit under `%USERPROFILE%\.gemini\`. `ANTIGRAVITY_CLI_CONFIG_DIR` overrides the CLI root. **[reported]**
+- Readable transcript: `<root>/brain/<conversationId>/.system_generated/logs/transcript.jsonl`. **[docs]**
+- Beside it, `transcript_full.jsonl` is the untruncated version; the plain one clips long outputs. Prefer `_full`. **[reported]**
+- The canonical store, `<root>/conversations/<uuid>.db`, is SQLite holding protobuf blobs with no public schema. Don't try to read it; use the JSONL. **[reported]**
+- Finding a repo's sessions: the transcript records no working directory. In the CLI root, `history.jsonl` maps each prompt to `workspace` and `conversationId` **[reported]**, and `cache/last_conversations.json` maps a workspace to its latest conversation. **[docs]**
+
+### What a transcript record holds **[reported]**
+
+One JSON object per step:
+
+- `step_index`, `created_at`, `status` (`DONE`, `RUNNING`, `ERROR`), `error`.
+- `source`: `USER_EXPLICIT`, `MODEL` or `SYSTEM`.
+- `type`: `USER_INPUT`; `PLANNER_RESPONSE` (a model turn); tool results (`GENERIC` in newer builds, named types such as `RUN_COMMAND`, `VIEW_FILE`, `GREP_SEARCH` in 1.1.x); `CHECKPOINT` (a compaction summary); `SYSTEM_MESSAGE`; `ERROR_MESSAGE`.
+- `content`, `thinking` (a string on model turns), `tool_calls[{name, args}]`.
+
+Things to know when reading it:
+- `args` values are JSON-encoded strings, so decode twice.
+- There is no call id. A tool result belongs to the call just before it.
+- Files read and edited are not listed anywhere; derive them from tool-call args such as `Path` and `CommandLine`.
+- Whether `thinking` is the full reasoning or a summary is unknown.
+
+`scripts/trace_digest.py` does not read this format. Have the Step 2 subagent read `transcript_full.jsonl` directly, in chunks, with the field list above in its brief.
+
+### Artifacts
+
+`<root>/brain/<conversationId>/` also holds the agent's own documents: `task.md`, `implementation_plan.md` and `walkthrough.md` (a summary of changes and validation, written when the work completes). **[reported for the paths, docs for what artifacts are]** They show what the agent intended and how it summarised its work, not the steps it took. Compare them with the transcript: a gap between the two is itself a finding.
+
+### Subagents
+
+- A subagent is started with the `invoke_subagent` tool, gets a fresh context, runs in the background, and sends a result message to its parent when done. Nesting goes up to 10 levels. **[docs]**
+- The docs state that agents can read each other's conversation transcripts, and that past transcripts stay readable as JSONL. **[docs]**
+- On disk each subagent is its own conversation with its own `brain/<id>/` folder and transcript. The parent's `invoke_subagent` result contains the child's `conversationId`; follow it to the child's transcript. **[reported]**
+- For a person: `/agents` in the CLI, then Enter on a child, shows its reasoning and tool calls. **[docs]**
+
+### Other ways
+
+| Way | What you get |
+|---|---|
+| `agy -p "<prompt>" --output-format stream-json` | A live event stream: `init` (cwd, tools, permission mode), `step_update` (step type, tool name, parameters, output, error, `subagent_info`), `result`. No thinking text is documented. **[docs]** |
+| `agy -c`, `agy --conversation <id>`, `/resume` | Reopens a past conversation. No documented command lists or exports sessions. **[docs]** |
+| Hooks: `.agents/hooks.json` in the workspace or `~/.gemini/config/hooks.json` | Events `SessionStart`, `PreToolUse`, `PostToolUse`, `PreInvocation`, `PostInvocation`, `Stop`. The payload has `conversationId`, `workspacePaths`, `transcriptPath`, `artifactDirectoryPath`, and on tool events `toolCall{name, args}`. Tool output is not in the payload; read it from the transcript. **[docs]** |
+| `agy --remote-control` | A web view of thoughts, tool calls and diffs while the agent runs. **[docs]** |
+| OpenTelemetry | Not built in. The workaround is a hook that emits the events itself. **[reported]** |
+
+### Remote agents (cloud)
+
+Conversations of remote agents are stored with the remote project, not on the local machine. **[docs]** No way to export or pull those transcripts was found, so for cloud runs rely on artifacts and the live view.
+
+### How instructions reach an Antigravity agent **[docs]**
+
+The audit's Collect step describes loading in Claude Code terms. For a repo used with Antigravity, these are the rules:
+
+- **Always loaded:** `AGENTS.md` and `GEMINI.md` in the workspace folder and every parent up to the repo root (also under `.agents/`), plus the global ones in `~/.gemini/` and `~/.gemini/config/`. Files in subfolders *below* the workspace are not loaded.
+- **Rules:** `.agents/rules/*.md` and `~/.gemini/config/rules/*.md`. Each needs a `trigger` in its frontmatter: `always_on`, `model_decision`, `glob` or `manual`. A rule file without a valid trigger is silently dropped, which is worth checking for in an audit. Each file is capped at 24,000 bytes, and all rules share a 20,000-token budget; beyond it the largest are replaced by a pointer to their path.
+- **Skills:** `.agents/skills/<name>/SKILL.md`, `~/.gemini/config/skills/`, and plugin skills. Name and description are listed every turn; the body is read only when the skill is activated.
+- **Agent definitions:** `.agents/agents/<name>.md`.
+- **Workflows:** invoked as `/name`, deprecated in favour of skills.
+
+### Sources
+
+- Official docs: https://antigravity.google/docs/ (pages `hooks`, `cli/headless`, `cli/commands/resume`, `cli/reference`, `subagents`, `artifacts`, `rules`, `skills`, `customization-discovery`, `remote-agents`, `remote-control`).
+- Transcript schema and file layout: https://agentgrep.org/backends/antigravity-cli/, https://jazzyalex.github.io/agent-sessions/guides/antigravity-cli-local-history.html, https://github.com/ZingerLittleBee/Heeler/issues/644.
+- Hooks and telemetry in practice: https://signoz.io/docs/antigravity-cli-monitoring/.
 
 ## Privacy
 
