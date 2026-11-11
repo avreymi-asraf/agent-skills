@@ -29,6 +29,7 @@
       "description": "Skills for managing agents, crafting skills, implementing MCP servers, and extending OpenCode runtimes.",
       "skills": [
         "agent-and-skill-improvement",
+        "grow-autonomy",
         "manage-skills",
         "manage-mcp",
         "project-agent-systems",
