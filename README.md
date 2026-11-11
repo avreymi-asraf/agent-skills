@@ -59,7 +59,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | [`coding-principles`](skills/coding-principles) | Fundamental principles for code clarity, naming uniformity, live execution, and clean architecture without unnecessary refactoring. |
 | [`colab-cli`](skills/colab-cli) | Manages Google Colab cloud runtimes, secrets, remote execution, and SSH access directly via the Colab CLI in agentic workflows. |
 | [`create-qa-spectrum`](skills/create-qa-spectrum) | Streams, filters, and selects diverse reasoning QA datasets across multiple reasoning families, pushing them to Hugging Face. |
-| [`experiment-lab-loop`](skills/experiment-lab-loop) | Runs an experiment as rounds of implement, run, analyze with a living plan and log next to the code in an isolated git worktree, then closes it with a final evaluation, postmortem, and wiki/journal update. |
+| [`experiment-lab`](skills/experiment-lab) | Builds and maintains a research lab repository: an autonomous system that runs experiments on external target repos in rounds (wiki, journal, worktrees, CLI). Ships a scaffold with `AGENTS.md`, the lab's own loop skill, templates and `lab.py`. |
 | [`gemini-deep-research`](skills/gemini-deep-research) | Local MCP server for Google Gemini Deep Research interactions with explicit start, status polling, and file handling. |
 | [`grow-autonomy`](skills/grow-autonomy) | Grows an autonomous agent system (many tools, too large to keep in view, changing structure) so harder tasks can be handed to it: shapes what each agent understands and how attention is divided, fixes rejects at the root instead of with patch sentences, and keeps a reject journal. |
 | [`jira-workflow`](skills/jira-workflow) | Jira issue tracking workflow — search, read, create, update issues, plan implementations, and reference commit tickets. |
@@ -90,7 +90,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
     ├── coding-principles/
     ├── colab-cli/
     ├── create-qa-spectrum/
-    ├── experiment-lab-loop/
+    ├── experiment-lab/
     ├── gemini-deep-research/
     ├── grow-autonomy/
     ├── jira-workflow/

@@ -18,7 +18,7 @@
       "description": "Skills for scientific experiments, dataset curation, deep research, and compounding LLM wikis.",
       "skills": [
         "wiki-llm",
-        "experiment-lab-loop",
+        "experiment-lab",
         "create-qa-spectrum",
         "gemini-deep-research",
         "pdf-to-markdown-mcp"

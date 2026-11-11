@@ -1,0 +1,8 @@
+# Target repos of this lab. `uv run scripts/lab.py sync-repos` clones or fetches them into .targets/repos/.
+# Use HTTPS urls so the lab clones the same way on a laptop and in a cloud session.
+
+repos:
+  - name: your-repo                                  # folder name under .targets/repos/
+    url: https://github.com/your-org/your-repo.git   # placeholder urls are skipped by sync-repos
+    short_name: repo                                 # used in experiment names: <id>-repo-<worktree-name>
+    default_branch: main
