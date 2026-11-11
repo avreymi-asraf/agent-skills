@@ -32,10 +32,14 @@ It lives in `.agents/skills/experiment-lab-loop/` with a relative link from `.cl
 
 *Shows when wrong:* agents load it for requests that are not about an experiment (the description is too wide), or do not load it at all (`AGENTS.md` does not point to it).
 
+## The lab's `review-wiki` skill
+
+One pass over `wiki-llm/` and `JOURNAL.md`, run from time to time in a fresh context: is the knowledge well built, well linked and still true. It fixes what the lab's evidence settles and reports what needs the user. Every experiment starts by reading this knowledge, so a wrong claim there steers all of them and nobody sees it happen.
+
 ## Templates (`experiments/_TEMPLATE/`)
 
 - `notes/plan.md`, copied into the worktree: the idea (stable), what we know and how we will do it (rewritten), open questions, stopping point, and the `data_source` line.
-- `notes/log.md`, copied into the worktree: one entry per round with Tried, Saw, Decided, Told the lab.
+- `notes/log.md`, copied into the worktree: one entry per round with Tried, Run plan, Saw, Decided, Told the lab. The run plan is written before the run, because running is the expensive part of a round.
 - `postmortem.md`, in the lab folder: verdict, the final conclusion and why we stopped, why it went this way, what happened to each provisional claim, Sparks.
 - `results.json`, in the lab folder: written by the CLI.
 
@@ -53,7 +57,7 @@ When adding a command, keep to that line. A command that refuses to continue unt
 
 ## System page per target (`wiki-llm/systems/<repo>.md`)
 
-Overview, the Experiment Language (mental model, vocabulary, structure and extension points, commands, data rules), checks and measurements, known limits. The header lines (`> Repo: ... | Fingerprint: git:<sha>`, `> Monitored:`, optional `> Branch:`) let `check-drift` report when the code moved since the page was written.
+Overview, the Experiment Language (mental model, vocabulary, structure and extension points, observation tools, commands, data source and rules), checks and measurements, known limits. The header lines (`> Repo: ... | Fingerprint: git:<sha>`, `> Monitored:`, optional `> Branch:`) let `check-drift` report when the code moved since the page was written.
 
 *Shows when wrong:* each experiment brings its own file layout and names, and nobody can tell whether a difference in results came from the idea.
 

@@ -27,7 +27,7 @@ find a direction ─▶ write the plan ─▶ ┌─ implement ─▶ run ─▶
 - **[Commands]**: what `scripts/lab.py` does and does not do.
 - **[Example]**: one experiment from idea to close.
 
-How far to carry a request (one round, or the whole experiment without checking in) is set by the request; see `AGENTS.md` §1. Companion skills: `wiki-llm` for building and maintaining the wiki pages the experiments write into, `iterative-deep-researcher` for literature work in [Find-a-direction], `code-as-tools` when writing experiment code, `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
+How far to carry a request (one round, or the whole experiment without checking in) is set by the request; see `AGENTS.md` §1. Companion skills: `wiki-llm` for building and maintaining the wiki pages the experiments write into, `iterative-deep-researcher` for literature work in [Find-a-direction], `review-wiki` for the periodic check of what the experiments wrote into the wiki, `code-as-tools` when writing experiment code, `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
 
 </experiment-lab-loop>
 
@@ -83,7 +83,7 @@ The plan holds:
 Each round, in the worktree `.targets/worktrees/<exp-name>/` on branch `exp/<exp-name>` (in a new session or a fresh clone, `uv run scripts/lab.py mount-exp --exp <id>` brings the worktree back from the pushed branch):
 
 1. **Implement** the next step of the plan, in the repo's Experiment Language. Commit to the experiment branch; remote runners ship committed code only.
-2. **Run** it. During rounds you are free to measure however is useful: a short training run, a probe, a notebook, the repo's own checks. The final evaluation script is not required here. `uv run scripts/lab.py run --exp <id> -- '<command>'` runs a command in the worktree with the lab's `.env`, `$LAB_ROOT` and `$EXP_DIR` set. Heavy runs go where `AGENTS.md` says. Running is expensive, so plan each run before starting it and watch it while it runs, not only after.
+2. **Run** it. During rounds you are free to measure however is useful: a short training run, a probe, a notebook, the repo's own checks. The final evaluation script is not required here. `uv run scripts/lab.py run --exp <id> -- '<command>'` runs a command in the worktree with the lab's `.env`, `$LAB_ROOT` and `$EXP_DIR` set. Heavy runs go where `AGENTS.md` says. Running is the expensive part of a round, so get the most out of each run: before starting, write in the log what question the run answers, what you will look at while it runs, and what would make you stop it early. Then watch it while it runs, with the target's own observation tools (system page), and stop a run that has already answered its question or cannot.
 3. **Analyze** what came back. Look at cases and traces, not only at the number, and ask why it moved or did not.
 4. **Write the round into the experiment log** (`notes/<exp-name>/log.md` in the worktree): what was tried, what was seen, what was decided, and where the run's files are (`notes/<exp-name>/runs/<nn>-<short-name>/`, small files only). A failed round is logged like any other; say whether the failure was technical or a real result.
 5. **Update the plan** if the round changed what we know. Commit code, log and plan together and push the branch, so the round survives the session.

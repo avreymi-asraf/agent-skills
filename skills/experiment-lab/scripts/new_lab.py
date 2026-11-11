@@ -22,6 +22,7 @@ RENAMED = {
     # Stored under other names so no agent tool mistakes the scaffold for live instructions or a skill.
     "lab-AGENTS.md": "AGENTS.md",
     "loop-skill.md": ".agents/skills/experiment-lab-loop/SKILL.md",
+    "review-wiki-skill.md": ".agents/skills/review-wiki/SKILL.md",
 }
 
 
@@ -50,10 +51,11 @@ def main() -> None:
             (lab / pointer).write_text("@AGENTS.md\n", encoding="utf-8")
 
     # Claude Code reads .claude/skills/; other agents read .agents/skills/. One copy, one relative link.
-    link = lab / ".claude" / "skills" / "experiment-lab-loop"
-    if not link.exists() and not link.is_symlink():
-        link.parent.mkdir(parents=True, exist_ok=True)
-        link.symlink_to(Path("../../.agents/skills/experiment-lab-loop"))
+    for skill in sorted(p for p in (lab / ".agents" / "skills").iterdir() if p.is_dir()):
+        link = lab / ".claude" / "skills" / skill.name
+        if not link.exists() and not link.is_symlink():
+            link.parent.mkdir(parents=True, exist_ok=True)
+            link.symlink_to(Path("../../.agents/skills") / skill.name)
 
     if not (lab / ".git").exists():
         subprocess.run(["git", "init", "-q", str(lab)], check=False)

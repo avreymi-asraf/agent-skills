@@ -9,6 +9,10 @@ Run this before the first wide request, after any change of structure (a part mo
 - One copy of the loop: `AGENTS.md` points to the loop skill and does not restate it. The README does not restate it either.
 - One name per concept: the vocabulary in `AGENTS.md` matches the words used in the loop skill, the templates and `lab.py --help`.
 - No absolute or machine-specific path in any tracked file.
+- One entry point: `AGENTS.md`. The README, the journal and the wiki index do not each claim to be the page to read first.
+- Every pointer leads to content. A line that says "read X before writing code" where X is a list of empty headings teaches agents to skip pointers.
+- No example content that looks real: a sample gap, Spark, experiment row or target repo left from a template will be picked up and worked on.
+- Nothing an agent needs lives outside the repo ([Running anywhere](running-anywhere.md)).
 - What the docs say a command does is what it does. Read `lab.py`, do not trust the table.
 
 ## 2. Cold read
@@ -39,6 +43,10 @@ Then check a wide request ends with a report that names what was decided, assume
 
 Clone the lab into an empty folder and run every command against a scratch target repo: `init`, `sync-repos`, `new-exp`, `run`, `evaluate` (with a missing, a failing and a valid evaluation), `record-verdict`, `cleanup-worktree`, `mount-exp`. A lab that only works on the machine it was built on cannot take a wide request in a cloud session.
 
+## 5. Housekeeping
+
+A lab that has run for a while collects leftovers that later agents read as state: worktrees of closed experiments, target branches that are no experiment, Sparks that were done, experiments opened and never closed. List them for the user with what each is; remove only what the user confirms. The wiki's own upkeep is the `review-wiki` pass.
+
 ## Signs, and the part they point to
 
 | What is seen | Likely root | Part |
@@ -54,6 +62,7 @@ Clone the lab into an empty folder and run every command against a scratch targe
 | Frontier, Sparks or Banlist are stale | The docs say a command updates them | `lab.py` docs, closing steps |
 | The agent picks a direction that serves nothing | The far goal is missing, or is template text | `purpose.md` |
 | A subagent did its piece correctly and the whole is wrong | The brief dropped the reason | `AGENTS.md` attention section |
+| Runs are started and only read when they finish; GPU time is spent on runs that answer nothing | Nothing asks for a run plan before the run, or the target has no tools for watching one | Log template, system page (Observation) |
 | A cloud session cannot continue an experiment | Something was not pushed, or a path is machine-specific | What always holds; `mount-exp` |
 
 When a sign appears after a real request the user rejected, it is a reject: open an entry in `.grow-autonomy/rejects.md` first, then follow `grow-autonomy` to the root. Do not fix signs one by one; several usually share a root.

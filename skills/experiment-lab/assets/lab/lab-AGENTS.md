@@ -42,6 +42,8 @@ Requests of every size arrive here, in any order: "rename this function", "fix t
 
 Load the `experiment-lab-loop` skill. It is the only place the loop is described: find a direction, write the plan, work in rounds, tell the lab what others need, close with a final evaluation. Do not load it for requests that are not about an experiment.
 
+The wiki is checked from time to time with the `review-wiki` skill: is it well built, well linked and still true.
+
 ## 5. What Always Holds
 
 Each of these holds for every request, whatever its size.
@@ -50,12 +52,12 @@ Each of these holds for every request, whatever its size.
 2. **Experiment branches are pushed and never merged** into the target's default branch unless the user explicitly asks. An experiment that builds on an earlier one starts from it (`new-exp --base-branch exp/<earlier-exp-name>`). *Why:* every result must survive a fresh clone, and no experiment may silently change the ground under another.
 3. **A technical failure is not a scientific result.** A crash, out-of-memory, missing credential or typo is `INFRA_INCONCLUSIVE`, or simply a round that failed. Never write to `wiki-llm/findings/` or the Anti-Repeat Banlist that an idea failed before it actually ran cleanly. *Why:* a false refutation stops every later agent from trying a good idea.
 4. **Experiments on one repo share one Experiment Language.** Reuse the terms, files, extension points and patterns recorded in `wiki-llm/systems/<repo>.md`, so that someone who understood experiment `0a` opens `0b` and sees that only the idea changed. Change the language only when that change is the idea. Say so in `plan.md`, and update the system page when the experiment is kept. *Why:* readability across experiments, and results that can be attributed to the idea.
-5. **Everything runs from a fresh clone, anywhere** (a laptop, a cloud session, CI, a cluster). Never write absolute or machine-specific paths into docs, code, configs, plans or the wiki. Use repo-relative paths, or the variables `lab.py run` and `lab.py evaluate` provide: `$LAB_ROOT`, `$EXP_DIR`, and the `.env` variables. Data is declared in `plan.md` as `data_source: <repo>@<ref>:<path>`.
+5. **Everything runs from a fresh clone, anywhere** (a laptop, a cloud session, CI, a cluster). Whatever an agent needs is in this repo: instructions, skills, tools. Push an experiment branch after every round that matters; a session elsewhere sees only what is pushed. Never write absolute or machine-specific paths into docs, code, configs, plans or the wiki. Use repo-relative paths, or the variables `lab.py run` and `lab.py evaluate` provide: `$LAB_ROOT`, `$EXP_DIR`, and the `.env` variables. Data is declared in `plan.md` as `data_source: <repo>@<ref>:<path>`.
 6. **Secrets come only from environment variables named in `.env.example`.** Never write a value into git, logs, results or the wiki.
 7. **Never edit a skill for one experiment.** `new-exp` copies the lab's skills into every worktree; a change to a skill is a change to the lab.
 8. **Final evaluation:** {{FILL: how this lab measures an experiment when it closes, and why that way. The scaffold's default: the script `evaluate.py` at the target repo's root, run by `uv run scripts/lab.py evaluate`, which records the script's version with every result so that numbers from different versions are not compared by mistake. Details in the `experiment-lab-loop` skill.}}
 9. **Where heavy runs go:** {{FILL: the machines or services GPU and long runs may use, and the skill for each.}}
-10. **Data rules:** {{FILL: which data may leave the machine and what may appear in logs, or "in each target's system page".}}
+10. **Data:** {{FILL: where the data comes from (repo and path), which data may leave the machine and what may appear in logs, or "in each target's system page".}}
 
 ## 6. Attention
 

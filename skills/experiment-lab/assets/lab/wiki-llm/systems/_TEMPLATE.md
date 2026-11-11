@@ -20,8 +20,9 @@ updated: YYYY-MM-DD
 * **Mental model:** [One or two sentences: what a run is, what an idea is allowed to change, what stays as it is so that two runs differ only by the idea.]
 * **Vocabulary (one concept, one name):** [The repo's terms.]
 * **Structure:** [The shared tools every experiment uses, and the extension points where an idea goes.]
+* **Observation:** [What every run leaves behind (run folder, file and key names) and the tools for looking at a run while it is going and after. Every experiment uses these, so rounds can be compared.]
 * **Commands:** [How a round's command is run through `lab.py run`, with repo-relative paths and `.env` variables only.]
-* **Data rules:** [What data may leave the machine, what may appear in logs, what is not leak-free.]
+* **Data rules:** [Where the data comes from (`<repo>@<ref>:<path>`). What data may leave the machine, what may appear in logs, what is not leak-free.]
 
 ## 3. Checks & Measurements
 [The cheap checks a round can run, and the final evaluation if the repo has one.]

@@ -31,6 +31,7 @@ What that takes:
 
 - **The request sets how far to go.** The lab has no automation level, no stages, no "human-in-the-loop mode". Nothing in its content says "ask before planning" or "the agent only implements": such a line describes one request and contradicts the next. A limit the user wants always (never merge an experiment branch) is a rule of the lab, written once with its reason.
 - **The loop is semantic.** Whether a round taught something, whether a lesson matters to others, whether the idea is exhausted: these are judgments, and the agent makes them. No tool gates them. An experiment can spend many rounds in implementation and analysis before there is anything to conclude, and the lab must make that normal, not a violation.
+- **The lab is whole wherever it is cloned.** A wide request may run in a cloud session that has nothing but the repo. Instructions, skills and tools live in the lab, and work that matters is pushed.
 - **Tools serve the loop.** The CLI does the mechanical steps (worktrees, names, running a command with the right environment, recording a result) so the correct path is the easy one. It decides nothing and blocks nothing.
 - **The far goal is written down.** An agent holding a wide task has to choose a direction and decide when to stop. It can only judge those against what the lab is for and the hardest thing the user hopes to hand it one day.
 
@@ -69,6 +70,7 @@ An agent acts on what reaches its context, and most of a repo never does. So eac
 | `scripts/lab.py` | When used | The mechanical steps, so names, folders and environments come out right without being remembered |
 | System page per target (`wiki-llm/systems/`) | When working on that target | The Experiment Language, data rules, known limits |
 | `JOURNAL.md`, the rest of the wiki | When choosing a direction | What is best, what is next, what not to repeat, what was learned |
+| `review-wiki` skill, inside the lab | From time to time, and before a wide request that chooses a direction | The pass that keeps that knowledge well built, well linked and still true |
 | `.grow-autonomy/rejects.md` | Never, for working agents | The record of rejects, for the user and whoever maintains the lab |
 
 Two rules follow. **Say each thing once**: the loop only in the lab's loop skill, a term only in the vocabulary, a rule only where it holds; a second copy drifts and the agent gets both. **What an agent would not know to look for must be given**: an agent asks "how do I open an experiment" by itself, and never asks "may this data leave the machine".
@@ -91,8 +93,8 @@ What each part must hold, and what goes wrong when it does not: [Parts](referenc
    It copies the scaffold and prints the `{{FILL: ...}}` slots.
 3. **Fill the slots** from the user's answers, in their terms. A slot the user has not answered stays visibly open ("Not written yet"), never filled with a guess. Turning a rough answer into fluent text adds meaning the user did not state; say back what an agent will take from the text and let them judge that.
 4. **Register the first target repo** in `repos.yaml`, then `uv run scripts/lab.py init` and `sync-repos`.
-5. **Write the target's system page** from `wiki-llm/systems/_TEMPLATE.md`. If the target is new or empty, the Experiment Language does not exist yet: say so on the page, and let the first experiment set it.
-6. **Install the companion skills** the lab's content names (`grow-autonomy`, `wiki-llm`, and the ones for where runs go).
+5. **Write the target's system page** from `wiki-llm/systems/_TEMPLATE.md`. If the target is new or empty, the Experiment Language does not exist yet: say so on the page. The first experiment on that target then has one job: connect the pipeline end to end (data in, one short run, results back) and set the frame every later experiment reuses, including the tools for watching a run. Its claim is narrow ("the pipeline is connected"), its numbers are not a baseline, and its Sparks are usually the first real task and the first evaluation.
+6. **Install the companion skills** the lab's content names (`grow-autonomy`, `wiki-llm`, and the ones for where runs go) into the lab's own folders, not the user's home ([Running anywhere](references/running-anywhere.md)).
 7. **Check it** ([Check-a-lab]) before the first wide request, and commit.
 
 The scaffold is a starting point. After step 2 the lab's files are its own and will diverge from the scaffold as the lab learns; that is intended.
@@ -127,7 +129,7 @@ The full pass, and the signs that show which part is failing: [Checking](referen
 <Scripts-and-scaffold>
 
 - `scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold. Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
-- `assets/lab/`: the scaffold. `lab-AGENTS.md` (becomes the lab's `AGENTS.md`), `loop-skill.md` (becomes the lab's own `experiment-lab-loop` skill), `README.md`, `JOURNAL.md`, `repos.yaml`, `pyproject.toml`, `wiki-llm/` (purpose, gap map, index, log, system page template), `experiments/_TEMPLATE/` (plan and log for the worktree, postmortem and results for the lab folder), and `scripts/lab.py`. Read a part here when deciding what a lab's own version should hold; edit it only to change what every new lab starts with.
+- `assets/lab/`: the scaffold. `lab-AGENTS.md` (becomes the lab's `AGENTS.md`), `loop-skill.md` and `review-wiki-skill.md` (become the lab's own `experiment-lab-loop` and `review-wiki` skills), `README.md`, `JOURNAL.md`, `repos.yaml`, `pyproject.toml`, `wiki-llm/` (purpose, gap map, index, log, system page template), `experiments/_TEMPLATE/` (plan and log for the worktree, postmortem and results for the lab folder), and `scripts/lab.py`. Read a part here when deciding what a lab's own version should hold; edit it only to change what every new lab starts with.
 - `assets/lab/scripts/lab.py`, in the lab as `uv run scripts/lab.py <command>`: `init`, `sync-repos`, `context-pack`, `check-drift`, `new-exp`, `mount-exp`, `run`, `evaluate`, `record-verdict`, `cleanup-worktree`. Standard library only. What each does and does not do is in the lab's loop skill.
 
 </Scripts-and-scaffold>
@@ -136,6 +138,7 @@ The full pass, and the signs that show which part is failing: [Checking](referen
 
 - [Parts](references/parts.md): each part of a lab, what it must hold, and the failure that shows when it does not. Read it when creating a lab or deciding where a change belongs.
 - [Checking](references/checking.md): the pass that tests whether a lab serves the loop. Read it before the first wide request and after any change of structure.
+- [Running anywhere](references/running-anywhere.md): what makes a lab work from a fresh clone in a cloud session as well as on a laptop: skills in the repo, secrets, git access, what must be pushed. Read it when creating a lab and when a session elsewhere cannot continue the work.
 
 </References>
 
