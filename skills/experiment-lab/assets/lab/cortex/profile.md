@@ -87,8 +87,8 @@ uv run scripts/lab.py check-drift    # system pages whose monitored code changed
 
 Read, besides `cortex/`: `JOURNAL.md`, and every `experiments/*/postmortem.md` and `results.json`. Then check:
 
-- **Closed experiments.** Every closed experiment (a row in the journal's matrix) has no `provisional` claim left, and the pages its postmortem says it changed show it.
-- **Numbers.** Frontier numbers match `results.json`, and numbers that are compared were measured with the same `eval_script_sha`.
+- **Closed experiments.** Every closed experiment (a row with a verdict in the journal's matrix) has no `provisional` claim left, and the pages its postmortem says it changed show it.
+- **Numbers.** Frontier numbers match `results.json`, and numbers that are compared were measured with the same `evaluation_version`.
 - **Basis.** No findings page presents as seen by the lab something that rests only on `quote` claims. Every Banlist entry names the `experiment` claim it rests on; none rests on a `quote` claim or on a technical failure.
 - **Gaps.** A gap listed as open that an experiment has answered; a question an experiment revealed that is on no list.
 - **Sparks and Banlist.** A Spark already done or made pointless; a Banlist entry whose "unless" condition has since changed.

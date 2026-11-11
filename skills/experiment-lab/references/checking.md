@@ -43,17 +43,17 @@ Bring the answers to the user: is this what you meant?
 
 Let an agent carry a real, small experiment on a scratch target, then read the transcript for the flow and not for the result: which files it opened and in what order, what it looked for and did not find, where it guessed, whether it loaded the loop skill, what it wrote in the log and what it told the lab.
 
-Read the experiment's diff against its base. It should read as the idea: a change at an extension point, perhaps a new shared component, and the notes. Copied scripts, a second loader or a private metrics file mean the Experiment Language did not reach the agent that wrote the code, often a subagent whose brief left it out.
+Read the experiment's `patch.diff`, its code change against its base. It should read as the idea: a change at an extension point, perhaps a new shared component. Copied scripts, a second loader or a private metrics file mean the Experiment Language did not reach the agent that wrote the code, often a subagent whose brief left it out.
 
 Then check a wide request ends with a report that names what was decided, assumed and not checked.
 
 ## 4. The CLI from a fresh clone
 
-Clone the lab into an empty folder and run every command against a scratch target repo: `init`, `sync-repos`, `new-exp`, `run`, `evaluate` (with a missing, a failing and a valid evaluation), `record-verdict`, `cleanup-worktree`, `mount-exp`. A lab that only works on the machine it was built on cannot take a wide request in a cloud session.
+Clone the lab into an empty folder and run every command against a scratch target repo: `init`, `sync-repos`, `new-exp`, `run`, `evaluate` (with a missing, a failing and a valid evaluation), `record-verdict`, `cleanup-worktree`, `mount-exp`, and one command with an experiment id that does not exist. Commit and push the scratch lab between `new-exp` and a `mount-exp` from a second clone: that is the step a cloud session depends on. A lab that only works on the machine it was built on cannot take a wide request in a cloud session.
 
 ## 5. Housekeeping
 
-A lab that has run for a while collects leftovers that later agents read as state: worktrees of closed experiments, target branches that are no experiment, Sparks that were done, experiments opened and never closed. List them for the user with what each is; remove only what the user confirms. The cortex's own upkeep is the `cortex` skill's review, with the lab's additions in `cortex/profile.md`.
+A lab that has run for a while collects leftovers that later agents read as state: worktrees of closed experiments, target branches that are no experiment, Sparks that were done, experiments opened and never closed (rows still marked `OPEN` in the journal's matrix). List them for the user with what each is; remove only what the user confirms. The cortex's own upkeep is the `cortex` skill's review, with the lab's additions in `cortex/profile.md`.
 
 ## Signs, and the part they point to
 

@@ -1,13 +1,14 @@
 {
-  "exp_id": "<exp-name>",
+  "exp_name": "<exp-name>",
   "title": null,
   "target_repo": "<target-repo>",
   "base_branch": null,
   "exp_branch": null,
   "base_commit": null,
+  "opened": null,
   "exp_commit": null,
   "timestamp": null,
-  "eval_script_sha": null,
+  "evaluation_version": null,
   "metrics": null,
-  "verdict": "PENDING"
+  "verdict": "OPEN"
 }

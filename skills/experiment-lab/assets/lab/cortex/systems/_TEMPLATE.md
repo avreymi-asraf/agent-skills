@@ -10,13 +10,15 @@ updated: YYYY-MM-DD
 > Repo: <target-repo> | Fingerprint: git:<sha>
 > Monitored: <paths, comma separated>
 
-> Add `> Branch: exp/<exp-name>` when the frame below lives on a kept experiment branch and not on the default branch. Experiments that use the frame then start from it with `new-exp --base-branch`.
+> Add `> Branch: exp/<exp-name>` when the shared components below live on a kept experiment branch and not on the default branch. Later experiments then start from that branch with `new-exp --base-branch`.
 
 ## 1. Overview
 [What this repo is for in the research, and a short diagram of how data moves through it.]
 
 ## 2. Experiment Language (Shared by Every Experiment on This Repo)
-> Every experiment on this repo is a small change on top of this frame: the idea goes in at an extension point and uses the shared components as they are. Change the frame only when the frame itself is the idea of an experiment, and update this section when that experiment is kept.
+> Every experiment on this repo is a small change on top of what this section describes: the idea goes in at an extension point and uses the shared components as they are. Change the Experiment Language only when that change is the idea of an experiment, and update this section when that experiment is kept.
+>
+> A target that is new or empty has no Experiment Language yet. Then write here "Not written yet", and the first experiment on this target has one job: connect the pipeline end to end (data in, one short run, results back, a way to watch a run) and write this section from what it built. Its claim is narrow ("the pipeline is connected") and its numbers are not a baseline.
 
 * **Mental model:** [One or two sentences: what a run is, what an idea is allowed to change, what stays as it is so that two runs differ only by the idea.]
 * **Vocabulary (one concept, one name):** [The repo's terms, as used in code, plans, logs and the cortex.]

@@ -37,7 +37,7 @@ It lives in `.agents/skills/experiment-lab-loop/` with a relative link from `.cl
 - `notes/plan.md`, copied into the worktree: the idea (stable), what we know and how we will do it (rewritten), the Experiment Language block (extension point, shared components used, what stays fixed, what is added to the shared set), open questions, stopping point, and the `data_source` line.
 - `notes/log.md`, copied into the worktree: one entry per round with Tried, Run plan, Saw, Decided, Told the lab. The run plan is written before the run, because running is the expensive part of a round.
 - `postmortem.md`, in the lab folder: verdict, the final conclusion and why we stopped, why it went this way, what happened to each provisional claim, what happened to the Experiment Language, Sparks.
-- `results.json`, in the lab folder: written by the CLI.
+- `results.json`, in the lab folder: written by the CLI. Its `verdict` is `OPEN` until `record-verdict`, and `evaluation_version` is what makes two numbers comparable.
 
 A section in a template is a behavior. "Told the lab" in every round entry is what makes the agent ask the question every round. When a behavior is wanted, look for the template field first.
 
@@ -45,9 +45,9 @@ A section in a template is a behavior. "Told the lab" in every round entry is wh
 
 ## `scripts/lab.py`
 
-Mechanical steps only. It creates the branch, the worktree and both folders with the right names; runs a command in the worktree with `.env`, `$LAB_ROOT` and `$EXP_DIR` set; runs the final evaluation and records what it measured; adds the matrix row. It does not choose a direction, fill a plan, compare with the baseline, or write to the Frontier, the Sparks or the Banlist: those carry judgment and are written by hand.
+Mechanical steps only. It creates the branch, the worktree and both folders with the right names, and the experiment's row in the journal's matrix; runs a command in the worktree with `.env`, `$LAB_ROOT` and `$EXP_DIR` set; saves the experiment's code change, runs the final evaluation and records what it measured; completes the matrix row with the verdict. It does not choose a direction, fill a plan, compare with the baseline, or write to the Frontier, the Sparks or the Banlist: those carry judgment and are written by hand.
 
-When adding a command, keep to that line. A command that refuses to continue until a condition holds is a gate, and belongs to the mistake in [What-the-loop-needs] 1.
+When adding a command, keep to that line. A command that refuses to continue until a condition holds is a gate, and belongs to the mistake in [What-the-loop-needs] 1. A command may say what it noticed (a target with no system page, a part cut from the context pack, the lab repo left to push): a printed line reaches the agent at the moment it matters and blocks nothing.
 
 *Shows when wrong:* the docs promise what a command does not do, and the journal goes stale because everyone assumed the tool updated it.
 
@@ -59,7 +59,7 @@ Overview, then the Experiment Language: the mental model, the vocabulary, a tabl
 
 ## `JOURNAL.md`
 
-The routing page: Current Frontier (best verified baseline per target and task), Active Sparks, the experiment matrix, the Anti-Repeat Banlist. Only a clean run puts an idea on the Banlist, and each entry says under which condition it would be worth trying again.
+The routing page: Current Frontier (best verified baseline per target and task, each with its evaluation version), Active Sparks, the experiment matrix (one row per experiment from the moment it is opened, written by `lab.py`), the Anti-Repeat Banlist. Only a clean run puts an idea on the Banlist, and each entry says under which condition it would be worth trying again.
 
 ## The cortex (`cortex/`)
 
@@ -88,9 +88,9 @@ The operations on the lab's memory that are not part of an experiment: add a sou
 | | Next to the code | In the lab |
 |---|---|---|
 | Where | Target repo, branch `exp/<exp-name>`, `notes/<exp-name>/` | `experiments/<exp-name>/` |
-| Holds | `plan.md`, `log.md`, `runs/` | `postmortem.md`, `results.json`, `evaluate.log`, `patch.diff` |
+| Holds | `plan.md`, `log.md`, `runs/` | `postmortem.md`, `results.json`, `evaluate.log`, `patch.diff` (the code change, without the notes) |
 | For | Whoever continues this experiment | Whoever does a different one |
-| Changes | Every round, committed with the code | Written at close, then fixed |
+| Changes | Every round, committed with the code | Created at open, written at close, then fixed |
 
 The folders have different names on purpose, so that `experiments/` means the lab's folder only.
 

@@ -1,5 +1,5 @@
 ---
-exp_id: <exp-name>
+exp_name: <exp-name>
 title: "<title>"
 date: YYYY-MM-DD
 target_repo: <target-repo>
@@ -17,7 +17,7 @@ data_source: "<repo>@<ref>:<path>"  # e.g. data-repo@main:data/samples/v1 (never
 * **Idea:** [What we want to try, in one or two sentences. This part is stable: if it has to be replaced, close the experiment and open a new one.]
 * **Why it is worth trying:** [The gap or Spark it answers, and how it serves `cortex/purpose.md`.]
 * **Crossed with what the lab knows:** [Findings, claims, tensions, earlier experiments and Banlist entries that bear on it, and what they change. Say which of them the lab saw and which are only reported by an outside source.]
-* **Alternatives considered:** [Other directions that were weighed and why this one was chosen. They are candidate Sparks.]
+* **Alternatives considered:** [Other directions that were weighed and why this one was chosen. For one that is worth an experiment of its own: the `SPARK-nn` it was given in `JOURNAL.md`.]
 
 ## 2. What We Know and How We Will Do It
 [The realisation, as exact as present knowledge allows and no more. May start high-level. Name the files, extension points and settings once they are known.]
@@ -26,7 +26,7 @@ data_source: "<repo>@<ref>:<path>"  # e.g. data-repo@main:data/samples/v1 (never
   * **Extension point:** [Where the idea goes in.]
   * **Shared components used as they are:** [Data, run entry and config, runner, observation and analysis tools, evaluation.]
   * **What stays fixed:** [So that a difference can be attributed to the idea.]
-  * **Added to or changed in the shared set:** [None | the new component or the fix, and why every later experiment should inherit it. If the frame itself is what changes, say that this is the idea.]
+  * **Added to or changed in the shared set:** [None | the new component or the fix, and why every later experiment should inherit it. If the Experiment Language itself is what changes, say that this is the idea.]
 
 ## 3. Open Questions
 * [What the next rounds have to find out.]
