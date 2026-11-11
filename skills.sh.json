@@ -30,6 +30,7 @@
       "skills": [
         "agent-and-skill-improvement",
         "manage-skills",
+        "staged-workflow",
         "manage-mcp",
         "project-agent-systems",
         "opencode-runtime-hooks",

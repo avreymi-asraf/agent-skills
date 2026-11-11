@@ -69,6 +69,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | [`project-agent-systems`](skills/project-agent-systems) | Builds project-local agent, skill, MCP, and memory setups across OpenCode, Copilot, and Codex without polluting global settings. |
 | [`research-and-experiments`](skills/research-and-experiments) | Workflows and structure for formulating hypotheses, designing experiments, logging metrics, and drawing compounding conclusions. |
 | [`scripts`](skills/scripts) | Guides creation of operational Python (uv / PEP 723) and JS scripts for AWS/CDN environments with security and session handling. |
+| [`staged-workflow`](skills/staged-workflow) | Grows an agent workflow toward real autonomy in stages, by shaping the agent's context and fixing the root cause of every rejection instead of patching it. |
 | [`tasks`](skills/tasks) | Task runner automation using Python-native `invoke` and `uv` inline PEP 723 dependencies to replace legacy Makefiles. |
 | [`wiki-llm`](skills/wiki-llm) | Implements Karpathy's compounding LLM wiki pattern — synthesizing raw documents into an interlinked markdown knowledge base. |
 
@@ -99,6 +100,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
     ├── project-agent-systems/
     ├── research-and-experiments/
     ├── scripts/
+    ├── staged-workflow/
     ├── tasks/
     └── wiki-llm/
 ```
