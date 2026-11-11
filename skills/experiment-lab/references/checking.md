@@ -11,7 +11,8 @@ Run this before the first wide request, after any change of structure (a part mo
 - No absolute or machine-specific path in any tracked file.
 - `uv` only: no `pip install`, bare `python` or `python3`, or virtual-environment commands in any doc, skill, template or script of the lab.
 - Every target's system page has its Experiment Language filled in: shared components with their files, and named extension points. Compare it with the code on the branch it points at.
-- One entry point: `AGENTS.md`. The README, the journal and the wiki index do not each claim to be the page to read first.
+- One entry point: `AGENTS.md`. The README, the journal and the cortex index do not each claim to be the page to read first.
+- The cortex check passes: `uv run .agents/skills/cortex/scripts/cortex.py check --also experiments`. Read what it lists for review.
 - Every pointer leads to content. A line that says "read X before writing code" where X is a list of empty headings teaches agents to skip pointers.
 - No example content that looks real: a sample gap, Spark, experiment row or target repo left from a template will be picked up and worked on.
 - Nothing an agent needs lives outside the repo ([Running anywhere](running-anywhere.md)).
@@ -26,12 +27,13 @@ Start a fresh agent in the lab with a request worded as the user words it and no
 - What will you read first?
 - What are you unsure about?
 
-Use at least three requests: a tiny one ("fix this wiki line"), a middle one ("analyze the last round of experiment 0a"), and a wide one ("find a direction and run it to a conclusion"). Compare the answers with what the user means. Keep the questions open: "will you ask for approval?" hands over the thing being tested.
+Use at least three requests: a tiny one ("fix this line in the cortex"), a middle one ("analyze the last round of experiment 0a"), and a wide one ("find a direction and run it to a conclusion"). Compare the answers with what the user means. Keep the questions open: "will you ask for approval?" hands over the thing being tested.
 
 Ask the same agent to explain "experiment", "plan" and "conclusion" in its own words, and what it would do in two borderline cases:
 
 - A run crashed on the first step. Is the idea refuted?
 - A round showed that a data field leaks the label. Where does that get written, and when?
+- A paper reports that the method you are about to try collapses after long training. What is that to this lab, and what do you do with it?
 - Your idea needs the data loaded differently from how the shared loader does it. What do you do?
 - You need a plot the repo does not have. Where does the code go?
 
@@ -51,7 +53,7 @@ Clone the lab into an empty folder and run every command against a scratch targe
 
 ## 5. Housekeeping
 
-A lab that has run for a while collects leftovers that later agents read as state: worktrees of closed experiments, target branches that are no experiment, Sparks that were done, experiments opened and never closed. List them for the user with what each is; remove only what the user confirms. The wiki's own upkeep is the `review-wiki` pass.
+A lab that has run for a while collects leftovers that later agents read as state: worktrees of closed experiments, target branches that are no experiment, Sparks that were done, experiments opened and never closed. List them for the user with what each is; remove only what the user confirms. The cortex's own upkeep is the `cortex` skill's review, with the lab's additions in `cortex/profile.md`.
 
 ## Signs, and the part they point to
 
@@ -62,7 +64,10 @@ A lab that has run for a while collects leftovers that later agents read as stat
 | An experiment is closed as refuted after one failed run | "Experiment" reads as a single test; the log has no place for the kind of failure | Vocabulary, log template |
 | The plan is never edited after the first round | The plan reads as a contract | Vocabulary, plan template |
 | Agents invent folders or files for their rounds | The templates have no home for what a round produces | Templates, `lab.py new-exp` |
-| The wiki fills with one experiment's settings | The two readers are not separated | Loop skill: what to tell the lab |
+| The cortex fills with one experiment's settings | The two readers are not separated | Loop skill: what to tell the lab |
+| A findings page presents a paper's result as something the lab found; a Banlist entry rests on a paper | The anchor of a claim does not reach the page, or "finding" reads as "anything written in the cortex" | `cortex/profile.md` (anchors), findings template, vocabulary |
+| Claims pile up and no findings page changes; or an outside-results page grows that no experiment uses | Fusion has no moment, or reading starts without a gap | `cortex/profile.md` (moments), loop skill: find a direction |
+| Claims of a closed experiment are still provisional | Closing does not list them | Loop skill: close; postmortem template |
 | A lesson everyone needed is found only in a branch log | Same root, other direction; or the round entry has no "Told the lab" line | Log template |
 | Each experiment has its own layout, loader or loop; a diff is mostly plumbing | The Experiment Language is missing, is not on the system page, names no extension points, or did not reach the subagent that wrote the code | System page, plan template, `AGENTS.md` attention section |
 | An agent codes around a shared component instead of fixing it | Nothing says a shared component may be fixed for everyone, or how | System page, `AGENTS.md` |

@@ -7,7 +7,7 @@
 
 It clones target repos, opens an experiment (branch, worktree, notes, lab folder), runs commands
 in a worktree, runs the final evaluation and records a verdict. It makes no judgment: the plan,
-the log, the wiki and the journal's Frontier, Sparks and Banlist are written by the agent.
+the log, the cortex and the journal's Frontier, Sparks and Banlist are written by the agent.
 """
 
 import argparse
@@ -27,7 +27,7 @@ WORKTREES_DIR = TARGETS_DIR / "worktrees"
 # Files the lab itself provisions into every worktree. They are not part of an experiment's change,
 # even when the target repo tracks its own copies (then provisioning overwrites them).
 LAB_PROVISIONED = (".agents", ".claude", "skills-lock.json", "CODE-STANDARDS.md")
-WIKI_DIR = LAB_ROOT / "wiki-llm"
+CORTEX_DIR = LAB_ROOT / "cortex"
 EXPS_DIR = LAB_ROOT / "experiments"
 JOURNAL_PATH = LAB_ROOT / "JOURNAL.md"
 REPOS_YAML_PATH = LAB_ROOT / "repos.yaml"
@@ -82,8 +82,8 @@ def now_iso() -> str:
     return dt.datetime.now().strftime("%Y-%m-%d %H:%M")
 
 
-def append_wiki_log(operation: str, target: str, summary: str) -> None:
-    log_path = WIKI_DIR / "log.md"
+def append_cortex_log(operation: str, target: str, summary: str) -> None:
+    log_path = CORTEX_DIR / "log.md"
     if not log_path.exists():
         return
     entry = f"## [{now_iso()}] {operation} | {target} — {summary}\n"
@@ -134,11 +134,10 @@ def parse_simple_repos_yaml(path: Path) -> dict:
 def cmd_init(_args: argparse.Namespace) -> None:
     REPOS_DIR.mkdir(parents=True, exist_ok=True)
     WORKTREES_DIR.mkdir(parents=True, exist_ok=True)
-    (WIKI_DIR / "systems").mkdir(parents=True, exist_ok=True)
-    (WIKI_DIR / "findings").mkdir(parents=True, exist_ok=True)
-    (WIKI_DIR / "literature").mkdir(parents=True, exist_ok=True)
+    for layer in ("claims", "findings", "tensions", "systems", "sources/text"):
+        (CORTEX_DIR / layer).mkdir(parents=True, exist_ok=True)
     EXPS_DIR.mkdir(parents=True, exist_ok=True)
-    append_wiki_log("init", "workspace", "Verified .targets/repos, .targets/worktrees, wiki-llm, and experiments directories")
+    append_cortex_log("init", "workspace", "Verified .targets/repos, .targets/worktrees, cortex, and experiments directories")
     print(f"[OK] Lab workspace initialized at: {LAB_ROOT}")
     print(f"     Target clones dir : {REPOS_DIR}")
     print(f"     Worktrees dir     : {WORKTREES_DIR}")
@@ -178,11 +177,11 @@ def cmd_sync_repos(args: argparse.Namespace) -> None:
                 continue
             print(f"[CLONE] Cloning {name} from {url} -> {target_path}...")
             subprocess.run(["git", "clone", url, str(target_path)], check=False)
-    append_wiki_log("sync-repos", args.repo or "all", "Synchronized target repositories")
+    append_cortex_log("sync-repos", args.repo or "all", "Synchronized target repositories")
 
 
 def cmd_check_drift(_args: argparse.Namespace) -> None:
-    """0-Token Code Drift Detection: checks Fingerprint & Monitored headers in wiki-llm/."""
+    """0-Token Code Drift Detection: checks Fingerprint & Monitored headers in cortex/."""
     fp_pattern = re.compile(r"^>\s*Repo:\s*(\S+)\s*\|\s*Fingerprint:\s*git:(\S+)", re.MULTILINE)
     mon_pattern = re.compile(r"^>\s*Monitored:\s*(.+)$", re.MULTILINE)
     # Optional: the frame lives on a kept experiment branch, not on the default branch.
@@ -190,8 +189,8 @@ def cmd_check_drift(_args: argparse.Namespace) -> None:
 
     checked = 0
     drifted = 0
-    print("=== 0-Token Wiki-to-Code Drift Check ===")
-    for md_file in sorted(WIKI_DIR.rglob("*.md")):
+    print("=== 0-Token Cortex-to-Code Drift Check ===")
+    for md_file in sorted(CORTEX_DIR.rglob("*.md")):
         if md_file.name.startswith("_"):
             continue  # page templates
         content = md_file.read_text(encoding="utf-8")
@@ -237,7 +236,7 @@ def cmd_check_drift(_args: argparse.Namespace) -> None:
         else:
             print(f"  [FRESH]     {rel_md} -> 0 changes in monitored paths since {commit_sha}")
 
-    print(f"Summary: {checked} fingerprinted wiki page(s) checked, {drifted} drifted.")
+    print(f"Summary: {checked} fingerprinted cortex page(s) checked, {drifted} drifted.")
 
 
 def cmd_context_pack(_args: argparse.Namespace) -> None:
@@ -245,11 +244,11 @@ def cmd_context_pack(_args: argparse.Namespace) -> None:
     sections = []
     sections.append(f"# Compiled Pre-Planning Context Pack (`query_pack.md`)\n> Auto-generated on `{now_iso()}` by `scripts/lab.py context-pack`. Read this before planning a new experiment.\n")
 
-    purpose_path = WIKI_DIR / "purpose.md"
+    purpose_path = CORTEX_DIR / "purpose.md"
     if purpose_path.exists():
         sections.append("## 1. Lab Purpose & Rules\n" + purpose_path.read_text(encoding="utf-8").strip()[:1200])
 
-    gap_path = WIKI_DIR / "gap_map.md"
+    gap_path = CORTEX_DIR / "gap_map.md"
     if gap_path.exists():
         sections.append("## 2. Open System Gaps (`gap_map.md`)\n" + gap_path.read_text(encoding="utf-8").strip()[:2000])
 
@@ -257,21 +256,21 @@ def cmd_context_pack(_args: argparse.Namespace) -> None:
         j_text = JOURNAL_PATH.read_text(encoding="utf-8")
         sections.append("## 3. Journal Snapshot (Frontier, Active Sparks & Banlist)\n" + j_text.strip()[:3000])
 
-    index_path = WIKI_DIR / "index.md"
+    index_path = CORTEX_DIR / "index.md"
     if index_path.exists():
-        sections.append("## 4. Wiki Page Catalog (`index.md`)\n" + index_path.read_text(encoding="utf-8").strip()[:1500])
+        sections.append("## 4. Cortex Page Catalog (`index.md`)\n" + index_path.read_text(encoding="utf-8").strip()[:1500])
 
     out_text = "\n\n".join(sections)[:8000] + "\n"
     # Planning reminders are appended after truncation so they are always present.
     out_text += (
         "\n## Planning Reminders\n"
-        "* **Cross the idea with what the lab knows:** purpose, open gaps, Sparks, the Anti-Repeat Banlist, findings and earlier postmortems.\n"
-        "* **Same experiment language:** reuse the concepts, structure, and mental model of previous experiments (`Experiment Language` in `wiki-llm/systems/<repo>.md`).\n"
+        "* **Cross the idea with what the lab knows:** purpose, open gaps, Sparks, the Anti-Repeat Banlist, findings, open tensions and earlier postmortems.\n"
+        "* **Same experiment language:** reuse the concepts, structure, and mental model of previous experiments (`Experiment Language` in `cortex/systems/<repo>.md`).\n"
         "* **The loop itself** (plan, rounds, conclusions, final evaluation) is in the `experiment-lab-loop` skill.\n"
     )
-    out_path = WIKI_DIR / "query_pack.md"
+    out_path = CORTEX_DIR / "query_pack.md"
     out_path.write_text(out_text, encoding="utf-8")
-    append_wiki_log("context-pack", "wiki-llm/query_pack.md", f"Compiled context pack ({len(out_text)} chars)")
+    append_cortex_log("context-pack", "cortex/query_pack.md", f"Compiled context pack ({len(out_text)} chars)")
     print(f"[OK] Compiled context pack written to: {out_path} ({len(out_text)} chars)")
 
 
@@ -441,7 +440,7 @@ def cmd_new_exp(args: argparse.Namespace) -> None:
                     exp_branch=exp_branch, base_commit=base_sha, timestamp=now_iso())
     res_path.write_text(json.dumps(res_data, indent=2) + "\n", encoding="utf-8")
 
-    append_wiki_log("new-exp", folder_name, f"Opened experiment on {args.repo} ({title})")
+    append_cortex_log("new-exp", folder_name, f"Opened experiment on {args.repo} ({title})")
     print(f"[WORKTREE] {wt_path.relative_to(LAB_ROOT)} (branch: {exp_branch}, base: {start_point}@{base_sha}, skills provisioned)")
     print(f"[NOTES]    {(notes_dir).relative_to(LAB_ROOT)}/ (not committed yet: write the plan, then commit on the experiment branch)")
     print(f"[LAB]      {exp_dir.relative_to(LAB_ROOT)}/ (results.json, postmortem.md)")
@@ -562,7 +561,7 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
     eval_sha = git("hash-object", EVAL_SCRIPT).strip()[:12]
     restore_eval_script()
     if problem:
-        append_wiki_log("evaluate", folder_name, f"Final evaluation failed ({problem})")
+        append_cortex_log("evaluate", folder_name, f"Final evaluation failed ({problem})")
         sys.exit(f"[FAIL] {EVAL_SCRIPT}: {problem}. Output saved to {exp_dir / 'evaluate.log'}; no metrics written.")
 
     # A re-evaluation (after evaluate.py changed) keeps the earlier measurement beside the new one.
@@ -580,7 +579,7 @@ def cmd_evaluate(args: argparse.Namespace) -> None:
     res_data["uncommitted_changes"] = bool(git("status", "--porcelain", "--", *own_changes).strip())
     res_data["timestamp"] = now_iso()
     res_path.write_text(json.dumps(res_data, indent=2) + "\n", encoding="utf-8")
-    append_wiki_log("evaluate", folder_name, f"Final evaluation at {res_data['exp_commit']} (eval {res_data['eval_script_sha']})")
+    append_cortex_log("evaluate", folder_name, f"Final evaluation at {res_data['exp_commit']} (eval {res_data['eval_script_sha']})")
     print(f"[OK] Metrics: {json.dumps(metrics)}")
     print(f"[OK] Saved patch.diff, evaluate.log and {res_path}")
     if res_data["uncommitted_changes"]:
@@ -612,8 +611,8 @@ def cmd_record_verdict(args: argparse.Namespace) -> None:
             j_text = head.rstrip("\n") + "\n" + row + "\n" + marker + tail
             JOURNAL_PATH.write_text(j_text, encoding="utf-8")
 
-    append_wiki_log("verdict", folder_name, f"{args.verdict}: {args.summary} ({args.metric_delta})")
-    print(f"[OK] Recorded verdict {args.verdict} for {folder_name} in JOURNAL.md and wiki-llm/log.md")
+    append_cortex_log("verdict", folder_name, f"{args.verdict}: {args.summary} ({args.metric_delta})")
+    print(f"[OK] Recorded verdict {args.verdict} for {folder_name} in JOURNAL.md and cortex/log.md")
 
 
 def cmd_cleanup_worktree(args: argparse.Namespace) -> None:
@@ -630,7 +629,7 @@ def cmd_cleanup_worktree(args: argparse.Namespace) -> None:
         while parent != WORKTREES_DIR and parent.exists() and not any(parent.iterdir()):
             parent.rmdir()
             parent = parent.parent
-        append_wiki_log("cleanup-worktree", folder_name, "Removed temporary worktree after archiving patch.diff")
+        append_cortex_log("cleanup-worktree", folder_name, "Removed temporary worktree after archiving patch.diff")
         print(f"[OK] Removed worktree {wt_path}. Experiment artifacts remain safely in {exp_dir}")
     else:
         print(f"[INFO] No active worktree found at {wt_path}")
@@ -645,8 +644,8 @@ def main() -> None:
     p_sync = sub.add_parser("sync-repos", help="Clone or fetch external repositories from repos.yaml")
     p_sync.add_argument("--repo", help="Sync only a specific repository name")
 
-    sub.add_parser("check-drift", help="0-token check for code drift on fingerprinted wiki-llm pages")
-    sub.add_parser("context-pack", help="Compile compact wiki-llm/query_pack.md for experiment planning")
+    sub.add_parser("check-drift", help="0-token check for code drift on fingerprinted cortex pages")
+    sub.add_parser("context-pack", help="Compile compact cortex/query_pack.md for experiment planning")
 
     p_new = sub.add_parser("new-exp", help="Scaffold a new experiment folder and spawn an isolated git worktree")
     p_new.add_argument("--repo", required=True, help="Target repository name from repos.yaml")

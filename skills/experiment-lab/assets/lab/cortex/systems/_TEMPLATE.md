@@ -1,5 +1,6 @@
 ---
 type: system
+anchor: code           # this page is grounded in the target's code (Fingerprint below), not in claims
 repo: <target-repo>
 status: fresh
 updated: YYYY-MM-DD
@@ -18,7 +19,7 @@ updated: YYYY-MM-DD
 > Every experiment on this repo is a small change on top of this frame: the idea goes in at an extension point and uses the shared components as they are. Change the frame only when the frame itself is the idea of an experiment, and update this section when that experiment is kept.
 
 * **Mental model:** [One or two sentences: what a run is, what an idea is allowed to change, what stays as it is so that two runs differ only by the idea.]
-* **Vocabulary (one concept, one name):** [The repo's terms, as used in code, plans, logs and the wiki.]
+* **Vocabulary (one concept, one name):** [The repo's terms, as used in code, plans, logs and the cortex.]
 
 ### Shared components
 Used by every experiment, reimplemented by none. Fix one here, for everyone; never fork one into an experiment.

@@ -32,7 +32,7 @@ You come to this work through one of two entrances: the user wants the system to
 - **[Rejects-and-root-causes]**: what to do when the system got something wrong. No plasters.
 - **[Neighbors]**: a change should also cover the cases nobody has seen yet.
 - **[Reject-journal]**: every reject is written down. Not optional.
-- **[With-audit-consistency]**: how this skill and the audit work together.
+- **[With-audit-agent-context]**: how this skill and the audit work together.
 - **[References]** and **[Examples]**: the detail, and three worked cases from different domains.
 
 These are ways of thinking, with some suggested ways of working. Use judgment; it is not a procedure to run step by step. The one fixed step is the reject journal.
@@ -176,18 +176,18 @@ Format, location and how to read it: [Reject journal](references/reject-journal.
 
 </Reject-journal>
 
-<With-audit-consistency>
+<With-audit-agent-context>
 
-`audit-consistency` is a general tool. It audits the content of any repo for any agent setup: it collects every instruction, doc, comment and prompt, records how an agent gets to each one, and reports contradictions, stale facts and gaps. It knows nothing about this system's far goal. This skill does.
+`audit-agent-context` is a general tool. It audits the content of any repo for any agent setup: it collects every instruction, doc, comment and prompt, records how an agent gets to each one, and reports contradictions, stale facts and gaps. Asked for traces, it also reads past agent sessions and shows what actually reached the agent. It knows nothing about this system's far goal. This skill does.
 
 So the audit measures, and this skill supplies the intent and decides what to do with the findings.
 
-- It is user-invoked. Suggest it with a focus taken from the far goal or from a recent group of rejects: `/audit-consistency how the reason a position is held reaches the agents that judge it`.
+- It is user-invoked. Suggest it with a focus taken from the far goal or from a recent group of rejects: `/audit-agent-context how the reason a position is held reaches the agents that judge it`.
 - Good moments: after the structure changed, when rejects pile up with no clear source, before the user tries a kind of wide request for the first time.
 - Its report lists a fix per problem. Don't apply them one by one. Group the problems by shared root and fix the roots, as with any reject.
 - Its collected data records, per file, how an agent could reach it. That is raw material for [Information flow](references/information-flow.md).
 
-</With-audit-consistency>
+</With-audit-agent-context>
 
 <References>
 
@@ -195,6 +195,8 @@ So the audit measures, and this skill supplies the intent and decides what to do
 - [Information flow](references/information-flow.md): for a given task, map what reaches the agent and how, and test the map with a real agent. Read it when tracing a reject or checking a change.
 - [Reject journal](references/reject-journal.md): the entry format, where the journal lives, how to read it. Read it at the first reject.
 - [Examples](references/examples.md): three worked cases.
+
+For a research lab built with `experiment-lab`, that skill carries this method in a lab's own terms (its `references/growing-a-lab.md`): which part of a lab carries what, the beliefs behind the failures labs usually show, and the journal entry with a lab's fields. Use it there, and come back here for what it leaves out.
 
 </References>
 

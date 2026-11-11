@@ -51,7 +51,7 @@ Draw a map for a small request and another for a wide one, of the kind the user 
 
 A wide request passes through several agents, and each one has its own map. Draw one per agent on the path: the main agent, then each worker, with the brief as the worker's "given". Compare neighbors on the path: what did the caller know that the worker's map lacks? That difference is where reasons get lost ([Attention](attention.md)).
 
-`audit-consistency` gives the raw material for the whole repo: for every file it records the ways an agent could end up reading it. The map here is the same data seen from the other side, starting from one task.
+`audit-agent-context` gives the raw material for the whole repo: for every file it records the ways an agent could end up reading it, and with traces, what past sessions really opened. The map here is the same data seen from the other side, starting from one task.
 
 ## Testing it
 

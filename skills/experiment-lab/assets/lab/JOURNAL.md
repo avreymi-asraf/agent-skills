@@ -11,7 +11,7 @@
 
 ## 2. Active Sparks (Ideas Waiting to Be Tried)
 
-> `* **[SPARK-nn] (from [[<exp-name>]] or the user, Priority, Gap):** the idea, and why it is worth an experiment.`
+> `* **[SPARK-nn] (from [[<exp-name>]], a claim from outside, or the user; Priority; Gap):** the idea, and why it is worth an experiment.`
 
 ## 3. Experiment Matrix (Chronological Index)
 
