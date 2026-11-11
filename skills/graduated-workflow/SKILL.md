@@ -1,6 +1,6 @@
 ---
 name: graduated-workflow
-description: Grow an agent system toward a broad, genuinely autonomous workflow (running experiments, investing, operating a company) in stages - narrow tasks with full review first, more independence as it is earned. Use when designing or advancing such a workflow, deciding what the agent may do alone at the current stage, turning a reject of the agent's work into a change in the instructions, or checking that the repo's content (CLAUDE.md/AGENTS.md, skills, docs, prompts) is aligned with the far goal. Teaches fixing the root cause in the content instead of adding patch sentences.
+description: Grow an agent system toward a broad, genuinely autonomous workflow (running experiments, investing, operating a company) in stages - narrow tasks with full review first, more independence as it is earned. Use when designing or advancing such a workflow, instilling or changing a behavior in it, deciding what the agent may do alone at the current stage, turning a reject of the agent's work into a change in the instructions, or checking that the repo's content (CLAUDE.md/AGENTS.md, skills, docs, prompts) is aligned with the far goal. Teaches changing what the agent understands, at the root, instead of adding patch sentences, and making sure the user's words and the agent's reading of them mean the same thing.
 ---
 
 <graduated-workflow>
@@ -9,10 +9,16 @@ description: Grow an agent system toward a broad, genuinely autonomous workflow 
 
 The user wants agents to do something of real value mostly on their own: run experiments, manage investments, operate a company. That can't be switched on. It is grown: at first the agent gets a narrow task and a human reads everything it did and rejects what is wrong; as the rejects dry up, the agent gets wider steps and lighter review, and so on up.
 
-What moves the system up is the content the agent reads: instructions, docs, skills, prompts, the wording of the task. The work is a loop of three things: shape the content, let the agent try a step, review what it did. Your job with this skill is to help the user run that loop while keeping the far goal in view. We are not at full automation yet and should not pretend to be, but everything we write is aimed there.
+What moves the system up is the content the agent reads: instructions, docs, skills, prompts, the wording of the task. The work is a loop of three things: shape the content, let the agent try a step, review what it did.
+
+Content gets shaped for two reasons: the user wants the agent to start working in a certain way, or the agent did something wrong. They are the same work. In both, the thing being changed is the picture the agent holds of the job, and an added sentence rarely changes a picture.
+
+Your job with this skill is to help the user run that loop while keeping the far goal in view. We are not at full automation yet and should not pretend to be, but everything we write is aimed there.
 
 - **[Far-goal-and-current-stage]**: know where the user is heading and where the system stands today.
 - **[Understanding-and-leash]**: how to write content that serves the far goal while the agent is still on a short leash.
+- **[Shared-meaning]**: making sure the user's words, the written content and the agent's reading all mean the same thing.
+- **[Instilling-a-behavior]**: bringing a new way of working into the workflow, through what the agent understands.
 - **[Rejects-and-root-causes]**: what to do when the agent got something wrong. No plasters.
 - **[Neighboring-mistakes]**: a fix should also prevent the mistakes the agent hasn't made yet.
 - **[Aligning-the-content]**: checking the whole content system, with `audit-consistency`.
@@ -57,6 +63,38 @@ Let each stage rehearse the next one. On rung 2 the human designs the experiment
 
 </Understanding-and-leash>
 
+<Shared-meaning>
+
+Three readers have to agree: the user, who has the workflow in their head; you, who turn what they say into content; and the agent, which will read that content cold. Meaning can slip at each handoff. The user may not be writing in their first language, or may think in one language while the content is written in another. A phrase can be unclear. Worse, it can be clear to both sides in two different ways.
+
+The risk is highest in exactly this kind of workflow. A narrow task has a right answer, and a wrong reading shows up as a failure. A far goal and an open-ended way of working have much less right and wrong; they rest on judgment. An agent that read "conclusion" or "worth trying" differently from the user doesn't fail. It does something plausible, and the difference surfaces weeks later, if at all.
+
+Some ways to keep the meaning in one piece:
+
+- **Agree on cases, not on sentences.** An abstract restatement gets a "yes" from two people who mean different things. Offer a concrete situation: "The run finished and the metric dropped. You want the agent to stop and report, not to try a second variant?" Borderline cases show a difference fastest.
+- **Say it back in the user's language.** Before writing content, and again after, tell the user in their own language what the agent will take from the text and what it will do because of it. They judge the consequence; they shouldn't have to judge the nuance of English.
+- **Don't polish meaning in.** Turning rough phrasing into fluent text adds precision the user never stated. Each addition is your guess. When it matters, show it as a guess and ask. When both readings lead to the same content, just pick one.
+- **Watch the words that carry judgment.** Every workflow has a few: "experiment", "result", "promising", "done", "review". Translation picks one word out of several (ניסוי can come out as experiment, trial or test), and each brings its own associations to the agent. Give every key term one meaning, written once, with an example of what it is and of what it isn't, and use the same word everywhere. An agent reads a new word as a new thing.
+- **Ask the agent what it read.** A fresh agent reads the content and explains the goal and the key terms in its own words, then says what it would do in two or three borderline cases. Bring the answers to the user: is this what you meant?
+
+</Shared-meaning>
+
+<Instilling-a-behavior>
+
+The loop doesn't start only from mistakes. Often the user wants the workflow to gain something: "from now on the agent writes down what it expects before every run." The shallow way is to add that sentence to the instructions. It is the same plaster, applied before the wound. The agent will comply where the sentence fits and miss everywhere else, because it has a rule and no reason.
+
+A behavior holds when it follows from how the agent understands the work. So start from the understanding:
+
+- **What is it for?** A written expectation is what makes a result informative: a surprise can only be seen against a prediction. That is what the agent needs to grasp. Check with the user that this is in fact their reason ([Shared-meaning]).
+- **What picture does the agent have now?** Read the existing content whole, as the agent does. Where in that picture does the new behavior belong? Usually inside the description of the work itself, where experiments are explained, and in the template the agent fills in. Rarely in a list of rules at the end of a file.
+- **What pulls the other way?** The three past experiments the agent will read as examples have no expectation written, and the report format has no place for one. Examples and formats outweigh a sentence, so they change too. When *updating* a behavior, find every place the old one is written or shown; otherwise the agent gets both.
+- **What should come with it?** The question from [Neighboring-mistakes] works in the positive. An agent that understood the reason will also leave the prediction unedited after the run, say so when it has no expectation, and point out the result that surprised it. If the content would produce the named behavior without these, it taught a rule.
+- **Where does it lead?** A behavior worth instilling on this rung usually rehearses the next one. This one is the first half of designing an experiment.
+
+Then let the agent work, and review the first runs closely. The rejects show which part of the picture didn't land, and they are handled the same way.
+
+</Instilling-a-behavior>
+
 <Rejects-and-root-causes>
 
 A reject is the most valuable thing the loop produces. It shows a gap between what the agent understood and what was needed.
@@ -70,6 +108,7 @@ Instead, treat the agent's action as reasonable given what it read, and ask what
 - An example or a piece of existing code shows the wrong pattern, and examples beat prose.
 - The purpose is unstated, so it couldn't tell which of two readings of the task was meant.
 - The task itself was worded loosely, or was too big a step for this stage.
+- A word means one thing to the user and another to the agent ([Shared-meaning]).
 - The important thing is there, buried under ten unimportant ones.
 
 Then fix that, at the place where it lives. Often the fix is rewriting an explanation, deleting a contradiction or replacing an example, and the text gets shorter. Sometimes the right fix is not in the content at all: a smaller task, or a rung down.
