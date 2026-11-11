@@ -146,7 +146,7 @@ Use [quality-gate](references/quality-gate.md) for the full checklist and the se
 </Audit-Lint>
 
 <Connecting-Skills>
-- **Companions**: `gemini-deep-research` when a named gap needs a long-running web investigation; `pdf-to-markdown-mcp` when a PDF in `raw/` must be converted before capture; `research-and-experiments` when an experiment produces wiki-worthy findings — ingest the write-up as a source.
+- **Companions**: `gemini-deep-research` when a named gap needs a long-running web investigation; `pdf-to-markdown-mcp` when a PDF in `raw/` must be converted before capture; `experiment-lab-loop` when an experiment produces wiki-worthy findings — ingest the write-up as a source.
 - **Successors**: `manage-skills` if this skill itself needs to change.
 
 </Connecting-Skills>

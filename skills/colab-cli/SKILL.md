@@ -228,7 +228,7 @@ Patterns and a full bash template: [Agent Workflows](references/agent-workflows.
 <Connecting-Skills>
 
 - **Prerequisites**: `code-as-tools` / `coding-principles` to shape the job script so it runs unchanged locally and on Colab; `scripts` for the driver script.
-- **Companions**: `notebook-observability` for notebooks run with `colab exec -f`; `research-and-experiments` decides *what* to run, and this skill runs it and brings back the metrics.
+- **Companions**: `notebook-observability` for notebooks run with `colab exec -f`; `experiment-lab-loop` decides *what* to run, and this skill runs it and brings back the metrics.
 - **Successors**: whatever records results (an experiment log, results file, or W&B) consumes the files in `./outputs/<run-name>/`.
 
 </Connecting-Skills>
