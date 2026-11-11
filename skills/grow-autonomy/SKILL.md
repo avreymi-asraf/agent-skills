@@ -200,7 +200,7 @@ So the audit measures, and this skill supplies the intent and decides what to do
 
 <Examples>
 
-Three cases, from three kinds of systems, are worked through in [Examples](references/examples.md). If you have not read one in this session, read one before changing anything.
+Three cases, from three kinds of systems, are worked through in [Examples](references/examples.md). Read the one closest to the work at hand when seeing the whole line of work in a real case would help.
 
 - **Research, a small request, a reject.** An evaluation reports a number that means nothing. The fix is a paragraph of explanation and a data loader with named splits; no rule is written.
 - **Running a shop, instilling a behavior.** "The system closes customer tickets by itself." The word "closes" meant two different things, and three agents each needed a different part of the picture.

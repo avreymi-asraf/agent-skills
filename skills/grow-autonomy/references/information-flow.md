@@ -34,7 +34,7 @@ For each item, write where it lives, how it arrives, and whether it arrives befo
 |---|---|---|
 | What the experiment tests | `experiments/12/index.md` | Found: the task wording names the file |
 | What makes a result trustworthy | nowhere | Never |
-| Which split each number comes from | the human's design, in the same file | Found, with the design |
+| Which split each number comes from | nowhere; the design names the model and the hypothesis only | Never |
 | How to load data | `data/README.md` | Found, if it looks; `load_data()` is what a search hits first |
 | How results are reported | `CLAUDE.md` | Given |
 | Deployment rules | `CLAUDE.md`, 60 lines | Given, irrelevant here |

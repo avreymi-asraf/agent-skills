@@ -13,7 +13,7 @@ For any agent about to do a piece of work, four things:
 3. **What it would not know to ask about.** The reasons behind the current state, the constraint that isn't visible in the material. See "silent" information in [Information flow](information-flow.md).
 4. **What to hand back**, and what to flag when the piece doesn't fit what it found.
 
-The fourth is easy to forget and matters most in wide requests. A worker that was told only what to produce will produce it even when the situation makes it meaningless. A worker that knows what the result is for can say "this doesn't fit" and stop.
+The fourth is easy to forget and matters most in wide requests, and it leans on the first. A worker that was told only what to produce will produce it even when the situation makes it meaningless. A worker that knows what the result is for can see that the piece doesn't fit, and one that was also told to flag that will say so and stop instead of finishing anyway.
 
 Everything else stays out. Each extra line takes attention from these four.
 
