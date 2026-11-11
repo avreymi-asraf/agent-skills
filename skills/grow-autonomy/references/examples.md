@@ -102,6 +102,8 @@ If the understanding landed, the system will also do things nobody listed: check
 
 In that week the system refunded, generously, a customer who had been refunded six times in two months. The owner rejected it. Journal entry first. Then the trace: the deciding agent had the policy reasoning and the ticket, and the customer's history had never reached it; the brief from the intake step carried the message and the order only. Belief: "this is a customer like any other". The fix was one field in the intake brief. Not a rule about serial refunders.
 
+The need had been named: the customer's history is on the deciding agent's list above. Naming a need does not route it. Nobody had drawn the map for the intake brief or given the deciding agent a cold read with only that brief, and either would have shown the gap before a customer did.
+
 ### What this shows
 
 - Instilling a behavior is the same depth of work as fixing one.
