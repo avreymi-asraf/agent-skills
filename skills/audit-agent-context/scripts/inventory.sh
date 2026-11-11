@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Inventory for the audit-consistency skill.
+# Inventory for the audit-agent-context skill.
 # Prints a bounded overview of the repo, split into the semantic layer
 # (instruction/documentation files) and code & config.
 # Must always exit 0: a failing injected command aborts the whole skill.
