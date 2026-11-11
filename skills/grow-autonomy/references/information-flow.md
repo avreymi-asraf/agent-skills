@@ -1,6 +1,6 @@
 # Reviewing the information flow for a task
 
-The question this file helps answer: **given this task, at this stage, what does the agent actually have in front of it?**
+The question this file helps answer: **given this task, what does the agent doing it actually have in front of it?**
 
 "It is written in the repo" does not answer it. An agent works from what reaches its context, and most of a repo never does. The flow can be drawn for a concrete task and then tested, like any other part of the system.
 
@@ -8,7 +8,7 @@ The question this file helps answer: **given this task, at this stage, what does
 
 Sort every piece of information by how it gets to the agent:
 
-- **Given.** In context before the first step: the system prompt, the always-loaded instruction files, the names and descriptions of skills and tools, and the wording of the task itself.
+- **Given.** In context before the first step: the system prompt, the always-loaded instruction files, the names and descriptions of skills and tools, and the wording of the task itself. For a worker agent, the brief it was handed is nearly all of this.
 - **Triggered.** Loads when something happens: the agent opens a file in a certain directory, a task matches a skill's description, a rule is scoped to a path. It arrives only if the trigger fires, and only from that moment on.
 - **Found.** Docs, READMEs, comments, other code. The agent sees it if something points there or if it goes looking.
 - **Never.** Nothing leads to it, or it exists only in someone's head.
@@ -19,14 +19,14 @@ The opposite mistake costs too. Context is a limited budget, and each always-loa
 
 ## Drawing the map
 
-Take one real task at the current rung, worded as it is really given. List what someone needs in order to do it well:
+Take one real task, worded as it is really given. List what someone needs in order to do it well:
 
 - what the task is for
 - the concepts of the domain it touches
 - the conventions here, and where things live
 - what "done" looks like
 - an example of good work
-- the leash: how far to go alone
+- how much the request leaves to the agent
 
 For each item, write where it lives, how it arrives, and whether it arrives before the decision it should shape.
 
@@ -47,13 +47,15 @@ Then read the map for these:
 - **Clash**: two routes deliver different answers. The doc says one thing; the code the agent copies from says another, and the code usually wins.
 - **Buried**: it is given, among much that this task doesn't need.
 
-Draw one map for a task of the *next* rung as well. It shows what has to exist before moving up, while there is still time to build it.
+Draw a map for a small request and another for a wide one, of the kind the user hopes to hand over. The second shows what is still missing while there is time to build it.
+
+A wide request passes through several agents, and each one has its own map. Draw one per agent on the path: the main agent, then each worker, with the brief as the worker's "given". Compare neighbors on the path: what did the caller know that the worker's map lacks? That difference is where reasons get lost ([Attention](attention.md)).
 
 `audit-consistency` gives the raw material for the whole repo: for every file it records the ways an agent could end up reading it. The map here is the same data seen from the other side, starting from one task.
 
 ## Testing it
 
-A map is a prediction about what the agent will read. Check it.
+A map is a prediction about what the agent will read. Check it. For a worker, test with exactly its brief and nothing from the conversation that produced it.
 
 **Cold read.** Start a fresh agent with exactly what the real one gets: the same directory, the same task wording, nothing explained on the side. Before it works, ask: What is this task for? What will "done" look like? What will you read first? What are you unsure about? Compare the answers with the real picture. Keep the questions open. "What do you know about data splits?" hands over the very thing being tested.
 
@@ -72,7 +74,8 @@ Every agent tool has its own rules for what loads when; learn the ones of the to
 - `CLAUDE.md` in the working directory and above, and rules without `paths`, load at launch. `@path` imports are expanded with them. A sentence that says "read `docs/x.md`" is not an import: the agent sees that file only if it decides to open it.
 - A subdirectory's `CLAUDE.md`, and rules with `paths`, load when the agent first reads a matching file. Before that they don't exist for it.
 - For a skill, only the description is in context until the skill is invoked, and long descriptions are cut. A skill with `disable-model-invocation` is never picked up by the agent itself. Files in `references/` load only if `SKILL.md` points to them and the agent follows.
-- A subagent does not see the conversation. It gets its own system prompt and the brief it was handed. The built-in Explore and Plan agents start without `CLAUDE.md`. For delegated work, the brief is the entire flow.
+- A subagent starts with a fresh context and does not see the conversation, the files already read, or the skills already invoked. It gets its own system prompt, the brief the caller wrote, `CLAUDE.md` (the built-in Explore and Plan agents skip it), and the full text of any skills its definition preloads. Only its final report comes back.
+- A forked skill (`context: fork`) runs the same way, with the skill's text as the task. An agent started by a workflow script gets the prompt the script passes it. For all delegated work, the brief is nearly the entire flow.
 - After compaction in a long session, earlier content is a summary and invoked skills are re-attached only in part. What was given at the start may be thinner by step 200.
 
 To see what actually loaded: `/context all` lists what is in the window, including which memory files; `/memory` and `/skills` show what is available; an `InstructionsLoaded` hook can log each instruction file as it loads and why; `claude --debug` shows the rest.
@@ -80,5 +83,5 @@ To see what actually loaded: `/context all` lists what is in the window, includi
 ## Sources
 
 - Anthropic, [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
-- Claude Code docs: [How Claude remembers your project](https://code.claude.com/docs/en/memory), [Skills](https://code.claude.com/docs/en/skills), [Debug your configuration](https://code.claude.com/docs/en/debug-your-config), [Hooks](https://code.claude.com/docs/en/hooks)
+- Claude Code docs: [How Claude remembers your project](https://code.claude.com/docs/en/memory), [Skills](https://code.claude.com/docs/en/skills), [Create custom subagents](https://code.claude.com/docs/en/sub-agents), [Dynamic workflows](https://code.claude.com/docs/en/workflows), [Debug your configuration](https://code.claude.com/docs/en/debug-your-config), [Hooks](https://code.claude.com/docs/en/hooks)
 - Drew Breunig, "How Long Contexts Fail" (context poisoning, distraction, confusion, clash)
