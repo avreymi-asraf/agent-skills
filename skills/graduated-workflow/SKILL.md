@@ -14,6 +14,7 @@ What moves the system up is the content the agent reads: instructions, docs, ski
 - **[Far-goal-and-current-stage]**: know where the user is heading and where the system stands today.
 - **[Understanding-and-leash]**: how to write content that serves the far goal while the agent is still on a short leash.
 - **[Rejects-and-root-causes]**: what to do when the agent got something wrong. No plasters.
+- **[Neighboring-mistakes]**: a fix should also prevent the mistakes the agent hasn't made yet.
 - **[Aligning-the-content]**: checking the whole content system, with `audit-consistency`.
 - **[Example]**: one reject, handled badly and then well.
 
@@ -73,9 +74,27 @@ Instead, treat the agent's action as reasonable given what it read, and ask what
 
 Then fix that, at the place where it lives. Often the fix is rewriting an explanation, deleting a contradiction or replacing an example, and the text gets shorter. Sometimes the right fix is not in the content at all: a smaller task, or a rung down.
 
-Two checks for a fix: Would it also have prevented the mistakes *next to* this one, which nobody has seen yet? And does it read as if it was always part of the document, with no trace of the incident? If the user asks to "make it stop doing X" and the cause is not yet clear, say so and look for it before editing anything.
+A good fix reads as if it was always part of the document, with no trace of the incident. And it covers more than the incident: see [Neighboring-mistakes]. If the user asks to "make it stop doing X" and the cause is not yet clear, say so and look for it before editing anything.
 
 </Rejects-and-root-causes>
+
+<Neighboring-mistakes>
+
+The mistake the user rejected is one sample from a family. A gap in the agent's picture produces many mistakes; this one only happened to surface first. So the question for any fix is: does it also prevent the neighbors, the mistakes the agent has not made yet?
+
+Ask it before fixing, as a way to find the cause. Once you think you know the cause, name two or three other mistakes it would produce. An agent that thinks an experiment's job is to produce a number will evaluate on training data, and will also tune a threshold on the test set, drop the runs that failed, and report the best seed of five.
+
+- If you can't name any neighbors, you have described the symptom, not the cause. Keep looking.
+- If the neighbors look unrelated to each other, there is probably more than one cause.
+- The neighbors show where the fix belongs: at the point they all pass through. Here that is the explanation of what a result means, not the evaluation script.
+
+Ask it again after fixing, as a test. Reread the changed content as the agent would and go through the neighbors one by one: is each of them now clearly wrong to someone who read only this? A plaster fails here, however well it is phrased. A rule covers the case its sentence names; an explanation of *why* covers cases nobody listed. When it is cheap, test for real: give the agent a task where a neighbor is the tempting move and watch what it does. That checks what it understood, not whether it remembers a rule.
+
+Don't write the neighbors into the content as rules. That is the same pile of plasters, laid in advance. They are a measure of the fix and stay out of the text.
+
+This is what makes moving up a rung possible. On a low rung a human catches each mistake as it happens. Higher up nobody reads every step, so the mistakes that matter are exactly the ones nobody has seen. A system that fixes only what was caught stays as wide as its reviewer's attention.
+
+</Neighboring-mistakes>
 
 <Aligning-the-content>
 
@@ -103,7 +122,7 @@ The agent implements an evaluation and reports 94% accuracy. The user rejects it
 
 **Root cause.** What did the agent read? The task said "evaluate the model on the dataset." The repo has one loader, `load_data()`, which returns everything. Nothing explains what the experiments are for. The agent's picture was: produce a number. The real picture: we are measuring whether the model generalizes, and any leak from evaluation data into decisions makes the number meaningless.
 
-**Fix.** The project's description of its experiments gets a short paragraph on what a result means here and what makes one trustworthy. The loader returns named splits, so the easy path is the correct one. The human's experiment design now states which split each number comes from. No rule against evaluating on training data is written anywhere, and the threshold mistake doesn't happen either, because it had the same cause.
+**Fix.** The project's description of its experiments gets a short paragraph on what a result means here and what makes one trustworthy. The loader returns named splits, so the easy path is the correct one. The human's experiment design now states which split each number comes from. No rule against evaluating on training data is written anywhere, and the threshold mistake doesn't happen either: it was a neighbor, with the same cause.
 
 This is also what rung 3 needs: an agent that will one day design experiments has to know what makes a result trustworthy. The reject on rung 2 paid for a capability of rung 3.
 
