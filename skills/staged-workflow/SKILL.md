@@ -94,8 +94,8 @@ trigger that needs it.
 The flow changes with the stages. Early on, a human hands over most of the context in
 the prompt. As autonomy grows, the agent has to find what it needs on its own, so the
 paths to knowledge must be built before they are needed. Otherwise a fix that worked
-because it sat in the prompt quietly disappears at the next stage. `/audit-consistency`
-records how an agent reaches each file, which is good raw material for the map.
+because it sat in the prompt quietly disappears at the next stage. To build that map for a set of tasks and test
+that it works, read [references/context-flow-review.md](references/context-flow-review.md).
 
 ### Find the root
 
