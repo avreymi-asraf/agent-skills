@@ -18,6 +18,7 @@ This one skill carries every operation on a cortex. Invoked with arguments, the 
 - **[Profile]**: what each cortex says about itself. This is where one cortex differs from another.
 - **[Claims]**: the atomic layer: one sentence, an anchor, its conditions, a status.
 - **[Synthesis]**: pages, tensions and questions, written on top of claims.
+- **[Where-it-runs]**: which operations get a fresh context of their own, and the brief that starts one.
 - **[Add]**: from a source to claims to fusion.
 - **[Investigate]**: starting from an open question and going out to find what could answer it.
 - **[Ask]**: answering from the cortex.
@@ -141,9 +142,35 @@ Before finishing a new or heavily revised page, run it through the gate in [Qual
 
 </Synthesis>
 
+<Where-it-runs>
+
+Some operations read a great deal and return little, and their draft should not be colored by whatever the conversation was about. Those run in a fresh context: a subagent, a forked skill, or a session of their own. The agent that received the request writes the brief and reads the report; it does not read the source itself.
+
+| Operation | Runs | Why |
+|---|---|---|
+| `add` | Fresh context | A whole source is read. The claims should come from the source, not from what the caller hopes it says. |
+| `investigate` | Fresh context for the search and each `add`; the caller keeps the question and writes what changed | The reading is heavy, the judgment about the question is the caller's. |
+| `review` | Fresh context | It reads the whole cortex. |
+| Blind verification of a claim | Its own fresh context, never the one that wrote the claim | The verifier must see only the sentence and the evidence. |
+| `ask` | In the conversation | The answer is for the conversation. |
+| Writing one claim from work already at hand (a round of an experiment just analyzed) | In the conversation | The evidence is already in front of the agent. |
+
+The brief is the worker's whole picture, so it carries:
+
+```
+Load the `cortex` skill and carry out `add` on <source path or URL>, in the cortex at <path>.
+You are the worker: do every step of the operation yourself. Read `profile.md` first.
+Why this source: <the question, gap or request it was brought for, or "no question behind it">.
+Return the "Cortex update" report and nothing else.
+```
+
+"Why this source" is the part a worker cannot guess, and it decides which claims are worth writing. When the user wants the fresh context guaranteed by the tool and not by this instruction, see [Scripts].
+
+</Where-it-runs>
+
 <Add>
 
-`/cortex add <source>`: one source in, the cortex changed. With no argument, take the next source that has no claims yet.
+`/cortex add <source>`: one source in, the cortex changed. With no argument, take the next source that has no claims yet. It runs in a fresh context ([Where-it-runs]); the steps below are the worker's.
 
 1. **Orient.** Read `profile.md`, then `index.md`. Search for the source's central terms among claims and pages, so that what is already known is in front of you: `cortex.py claims --grep <term>`.
 2. **Store the source.** The original goes to `sources/raw/` and its extracted text to `sources/text/` (use `pdf-to-markdown-mcp` for a PDF). Write the source note `sources/<source-id>.md` from the template: what it is, where it came from, how reliable, and **how much of it was actually read**.
@@ -187,7 +214,7 @@ Persist only what is reusable: a recurring explanation, a comparison, a sharpene
 
 <Review>
 
-`/cortex review`: one pass over the whole cortex, from time to time, after a batch of additions, and before a decision that will lean on it. It reads a lot and returns little, so run it in a fresh context (a subagent, or a session of its own).
+`/cortex review`: one pass over the whole cortex, from time to time, after a batch of additions, and before a decision that will lean on it. It runs in a fresh context ([Where-it-runs]).
 
 1. **Mechanical first:** `cortex.py check` and `cortex.py claims --status provisional`.
 2. **Built.** Does every page pass the gate? Is a page one source's summary? Is something stated as seen that is only quoted?
@@ -215,6 +242,11 @@ uv run <this-skill>/scripts/cortex.py links <node>
 - `links <node>` prints what a node points to and what points to it. Run it before withdrawing a claim, to see which pages rest on it.
 
 A typed page that is grounded in something other than claims says so in its frontmatter (`anchor: code` on a page that describes a codebase), and `check` does not ask it for claims.
+
+**Making the fresh context a property of the tool.** This skill asks for a fresh context in words, which works in every agent tool and depends on the agent following it. Claude Code can enforce it, in one of two ways, and both are the owner's choice for their own repo:
+
+- Add `context: fork` to this skill's frontmatter in that repo. Every `/cortex ...` then runs in a subagent that gets this file and the arguments as its task. It suits a repo that is only a knowledge base. It does not suit a repo where an agent writes claims in the middle of other work (a lab), because the skill then never loads into the working agent's own context.
+- Define one subagent in `.claude/agents/` that preloads this skill (`skills: [cortex]`), and delegate `add` and `review` to it. The skill stays as it is.
 
 </Scripts>
 
