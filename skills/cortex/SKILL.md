@@ -192,7 +192,7 @@ Report what was captured, what it changed, and the tensions it opened.
 `/cortex investigate <question>`: reading as an active step. It starts from a named question, tension or gap, and its job is to change that node.
 
 1. State what would count as an answer, and what kind of source could give it: a primary paper, official documentation, a dataset, an independent measurement.
-2. Search for those sources. For a disputed point, look deliberately for the evidence against the side the cortex currently leans to. Use `iterative-deep-researcher` or `gemini-deep-research` for a long search.
+2. Search for those sources. For a disputed point, look deliberately for the evidence against the side the cortex currently leans to. Use `gemini-deep-research` for a long search.
 3. Run each source that is worth it through [Add].
 4. Return to the node that started it and write what changed: answered (by which claims), narrowed (what is now known, what remains), or still open (what was looked for and not found, so the next agent does not repeat the search).
 
@@ -253,7 +253,7 @@ A typed page that is grounded in something other than claims says so in its fron
 <Connecting-Skills>
 
 - **Prerequisites:** `pdf-to-markdown-mcp` when a source is a PDF: a quote can only be checked against extracted text.
-- **Companions:** `iterative-deep-researcher` and `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its memory as a cortex, with its own profile; there the experiment loop decides when a claim is written and settled, and this skill gives the form and the operations.
+- **Companions:** `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its memory as a cortex, with its own profile; there the experiment loop decides when a claim is written and settled, and this skill gives the form and the operations.
 - **Successors:** `manage-skills` when this skill itself has to change. `grow-autonomy` when agents keep writing to a cortex in a way the user rejects: the cause is in what they understood, usually in the profile, not in the pages.
 
 </Connecting-Skills>

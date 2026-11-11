@@ -27,7 +27,7 @@ find a direction ─▶ write the plan ─▶ ┌─ implement ─▶ run ─▶
 - **[Commands]**: what `scripts/lab.py` does and does not do.
 - **[Example]**: one experiment from idea to close.
 
-How far to carry a request (one round, or the whole experiment without checking in) is set by the request; see `AGENTS.md` §1. Companion skills: `cortex` for the operations on the lab's memory that go beyond writing a claim from its template (`investigate` for reading from outside, `review` for the periodic check); this lab's layout, anchors and statuses are in `cortex/profile.md`, which is what to read before writing a claim; `iterative-deep-researcher` for a long search inside an investigation; `code-as-tools` when writing experiment code, `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
+How far to carry a request (one round, or the whole experiment without checking in) is set by the request; see `AGENTS.md` §1. Companion skills: `cortex` for the operations on the lab's memory that go beyond writing a claim from its template (`investigate` for reading from outside, `review` for the periodic check); this lab's layout, anchors and statuses are in `cortex/profile.md`, which is what to read before writing a claim; `code-as-tools` when writing experiment code, `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
 
 </experiment-lab-loop>
 
