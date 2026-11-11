@@ -60,6 +60,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | [`colab-cli`](skills/colab-cli) | Manages Google Colab cloud runtimes, secrets, remote execution, and SSH access directly via the Colab CLI in agentic workflows. |
 | [`create-qa-spectrum`](skills/create-qa-spectrum) | Streams, filters, and selects diverse reasoning QA datasets across multiple reasoning families, pushing them to Hugging Face. |
 | [`gemini-deep-research`](skills/gemini-deep-research) | Local MCP server for Google Gemini Deep Research interactions with explicit start, status polling, and file handling. |
+| [`graduated-workflow`](skills/graduated-workflow) | Grows an agent system toward a broad autonomous workflow in stages: content written for the far goal, a short leash that widens as trust is earned, and root-cause fixes to the content instead of patch sentences. |
 | [`jira-workflow`](skills/jira-workflow) | Jira issue tracking workflow — search, read, create, update issues, plan implementations, and reference commit tickets. |
 | [`manage-mcp`](skills/manage-mcp) | Guides designing and implementing focused Model Context Protocol (MCP) tools and integrating them into agent skills. |
 | [`manage-skills`](skills/manage-skills) | Rules and quality patterns for creating, auditing, modifying, and improving Agent Skills (`SKILL.md`). |
@@ -90,6 +91,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
     ├── colab-cli/
     ├── create-qa-spectrum/
     ├── gemini-deep-research/
+    ├── graduated-workflow/
     ├── jira-workflow/
     ├── manage-mcp/
     ├── manage-skills/
