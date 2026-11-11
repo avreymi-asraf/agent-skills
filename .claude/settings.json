@@ -1,0 +1,21 @@
+{
+  "disableBundledSkills": true,
+  "skillOverrides": {
+    "design": "off",
+    "doctor": "off",
+    "plugin-authoring": "off",
+    "session-start-hook": "off",
+    "anthropic-skills:pdf": "off",
+    "anthropic-skills:docx": "off",
+    "anthropic-skills:xlsx": "off",
+    "anthropic-skills:pptx": "off"
+  },
+  "allowedMcpServers": [
+    { "serverName": "local-probe" }
+  ],
+  "autoMemoryEnabled": false,
+  "claudeMdExcludes": [
+    "/{root,home/*,Users/*}/.claude/CLAUDE.md",
+    "/{root,home/*,Users/*}/.claude/rules/**"
+  ]
+}
