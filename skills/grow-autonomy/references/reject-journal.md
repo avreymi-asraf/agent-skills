@@ -35,6 +35,7 @@ When it gets long, split by year or by area. Don't delete entries.
 - Root: why it believed that.
 - Neighbors: two or three other mistakes the same root would produce.
 - Change: what was changed and where (content, tool, template, protocol, the cut of the work).
+  At which level: this system's own content, or a change proposed for the source of an outside skill.
 - Check: how the change was tested and what happened.
 ```
 

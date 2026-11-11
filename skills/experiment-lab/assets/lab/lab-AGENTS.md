@@ -75,3 +75,13 @@ Each of these holds for every request, whatever its size.
 No agent can hold the whole lab in view. Keep your own context for judgment: choosing a direction, reading evidence, deciding what a round taught. Hand heavy-reading work with a small result to subagents: a long implementation or debugging session, an investigation of a gap from outside sources, a cortex review.
 
 A subagent sees none of this conversation. Its brief must carry what the piece is for, what good looks like, the reasons it could not guess (the relevant part of `plan.md`, the data rules), the target's Experiment Language (a subagent that has not seen it will write its own loader and its own loop), what to hand back, and when to stop and flag instead of finishing. Review what comes back; do not redo it.
+
+## 7. What You Learned Goes Somewhere
+
+A conversation is not memory. Before you finish any piece of work, place each thing you learned at the level it is true for, and tell the user what you wrote where:
+
+- **True for this experiment:** its `log.md` and `plan.md`, on the branch.
+- **True for the research** (a different experiment should know it): a claim in the cortex, and the page or gap it changes.
+- **True for how this lab works** (a term that misled, a template with no place for something, a step that came out wrong): the lab's own files, at the root, with `grow-autonomy`. On a small request, say it and leave the change to the user.
+- **True for anyone who uses a skill that came from outside** (`cortex`, `grow-autonomy`, the skills for where runs go): do not edit the copy in `.agents/skills/`. Propose the change to the user, with what happened here that showed it, so it is made at the skill's source. What is true only here goes in `cortex/profile.md` or in this file.
+- **True for any lab:** the same, for the scaffold this lab was made from (`experiment-lab`).

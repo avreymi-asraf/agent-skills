@@ -108,7 +108,7 @@ An agent acts on what reaches its context, and most of a repo never does. So eac
 
 | Part | Arrives | Carries |
 |---|---|---|
-| `AGENTS.md` | Always | What the lab is, how far to go, the vocabulary (one concept, one name), where things live, the few things that always hold with their reasons, how to brief a subagent. Short. No procedure. |
+| `AGENTS.md` | Always | What the lab is, how far to go, the vocabulary (one concept, one name), where things live, the few things that always hold with their reasons, how to brief a subagent, where what was learned is written. Short. No procedure. |
 | `cortex/purpose.md` | Pointed to from `AGENTS.md` for any task with a choice of direction | What the lab is for, the far goal, how results are judged here |
 | `experiment-lab-loop` skill, inside the lab | When the task is about an experiment | The loop, written once: direction, plan, rounds, what to tell the lab, conclusions, closing |
 | Templates (`plan.md`, `log.md`, `postmortem.md`) | When an experiment is opened or closed | The behaviors themselves: a stopping point section, a "Told the lab" line per round, a line per provisional claim. A template outweighs a sentence. |

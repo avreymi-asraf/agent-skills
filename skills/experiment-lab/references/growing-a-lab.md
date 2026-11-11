@@ -73,6 +73,21 @@ A wrong belief produces a family of mistakes; the one the user rejected only sur
 
 The fix goes where all the neighbors pass through, and it is often not text: a template field, a named split in a loader, a line the CLI prints. A good fix leaves no trace of the incident. Do not write the neighbors into the lab as rules; they measure the fix and stay out of the content.
 
+## Where a lesson goes
+
+A lab has more levels of memory than most systems, and each lesson belongs to one. The question is always for whom it is true (`grow-autonomy`, Levels-of-memory):
+
+| True for | Written in |
+|---|---|
+| This experiment | `notes/<exp-name>/` on its branch: `plan.md`, `log.md` |
+| The research: a different experiment should know it | The cortex: a claim, and the findings page or gap it changes |
+| How this lab works | The lab's own files: `AGENTS.md`, its `experiment-lab-loop` skill, the templates, `cortex/profile.md`, `lab.py` |
+| Any lab | The scaffold in this skill (`assets/lab/`), proposed to the user and changed here, not by re-copying over a living lab |
+| Anyone who uses `cortex`, `grow-autonomy` or a run skill | The source of that skill, proposed to the user. The copy in the lab's `.agents/skills/` is not edited |
+| The user, in every project | The user's own instructions |
+
+The lab's `AGENTS.md` holds this as a few short lines (its last section), so that every agent asks the question before it finishes. When the same kind of lesson keeps landing at the wrong level, that is a reject like any other: find what the agent believed about where things go.
+
 ## Words that carry judgment here
 
 "Experiment", "round", "conclusion", "finding", "refuted", "provisional", "baseline", "kept", "exhausted", "a new direction", "worth trying". Each has one meaning, written once in the vocabulary. The user may think in another language than the lab is written in (ניסוי comes out as experiment, trial or test, and each brings its own associations), so agree on cases and not on sentences:

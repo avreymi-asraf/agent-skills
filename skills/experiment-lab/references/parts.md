@@ -13,6 +13,7 @@ Holds the picture and nothing procedural:
 5. A pointer to the loop skill, and when not to load it; a pointer to the `cortex` skill for work on the lab's memory outside an experiment.
 6. What always holds: a short list, each item with its reason. The Experiment Language comes first. The last items are this lab's own (evaluation, where runs go, data).
 7. Attention: what to keep in the main context, what to hand to a subagent, what a brief must carry.
+8. Where what was learned is written, by who it is true for: the experiment's notes, the cortex, the lab's own files, or a proposal for the source of an outside skill. Short lines; the reasoning is in `grow-autonomy`.
 
 Every line here is read on every request, including "fix this label". A line that only matters during an experiment belongs in the loop skill.
 

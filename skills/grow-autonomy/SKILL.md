@@ -31,6 +31,7 @@ You come to this work through one of two entrances: the user wants the system to
 - **[Instilling-a-behavior]**: bringing a way of working into the system through what agents understand.
 - **[Rejects-and-root-causes]**: what to do when the system got something wrong. No plasters.
 - **[Neighbors]**: a change should also cover the cases nobody has seen yet.
+- **[Levels-of-memory]**: for whom a lesson is true decides where it is written: the work's notes, the system's own content, or the source of a skill that came from outside.
 - **[Reject-journal]**: every reject is written down. Not optional.
 - **[With-audit-agent-context]**: how this skill and the audit work together.
 - **[References]** and **[Examples]**: the detail, and three worked cases from different domains.
@@ -136,7 +137,7 @@ Where the belief usually comes from:
 - The important thing was there, buried under ten unimportant ones.
 - The request itself could be read two ways.
 
-Then fix that, where it lives. Often the fix is rewriting an explanation, deleting a contradiction or replacing an example, and the text gets shorter. Often it is not text at all: a tool whose easy path is the correct one, a template with a place for the thing that was forgotten, a field in a report schema, a different cut of the work between agents. Make the right path the easy path, and no sentence is needed.
+Then fix that, where it lives, and at the level it is true for ([Levels-of-memory]). Often the fix is rewriting an explanation, deleting a contradiction or replacing an example, and the text gets shorter. Often it is not text at all: a tool whose easy path is the correct one, a template with a place for the thing that was forgotten, a field in a report schema, a different cut of the work between agents. Make the right path the easy path, and no sentence is needed.
 
 A good fix leaves no trace of the incident; it reads as if it was always there. And it covers more than the incident ([Neighbors]). If the user asks to "make it stop doing X", or asks for a rule outright ("add a rule that it always cites"), and the cause is not yet clear, say so and look for it before editing anything. Then tell them what you found and what you would change instead. It is their system: if they still want the rule, write it once, with its reason, in the place it belongs.
 
@@ -163,6 +164,28 @@ Don't write the neighbors into the content as rules. That is the same pile of pl
 This is what makes wide requests possible. On a small request the user sees every mistake. On a wide one nobody reads every step, so the mistakes that matter are exactly the ones nobody saw.
 
 </Neighbors>
+
+<Levels-of-memory>
+
+A system keeps only what gets written down, and there are several places to write, which differ in who they are true for. A lesson at the wrong level is lost or does harm. Too low, and it dies with the session or stays in one task's notes. Too high, and one system's habit is imposed on everyone.
+
+So ask of every lesson, from a reject or from ordinary work: **for whom is this true?**
+
+| True for | Where it is written | How it changes |
+|---|---|---|
+| This session | Nowhere. A conversation is not memory: what stays only there is gone when it ends. | |
+| This piece of work | The work's own notes: a plan, a log, a ticket | By the agent, as it works |
+| This system | The system's own content. How it works: instructions, its own skills, templates, protocols. What it knows about its domain: its knowledge base. | By the agent, at the root, as this skill describes |
+| Anyone who uses a skill or a tool that came from outside | The source of that skill | Proposed to the user with the evidence; changed at the source |
+| The user, in every project | The user's own instructions or memory | By the user, or on their word |
+
+**A skill that came from outside stays general.** Do not edit the installed copy to fit this system. The next update erases the edit, and until then this copy silently means something other than its name says everywhere else. What is particular to this system goes in the system's own content: a profile the skill reads, or a line where that area is described.
+
+**When the lesson is true for everyone who uses the skill, propose the change.** The root of a reject, or a gap met in ordinary work, is sometimes in the skill itself: a step that is wrong, a case it does not cover, a term that misleads. The test: can the fix be said without this system's names, and would it hold in a different system that uses the same skill? If so, tell the user what to change, why it is general, and what happened here that showed it. They decide, and the change is made at the source. Until it arrives, the system's own content carries what it needs. The same holds in the other direction: local content that turns out to be general is a proposal for the source.
+
+This is part of finishing any piece of work, not only of handling a reject. Before closing, go over what was learned and place each thing at its level. Then tell the user what was written where, and what is proposed for a level you do not change yourself.
+
+</Levels-of-memory>
 
 <Reject-journal>
 
