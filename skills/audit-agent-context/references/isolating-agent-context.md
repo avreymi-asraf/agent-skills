@@ -7,6 +7,7 @@ Isolated means: every skill, setting, MCP server, agent and instruction file the
 Each fact is marked:
 - **[docs]** stated in the official documentation (code.claude.com/docs, checked 2026-11-11).
 - **[seen]** observed in Claude Code 2.1.322 in a cloud container and in `claude -p` runs, but not documented. Can change between versions.
+- **[tested]** checked end to end in a fresh cloud session (2026-11-11) with the exact settings below. See "Cloud test" at the end.
 
 There are three layers, and you need all three:
 1. **The repo:** a committed `.claude/settings.json` that turns off what a repo can turn off.
@@ -41,7 +42,7 @@ There are three layers, and you need all three:
 | User/local MCP servers | `~/.claude.json` | yes | no | `allowedMcpServers` [docs, seen] |
 | Plugin MCP servers | a plugin | yes | yes | `allowedMcpServers` [seen] |
 | claude.ai connectors | the account; fetched by Claude Code locally, passed in by the host in the cloud | when signed in | yes | locally `disableClaudeAiConnectors`; in the cloud `allowedMcpServers`/`deniedMcpServers` [docs] |
-| Platform tools | cloud: GitHub tools, Claude Code Remote MCP, Artifact, plugin suggestions | no | yes | `permissions.deny`, and only if you don't need them [docs] |
+| Platform tools | cloud: GitHub tools, Claude Code Remote MCP, Artifact, plugin suggestions | no | yes | `allowedMcpServers` drops the MCP ones unless listed [tested]; `permissions.deny` |
 | Hooks | repo, user, plugin, managed settings, and the cloud platform's own | yes | repo + platform | `disableAllHooks` is all-or-nothing, including platform hooks |
 | Output style | `outputStyle` in any settings file | yes | yes | pin it in the repo |
 | Environment | shell env; in the cloud the environment's variables, setup script, network secrets | yes | yes | the person / the environment's owner |
@@ -74,7 +75,9 @@ A committed `.claude/settings.json` that turns off everything a repo can turn of
     "anthropic-skills:pptx": "off"
   },
   "allowedMcpServers": [
-    { "serverName": "<each server in .mcp.json>" }
+    { "serverName": "<each server in .mcp.json>" },
+    { "serverName": "github" },
+    { "serverName": "claude-code-remote" }
   ],
   "autoMemoryEnabled": false,
   "claudeMdExcludes": [
@@ -89,9 +92,9 @@ What each key does:
 - **`skillOverrides`** turns off one skill by name. It accepts `"off"`, `"user-invocable-only"` and `"name-only"` [docs]. There is no wildcard, so it can't turn off all account skills [seen]. Two entries need care:
   - **The `anthropic-skills:` prefix.** A short name hits the local skill: `"code-as-tools": "off"` turned off the repo's skill and left `anthropic-skills:code-as-tools` on [seen].
   - **`session-start-hook`.** It is a user skill the cloud platform installs [seen].
-- **`allowedMcpServers`** lists every server in `.mcp.json` by name, and every other server is dropped: user servers, plugin servers, and connectors [docs]. A plugin's MCP server was dropped this way [seen]. Use `[]` if the repo has no servers.
-  - In the cloud, the docs say allowlist entries that reach the session filter the connectors the host passes in. This audit hasn't checked that in a cloud session, so confirm it with the check below.
-  - Built-in servers skip the allowlist [docs].
+- **`allowedMcpServers`** lists every server in `.mcp.json` by name, and every other server is dropped: user servers, plugin servers, and claude.ai connectors [docs, tested].
+  - **In the cloud it also drops the platform's own servers.** Without `github` and `claude-code-remote` in the list, the session loses its GitHub tools (PRs, issues) and the tool that starts sessions and scheduled tasks [tested]. Keep both entries. They do nothing locally.
+  - The docs say built-in servers skip the allowlist [docs]. In the cloud that is not true of these two [tested].
   - `serverName` is not a security control, but it is enough for isolation, where nobody is trying to get around it.
 - **`autoMemoryEnabled: false`** stops reading and writing `MEMORY.md` [docs]. Leave it on if you want memory, but then it is a source the check will list.
 - **`claudeMdExcludes`** skips CLAUDE.md files by absolute-path glob. The brace pattern covers Linux, macOS and the cloud's `/root` [seen]. A parent folder's CLAUDE.md has no portable path, so the check reports it instead.
@@ -121,12 +124,17 @@ A repo can't stop account skills from syncing: `syncClaudeAiSkills` is read only
 
 This stops account skills and account plugins in this repo only. Other projects keep them, and nothing is deleted [docs, seen]. The same keys in `~/.claude/settings.json` turn them off in every project, and move the synced skills to `~/.claude/skills/.trash/` [docs].
 
-**In the cloud, per environment.** User and local settings files are not read from your machine [docs]. Pick one:
-- **A cloud environment for this repo** whose setup script writes the same file:
-  ```bash
-  if [ -d <repo> ]; then printf '{"syncClaudeAiSkills": false, "syncClaudeAiPlugins": false}\n' > <repo>/.claude/settings.local.json; fi
-  ```
-  The script runs after the clone [docs]. A `claude -p` in a cloud container honored the file [seen]. Whether the main cloud session honors it isn't documented, so confirm it with the check below. This keeps local and cloud on one mechanism.
+**In the cloud, per environment.** The files on your machine don't reach the cloud [docs]. Create a cloud environment for this repo (claude.ai/code → environment selector → new environment, or Settings → Environments), whose setup script writes the same file into the clone:
+
+```bash
+if [ -d <repo>/.claude ]; then
+  printf '{"syncClaudeAiSkills": false, "syncClaudeAiPlugins": false}\n' > <repo>/.claude/settings.local.json
+fi
+```
+
+The script starts in the folder that holds the clones, after cloning [docs]. The cloud session honors the file: no account skills or account plugins were even downloaded [tested]. Local and cloud now use the same file. Start the repo's sessions in this environment.
+
+Other ways, when a dedicated environment doesn't fit:
 - **claude.ai → Customize → Skills:** turn off the skills you don't want. This applies to every surface on the account, including chat. Anthropic's `pdf`, `xlsx`, `docx` and `pptx` always sync [docs], which is why Layer 1 turns them off by name.
 - **Organization owner:** server-managed settings with `syncClaudeAiSkills: false` (and, if wanted, `allowedMcpServers` with `allowManagedMcpServersOnly`). This reaches cloud sessions for the whole organization [docs].
 
@@ -167,6 +175,8 @@ What the report shows:
 - everything else, grouped as instructions, skills (labelled account, plugin, or bundled/user), plugins, MCP servers and agents
 - built-in plugins on their own line, without counting them as external
 
+Settings reload while a session runs. Switching to a branch with a different `.claude/settings.json` changed the running session's MCP servers at once, so check after switching branches too [seen].
+
 Exit code: 0 when nothing external loaded, 1 when something did, 2 when the check couldn't run. `--allow` accepts a name on purpose. That makes the script usable in CI.
 
 **In the session itself.** Two things are out of the script's reach:
@@ -180,8 +190,27 @@ To check those:
 
 Run the check again after changing account skills, creating a new cloud environment, or upgrading Claude Code. Account skills sync in the background, so new ones appear without any change to the repo [docs].
 
+## Cloud test (2026-11-11, Claude Code 2.1.322)
+
+Setup:
+- A fresh cloud session on a test branch with the Layer 1 settings above (and one repo skill, one repo MCP server).
+- A dedicated environment whose setup script wrote `.claude/settings.local.json`.
+
+For comparison, a session in the same account without these settings had 19 account skills, 2 account plugins and 6 MCP servers (Google Drive, Google Docs, Exa, Twitter, Claude Docs, GitHub).
+
+What the isolated session got:
+- **Skills:** only the repo skill. No `anthropic-skills:*`. `~/.claude/skills/synced/` and `~/.claude/plugins/synced/` were never created, although `CLAUDE_CODE_SYNC_SKILLS=1` was set.
+- **MCP:** `github` and `claude-code-remote` worked, and the repo server was allowed. No claude.ai connector appeared.
+- **Instructions:** only the repo `CLAUDE.md`.
+- **`check_isolation.py`:** exit 0, nothing external.
+
+What still reached it, and can't be turned off: the user's email (as session context), the platform's system prompt additions, and the built-in agents.
+
+One caveat: the test session was started by another session. That the allowlist removes connectors was also seen directly in an ordinary session, where switching to the test branch made Exa, GitHub and `claude-code-remote` report "blocked by managed policy".
+
 ## Where the docs and what we saw disagree (2.1.322)
 
+- **`allowedMcpServers` and built-in servers.** The docs say built-in servers skip the allowlist. In the cloud, the GitHub tools and `claude-code-remote` were blocked unless listed [tested].
 - **Account plugins in ordinary cloud sessions.** The plugin docs list only Cowork and terminal sessions, but they loaded in a cloud session, and the changelog agrees [seen].
 - **The cloud user folder.** "`~/.claude/skills` and `~/.claude/settings.json` aren't read in the cloud" is true of your machine's files. The cloud platform puts its own skill, settings (`launcher-settings.json`) and hooks there [seen].
 - **AGENTS.md.** It should load when no CLAUDE.md exists. It did not load in `claude -p` runs [seen].
