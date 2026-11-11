@@ -72,13 +72,38 @@ doing this when asked to fix something. It is bad because:
   and turn a document that explains the world into a list of scars.
 - **It's ugly.** We want content we are proud to read, same as code.
 
+### Trace the context path
+
+Before deciding what to fix, reconstruct what the agent actually saw and how it got
+there. Text that exists in the repo is not text the agent read. For the rejected output:
+- **What was in context at that moment?** Always-loaded instructions, the task prompt,
+  a skill it triggered, files it opened, tool output, memory, what a parent agent
+  passed down to a subagent.
+- **Where did the belief come from?** Find the text that taught it, or notice there is
+  none and the agent filled the gap with a generic default.
+- **Did the right knowledge exist but not arrive?** No trigger, no link pointing to it,
+  loaded too late, buried in noise, lost in a handoff summary.
+
+This needs a picture of the project's information flow: what is always loaded, what
+loads on a trigger, what is reached only by a link or a search, and what each subagent
+starts with. Keep that picture explicit, as a short map in the docs, because it is part
+of the design. The same text in a different place is a different fix: a concept every
+task needs belongs where it is always seen; a narrow procedure belongs behind the
+trigger that needs it.
+
+The flow changes with the stages. Early on, a human hands over most of the context in
+the prompt. As autonomy grows, the agent has to find what it needs on its own, so the
+paths to knowledge must be built before they are needed. Otherwise a fix that worked
+because it sat in the prompt quietly disappears at the next stage. `/audit-consistency`
+records how an agent reaches each file, which is good raw material for the map.
+
 ### Find the root
 
 Look for what was missing or wrong in what the agent saw. Typical roots:
 - A concept was never explained (the agent didn't know what makes evidence strong).
 - The goal wasn't stated, so it optimized for the wrong thing (finishing vs. learning).
 - Two texts disagree, or an example teaches the opposite of the rule.
-- Important knowledge exists but nothing leads the agent to it.
+- The right knowledge exists but didn't reach the agent when it needed it.
 - The ask itself was ambiguous, or bigger than the stage allows.
 
 Fix it where it lives: rewrite the explanation, state the goal, fix the example, remove
