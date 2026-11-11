@@ -1,9 +1,9 @@
 ---
 name: audit-agent-context
-description: Audit how well the repo's instructions (CLAUDE.md/AGENTS.md, skills, rules, agent definitions, docs, code comments, prompts) support an agent working in it. Cheap Sonnet subagents collect all semantic data into one file; optionally they also digest past agent sessions (tool calls, thinking, actions) to see how context really reached the agent; an Opus subagent analyzes it all and writes a simple report of problems, fixes, agent-workflow gaps and missing information. Read-only; writes under .audit/. Manual invocation only.
-argument-hint: "[optional focus, e.g. 'how evaluation metrics are defined'; add 'with traces' to also read past agent sessions]"
+description: Audit how well the repo's instructions (CLAUDE.md/AGENTS.md, skills, rules, agent definitions, docs, code comments, prompts) support an agent working in it. Cheap Sonnet subagents collect all semantic data into one file; optionally they also digest past agent sessions (tool calls, thinking, actions) to see how context really reached the agent; an Opus subagent analyzes it all and writes a simple report of problems, fixes, agent-workflow gaps and missing information. Can also check that the agent's context is isolated to the repo (no outside skills, settings, MCP servers or memory). Read-only; writes under .audit/. Manual invocation only.
+argument-hint: "[optional focus, e.g. 'how evaluation metrics are defined'; add 'with traces' to also read past agent sessions; add 'isolation' to check for context from outside the repo]"
 disable-model-invocation: true
-allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/scripts/inventory.sh*) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/trace_digest.py*) Bash(git ls-files*) Bash(wc *) Bash(mkdir -p .audit*) Bash(date *) Bash(cat .audit/*)
+allowed-tools: Bash(bash ${CLAUDE_SKILL_DIR}/scripts/inventory.sh*) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/trace_digest.py*) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/check_isolation.py*) Bash(git ls-files*) Bash(wc *) Bash(mkdir -p .audit*) Bash(date *) Bash(cat .audit/*)
 ---
 
 # Agent context audit
@@ -14,6 +14,8 @@ Steps:
 1. **Collect.** Cheap Sonnet subagents read the whole repo and extract its semantic data into one long file.
 2. **Observe (optional).** Sonnet subagents read past agent sessions in this repo and record how context actually reached the agent. Run it only when the user asks or when you judge it matters; see Step 2.
 3. **Analyze.** One Opus subagent reads those files and writes the report.
+
+Optional extra: **Isolation check.** Whether anything outside the repo reaches the agent; see the section before Step 3.
 
 Rules for every step:
 - **Read-only.** Don't edit anything outside `.audit/`. Don't run repo code, builds or tests.
@@ -157,6 +159,21 @@ Reply with one line: the session id and the output path.
 
 5. Concatenate: `cat $RUN/traces/*.md > $RUN/traces.md`.
 
+## Isolation check (optional)
+
+The steps above audit what the repo says. This check covers what reaches the agent from outside the repo: claude.ai account skills and plugins, bundled skills, user-level CLAUDE.md, auto memory, connectors and other MCP servers, platform hooks.
+
+Run it when the focus mentions isolation, outside context, memory, account skills or "only local", or when Step 1 shows the repo is meant to be self-contained. Otherwise skip it.
+
+1. Read [references/isolating-agent-context.md](references/isolating-agent-context.md). It maps every context source, what the repo can turn off, and what only the person or the environment can.
+2. Run the check from the repo root and keep its output:
+   ```
+   python3 ${CLAUDE_SKILL_DIR}/scripts/check_isolation.py > $RUN/isolation.md
+   ```
+   Exit code 1 means something external loaded. That is a finding, not a failure of the audit.
+3. In a cloud session, also list the MCP servers and skills you see in your own context. The script can't see connectors the cloud host passes in. Append them to `$RUN/isolation.md`.
+4. Give `$RUN/isolation.md` to the Step 3 subagent: add to its brief "Also read <RUN>/isolation.md and the reference; add an `## Isolation` section listing each outside source, whether the repo, the person or the environment can turn it off, and the exact setting."
+
 ## Step 3: Analyze (Opus subagent)
 
 Launch one subagent (`subagent_type: general-purpose`, `model: opus`, foreground) with this brief:
@@ -206,4 +223,4 @@ Reply with the report path and the top 5 fixes, one line each.
 
 ## Final reply
 
-Tell the user the path to `REPORT.md` and give the top 5 fixes, one line each. Add one line saying whether past sessions were read (how many) or skipped, and why.
+Tell the user the path to `REPORT.md` and give the top 5 fixes, one line each. Add one line saying whether past sessions were read (how many) or skipped, and why. If the isolation check ran, add one line with what came from outside the repo, or that nothing did.
