@@ -1,0 +1,10 @@
+[project]
+name = "research-lab"
+version = "0.1.0"
+description = "Research & experimentation control repository (wiki-llm + JOURNAL.md + experiments + git worktree controller)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false
