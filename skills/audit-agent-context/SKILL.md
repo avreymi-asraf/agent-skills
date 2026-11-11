@@ -91,8 +91,10 @@ All semantic data from every file in the repo (any format), collected by Sonnet 
 - Content: verbatim quotes of the semantic data
 How Claude Code loads instructions: root/parent CLAUDE.md and rules without `paths:` are
 always loaded; a subdirectory CLAUDE.md and rules with `paths:` load when the agent touches
-matching files; only a skill's description is in context until the skill is invoked;
-subagents start fresh with the CLAUDE.md hierarchy plus their own definition;
+matching files; only a skill's description is in context until the skill is invoked
+(with `disable-model-invocation: true` not even the description is); subagents start
+fresh with the CLAUDE.md hierarchy plus their own definition, except the built-in
+Explore and Plan agents, which skip CLAUDE.md;
 everything else (docs, READMEs, comments) is seen only if something points to it or the
 agent opens it.
 ```
