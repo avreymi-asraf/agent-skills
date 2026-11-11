@@ -15,7 +15,7 @@ This skill is for the person or agent who **builds or changes** such a lab. It i
 - **[One-code-language-per-target]**: the shared code language and shared components of a target repo. The part of a lab that decides whether its experiments add up. Read this second.
 - **[What-the-loop-needs]**: the other ideas the design follows from.
 - **[What-carries-the-picture]**: the parts of a lab, and how each reaches an agent.
-- **[Create-a-lab]**: from an empty folder to a lab ready for its first experiment.
+- **[Create-a-lab]**: from an empty folder to a lab ready for its first experiment, carried through without waiting for the next instruction.
 - **[Change-a-lab]**: adding a target repo, changing a behavior, handling a reject.
 - **[Check-a-lab]**: finding out whether the lab serves the loop.
 - **[Scripts-and-scaffold]**, **[References]**, **[Example]**.
@@ -127,21 +127,24 @@ What each part must hold, and what goes wrong when it does not: [Parts](referenc
 
 <Create-a-lab>
 
-1. **Ask what only the user knows**, before writing anything, in their language and with concrete cases:
-   - What is being researched, and on which target repos?
+"Create", "init" or "set up" a lab is a wide request ([The-autonomy-we-build-for]), and it is carried through. **The lab is created when it is ready for its first experiment:** the target repo is registered, cloned and has a system page, the slots are filled or honestly open, the check has passed, and everything is committed and pushed. A scaffold with a list of what is left is not a created lab; it hands the user's work back to them, one "now do the next step" at a time.
+
+Only three things wait for the user, because only they have them: the answers of step 1, a repository that does not exist yet (a session often cannot create one) and credentials. Ask for those in one batch, in the same message that reports progress, and go on with everything else. Never as a condition for the next step, and never as "say the word and I'll do it". When the answers arrive, apply them everywhere they belong without asking again. The final report says what is done, what was assumed, and what is still open and why only the user can close it.
+
+1. **Ask what only the user knows**, in their language and with concrete cases:
+   - What is being researched, and on which target repos? (A repo they already named is not asked again.)
    - The far goal: the hardest thing they want to hand this lab one day. If they cannot say yet, record that; do not invent one.
    - What a good result is here, and how it is measured.
    - Where heavy runs go, and any data rules.
-2. **Scaffold:**
+2. **Scaffold and register the target in one command:**
    ```bash
-   uv run <this-skill>/scripts/new_lab.py <lab-folder> --name "<lab name>"
+   uv run <this-skill>/scripts/new_lab.py <lab-folder> --name "<lab name>" --target <https-url> [--short-name <x>]
    ```
-   It copies the scaffold and prints the `{{FILL: ...}}` slots.
+   It copies the scaffold, registers the target in `repos.yaml`, runs `lab.py init` and `sync-repos`, starts the target's system page and prints the `{{FILL: ...}}` slots and what is still open. No target named yet: run it without `--target` and again with it when the user names one (it never overwrites). In a cloud session the target must be attached to the session as well.
 3. **Fill the slots** from the user's answers, in their terms. A slot the user has not answered stays visibly open ("Not written yet"), never filled with a guess. Turning a rough answer into fluent text adds meaning the user did not state; say back what an agent will take from the text and let them judge that.
-4. **Register the first target repo** in `repos.yaml`, then `uv run scripts/lab.py init` and `sync-repos`.
-5. **Write the target's system page** from `cortex/systems/_TEMPLATE.md`. If the target is new or empty, the Experiment Language does not exist yet: say so on the page. The first experiment on that target then has one job: connect the pipeline end to end (data in, one short run, results back) and build the shared components every later experiment reuses, including the tools for watching a run. Its claim is narrow ("the pipeline is connected"), its numbers are not a baseline, and its Sparks are usually the first real task and the first evaluation. The system page template carries this case into the lab, and `lab.py` names a target that has no system page, so a target added later by the lab's own agents is onboarded the same way.
-6. **Check the companion skills.** `new_lab.py` copies the skills the lab's content names (`cortex`, `grow-autonomy`, `code-as-tools`, `iterative-deep-researcher`) into the lab when they are installed next to this skill, and says so when they are not. Install those, and the skills for where runs go, into the lab's own folders, not the user's home ([Running anywhere](references/running-anywhere.md)).
-7. **Check it** ([Check-a-lab]) before the first wide request, and commit.
+4. **Write the target's system page** from the code, using the page the script started. If the target is new or empty, the Experiment Language does not exist yet: say so on the page. The first experiment on that target then has one job: connect the pipeline end to end (data in, one short run, results back) and build the shared components every later experiment reuses, including the tools for watching a run. Its claim is narrow ("the pipeline is connected"), its numbers are not a baseline, and its Sparks are usually the first real task and the first evaluation. Add the target to `cortex/index.md`. The system page template carries this case into the lab, and `lab.py` names a target that has no system page, so a target added later by the lab's own agents is onboarded the same way.
+5. **Check the companion skills.** `new_lab.py` copies the skills the lab's content names (`cortex`, `grow-autonomy`, `code-as-tools`, `iterative-deep-researcher`) into the lab when they are installed next to this skill, and says so when they are not. Install those, and the skills for where runs go, into the lab's own folders, not the user's home ([Running anywhere](references/running-anywhere.md)).
+6. **Check it** ([Check-a-lab]) before the first wide request, then commit and push.
 
 The scaffold is a starting point. After step 2 the lab's files are its own and will diverge from the scaffold as the lab learns; that is intended.
 
@@ -174,7 +177,7 @@ The full pass, and the signs that show which part is failing: [Checking](referen
 
 <Scripts-and-scaffold>
 
-- `uv run scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold and copies into it the skills its content names (`cortex`, `grow-autonomy`, `code-as-tools`, `iterative-deep-researcher`). Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
+- `uv run scripts/new_lab.py <destination> --name "<lab name>" [--target <https-url>]`: creates a lab from the scaffold, with `--target` registers, clones and starts the system page of a target repo, and copies into it the skills its content names (`cortex`, `grow-autonomy`, `code-as-tools`, `iterative-deep-researcher`). Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots and what is still open before the lab is ready.
 - `assets/lab/`: the scaffold. `lab-AGENTS.md` (becomes the lab's `AGENTS.md`), `loop-skill.md` (becomes the lab's own `experiment-lab-loop` skill), `README.md`, `JOURNAL.md`, `repos.yaml`, `pyproject.toml`, `cortex/` (profile, purpose, gap map, index, log, and the templates for a claim, a findings page, a source note and a system page), `experiments/_TEMPLATE/` (plan and log for the worktree, postmortem and results for the lab folder), and `scripts/lab.py`. Read a part here when deciding what a lab's own version should hold; edit it only to change what every new lab starts with.
 - `assets/lab/scripts/lab.py`, in the lab as `uv run scripts/lab.py <command>`: `init`, `sync-repos`, `context-pack`, `check-drift`, `new-exp`, `mount-exp`, `run`, `evaluate`, `record-verdict`, `cleanup-worktree`. Standard library only. What each does and does not do is in the lab's loop skill.
 

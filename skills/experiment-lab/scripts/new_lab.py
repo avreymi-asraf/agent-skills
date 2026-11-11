@@ -5,15 +5,18 @@
 # ///
 """Create a research lab repository from this skill's scaffold (assets/lab).
 
-    uv run scripts/new_lab.py <destination> --name "<lab name>"
+    uv run scripts/new_lab.py <destination> --name "<lab name>" [--target <https-url> [--short-name <x>]]
 
 Copies the scaffold, puts the files that need a dot name or a symlink in place, gives the lab its own
 copy of the companion skills found next to this one, and lists the `{{FILL: ...}}` slots that only the
-user can answer. It never overwrites an existing file, so it
-is safe to run again on a lab that is partly built. Standard library only.
+user can answer. With --target it also registers the target repo in repos.yaml, runs `lab.py init` and
+`sync-repos`, and starts the target's system page from the template. It never overwrites an existing file,
+so it is safe to run again on a lab that is partly built (run it again with --target when the target is
+named later). Standard library only.
 """
 
 import argparse
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -34,10 +37,56 @@ RENAMED = {
 COMPANIONS = ("cortex", "grow-autonomy", "code-as-tools", "iterative-deep-researcher")
 
 
+def register_target(lab: Path, url: str, short_name: str | None) -> str:
+    """Put the target in repos.yaml, clone it, and start its system page. Returns the repo's folder name."""
+    name = url.rstrip("/").removesuffix(".git").rsplit("/", 1)[-1]
+    short = short_name or name.replace("-", "")[:4].lower()
+    repos = lab / "repos.yaml"
+    text = repos.read_text(encoding="utf-8")
+    entry = (f"  - name: {name}\n    url: {url}\n    short_name: {short}\n    default_branch: main\n")
+    if url in text:
+        print(f"[OK] {name} is already in repos.yaml.")
+    else:
+        # The scaffold's placeholder entry is replaced; a real entry is kept and this one is added after it.
+        text = re.sub(r"  - name: your-repo[^\n]*\n(?:    .*\n)+", "", text)
+        repos.write_text(text.rstrip("\n") + "\n\n" + entry, encoding="utf-8")
+        print(f"[OK] Registered {name} (short name '{short}') in repos.yaml. Check default_branch there.")
+    for command in ("init", "sync-repos"):
+        subprocess.run(["uv", "run", "scripts/lab.py", command], cwd=lab, check=False)
+    page = lab / "cortex" / "systems" / f"{name}.md"
+    clone = lab / ".targets" / "repos" / name
+    if not page.exists() and (clone / ".git").exists():
+        sha = subprocess.run(["git", "-C", str(clone), "rev-parse", "--short", "HEAD"],
+                             capture_output=True, text=True, check=False).stdout.strip() or "<sha>"
+        template = (lab / "cortex" / "systems" / "_TEMPLATE.md").read_text(encoding="utf-8")
+        page.write_text(template.replace("<target-repo>", name).replace("git:<sha>", f"git:{sha}"), encoding="utf-8")
+        print(f"[OK] Started cortex/systems/{name}.md from the template.")
+    return name
+
+
+def print_remaining(lab: Path, target: str | None) -> None:
+    """What is still open after this run. A list, not a gate: the lab is ready when none of it is left."""
+    open_items = []
+    if target is None and "your-repo" in (lab / "repos.yaml").read_text(encoding="utf-8"):
+        open_items.append("No target repo registered. Ask the user for one (a session may not be able to create a "
+                          "repository), then run this script again with --target <https-url>.")
+    if target:
+        open_items.append(f"Read the code of {target} and write its system page (cortex/systems/{target}.md): the "
+                          "Experiment Language, or 'Not written yet' for a new or empty target. Add a line for it to cortex/index.md. "
+                          "In a cloud session the target must also be attached to the session (add_repo).")
+    open_items.append("Fill the slots above from the user's answers; one the user has not answered stays visibly open.")
+    open_items.append("Run the check in the skill (Check-a-lab), then commit and push the lab.")
+    print("\nStill open before this lab is ready for its first experiment (agent's work unless it says the user's):")
+    for item in open_items:
+        print(f"  - {item}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("destination", type=Path, help="Folder of the new lab (created if missing)")
     parser.add_argument("--name", required=True, help="Lab name as it appears in AGENTS.md, e.g. 'Retrieval'")
+    parser.add_argument("--target", help="HTTPS url of a target repo to register (repos.yaml), clone and give a system page")
+    parser.add_argument("--short-name", help="Short name for experiment names (default: first 4 letters of the repo name)")
     args = parser.parse_args()
     lab = args.destination.resolve()
 
@@ -83,6 +132,8 @@ def main() -> None:
     if missing:
         print(f"[TODO] Not found next to this skill: {', '.join(missing)}. The lab's content relies on them: "
               "install them into the lab's .agents/skills/ and commit.")
+    target_name = register_target(lab, args.target, args.short_name) if args.target else None
+
     slots = []
     for path in sorted(lab.rglob("*.md")):
         if {".targets", ".venv"} & set(path.parts):
@@ -93,6 +144,7 @@ def main() -> None:
     if slots:
         print("Slots only the user can answer (ask, then write the answer in their terms):")
         print("\n".join(slots))
+    print_remaining(lab, target_name)
 
 
 if __name__ == "__main__":

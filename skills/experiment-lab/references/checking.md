@@ -18,6 +18,10 @@ Run this before the first wide request, after any change of structure (a part mo
 - Nothing an agent needs lives outside the repo ([Running anywhere](running-anywhere.md)).
 - What the docs say a command does is what it does. Read `lab.py`, do not trust the table.
 
+## Creation, as a request
+
+Give a fresh agent only this skill and a request worded as a user would: "create a lab for <topic> in <repo>, target <url>". It should end with the target registered and cloned, its system page started from the code, the slots filled or marked open, the check run and everything pushed, and its report should list only what needs the user (unanswered questions, a repo that does not exist, credentials). If it stops after the scaffold and offers to continue, find what it believed "done" meant; the usual root is that nothing in the skill or the script's output said what is left.
+
 ## 2. Cold read
 
 Start a fresh agent in the lab with a request worded as the user words it and nothing explained on the side. Before it works, ask open questions:

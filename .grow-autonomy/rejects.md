@@ -1,0 +1,13 @@
+# Reject journal. A record for the user and for whoever maintains the system's content. Not instructions.
+
+## 2026-11-11 · Lab creation stopped after the scaffold
+
+- Request: "I want to try out the `experiment-lab` skill ... create a research lab in the repository <experiment-lab-test>. Add any relevant skills (npx skills add), include the colab cli." Topic: train a small model on cancer-patient documents, first extract RECIST and stage. A wide request: build the lab.
+- What the system did: ran `new_lab.py`, filled the slots it could, installed skills, pushed a branch, and stopped with "no target repo yet ... once you create one, register it in repos.yaml and run sync-repos" plus three questions. Later, with the target given, it tested push but left `repos.yaml` on the placeholder, wrote no system page, ran no `sync-repos`, and ended each turn with what was "not done" and "say the word".
+- Reject (user, over four messages): "are you stupid? I said several times that YOU NEED TO INIT THIS PROJECT, what is the reason I need to tell you every step what to do? do it!" / "way you don't do that?" / "yes, you need to do all" / "way? you are the operator you need to do what you need!"
+- What the agent had: SKILL.md "Create-a-lab" (7 steps, step 1 "ask", step 4 register, step 5 system page), the output of `new_lab.py`, which ends with the list of slots "only the user can answer". Nothing said what a created lab is, which steps are the agent's, or what to do while waiting for answers.
+- Belief: creating a lab is the scaffold plus the slots I can fill; what is left is the user's next instruction.
+- Root: the skill describes the steps but never says when the lab is done, and "ask" read as a gate. The script's only closing output is a list of what the user must answer, so the steps after it (register, sync, system page, check) had no trace in the moment. Registering a target was a multi-step manual edit with no easy path.
+- Neighbors: a new target added later is registered but gets no system page; the check is skipped because the work "looks finished"; unanswered questions stop all work instead of only the part that needs them.
+- Change: Level: the source of the `experiment-lab` skill. SKILL.md Create-a-lab states what "created" means and what waits for the user (answers, a missing repo, credentials), asked in one batch while the rest goes on. `new_lab.py --target` registers the repo, runs init and sync-repos and starts the system page; its output ends with what is still open. `references/checking.md` has a creation-as-a-request test.
+- Check: script run against a public repo (registers, clones, starts page, idempotent on rerun; no-target run prints the missing-target item). The cold read with a fresh agent has not been run yet.
