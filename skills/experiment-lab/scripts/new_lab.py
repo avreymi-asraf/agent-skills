@@ -28,9 +28,10 @@ RENAMED = {
     "lab-AGENTS.md": "AGENTS.md",
     "loop-skill.md": ".agents/skills/experiment-lab-loop/SKILL.md",
 }
-# Skills the lab's own content depends on. A lab must be whole wherever it is cloned, so it gets its
-# own copy of each one that is installed next to this skill.
-COMPANIONS = ("cortex", "grow-autonomy")
+# Every skill the lab's own content names (AGENTS.md, the loop skill). A lab must be whole wherever it
+# is cloned, so it gets its own copy of each one that is installed next to this skill. When the scaffold
+# starts naming another skill, add it here.
+COMPANIONS = ("cortex", "grow-autonomy", "code-as-tools", "iterative-deep-researcher")
 
 
 def main() -> None:

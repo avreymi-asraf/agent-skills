@@ -70,7 +70,7 @@ Without it, the lab is a pile of unrelated branches, and no cortex or journal tu
 - A shared component is used as it is. If it is wrong or too narrow, it is fixed as a shared component, the plan says so, and every later experiment inherits the fix. It is never forked into the experiment.
 - Something new that more than this experiment will need (a metric, a plot, a data view) is written as a shared component, in the shared style, and added to the system page when the experiment is kept.
 - The language itself changes only when that change is the idea of an experiment. Then the plan says so, and the system page is updated at close.
-- When an idea does not fit the language, that is a finding, not an obstacle to code around. Stop and decide: either the frame change is the idea, or the frame change is its own experiment first.
+- When an idea does not fit the language, that is a finding, not an obstacle to code around. Stop and decide: either changing the language is the idea, or that change is its own experiment first.
 - The test at any moment: read the experiment's diff against its base. It should read as the idea and nothing else.
 
 **How a lab carries it** (so that no agent has to remember it):
@@ -139,8 +139,8 @@ What each part must hold, and what goes wrong when it does not: [Parts](referenc
    It copies the scaffold and prints the `{{FILL: ...}}` slots.
 3. **Fill the slots** from the user's answers, in their terms. A slot the user has not answered stays visibly open ("Not written yet"), never filled with a guess. Turning a rough answer into fluent text adds meaning the user did not state; say back what an agent will take from the text and let them judge that.
 4. **Register the first target repo** in `repos.yaml`, then `uv run scripts/lab.py init` and `sync-repos`.
-5. **Write the target's system page** from `cortex/systems/_TEMPLATE.md`. If the target is new or empty, the Experiment Language does not exist yet: say so on the page. The first experiment on that target then has one job: connect the pipeline end to end (data in, one short run, results back) and set the frame every later experiment reuses, including the tools for watching a run. Its claim is narrow ("the pipeline is connected"), its numbers are not a baseline, and its Sparks are usually the first real task and the first evaluation.
-6. **Check the companion skills.** `new_lab.py` copies `cortex` and `grow-autonomy` into the lab when they are installed next to this skill, and says so when they are not. Install those, and the skills for where runs go, into the lab's own folders, not the user's home ([Running anywhere](references/running-anywhere.md)).
+5. **Write the target's system page** from `cortex/systems/_TEMPLATE.md`. If the target is new or empty, the Experiment Language does not exist yet: say so on the page. The first experiment on that target then has one job: connect the pipeline end to end (data in, one short run, results back) and build the shared components every later experiment reuses, including the tools for watching a run. Its claim is narrow ("the pipeline is connected"), its numbers are not a baseline, and its Sparks are usually the first real task and the first evaluation. The system page template carries this case into the lab, and `lab.py` names a target that has no system page, so a target added later by the lab's own agents is onboarded the same way.
+6. **Check the companion skills.** `new_lab.py` copies the skills the lab's content names (`cortex`, `grow-autonomy`, `code-as-tools`, `iterative-deep-researcher`) into the lab when they are installed next to this skill, and says so when they are not. Install those, and the skills for where runs go, into the lab's own folders, not the user's home ([Running anywhere](references/running-anywhere.md)).
 7. **Check it** ([Check-a-lab]) before the first wide request, and commit.
 
 The scaffold is a starting point. After step 2 the lab's files are its own and will diverge from the scaffold as the lab learns; that is intended.
@@ -154,7 +154,7 @@ Every change to a lab is a change to what its agents understand, so it goes thro
 - **Change the part that carries the thing** ([What-carries-the-picture]). A behavior that agents keep missing usually belongs in a template or in the CLI, not in one more sentence of `AGENTS.md`.
 - **Keep one copy.** When a behavior changes, find every place the old one is written or shown: `AGENTS.md`, the loop skill, `cortex/profile.md`, the templates, `lab.py` help texts, the README, old experiments agents read as examples.
 - **Edit the lab, not this skill.** The lab's loop skill and `AGENTS.md` are the lab's own. Do not re-copy the scaffold over them to "update": that erases what the lab learned. Bring a general lesson back to the scaffold separately, if it holds for any lab. The `cortex` skill in the lab is an installed copy of the general skill: what is particular to this lab's memory goes in `cortex/profile.md` and the templates beside it, not into the copy.
-- **A new target repo:** an entry in `repos.yaml` with its own `short_name`, a system page with its Experiment Language, and a line in `cortex/index.md`. A later stage of the research is a new target, not a new lab.
+- **A new target repo:** an entry in `repos.yaml` with its own `short_name`, a system page with its Experiment Language, and a line in `cortex/index.md` (the comment in `repos.yaml` says the same to a lab agent that adds one). A later stage of the research is a new target, not a new lab.
 - **A new stage in the loop, or a new tool:** hold it to the test in [The-autonomy-we-build-for] first.
 
 </Change-a-lab>
@@ -174,7 +174,7 @@ The full pass, and the signs that show which part is failing: [Checking](referen
 
 <Scripts-and-scaffold>
 
-- `uv run scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold and copies the `cortex` and `grow-autonomy` skills into it. Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
+- `uv run scripts/new_lab.py <destination> --name "<lab name>"`: creates a lab from the scaffold and copies into it the skills its content names (`cortex`, `grow-autonomy`, `code-as-tools`, `iterative-deep-researcher`). Never overwrites an existing file, so it is safe on a partly built lab. Prints the open slots.
 - `assets/lab/`: the scaffold. `lab-AGENTS.md` (becomes the lab's `AGENTS.md`), `loop-skill.md` (becomes the lab's own `experiment-lab-loop` skill), `README.md`, `JOURNAL.md`, `repos.yaml`, `pyproject.toml`, `cortex/` (profile, purpose, gap map, index, log, and the templates for a claim, a findings page, a source note and a system page), `experiments/_TEMPLATE/` (plan and log for the worktree, postmortem and results for the lab folder), and `scripts/lab.py`. Read a part here when deciding what a lab's own version should hold; edit it only to change what every new lab starts with.
 - `assets/lab/scripts/lab.py`, in the lab as `uv run scripts/lab.py <command>`: `init`, `sync-repos`, `context-pack`, `check-drift`, `new-exp`, `mount-exp`, `run`, `evaluate`, `record-verdict`, `cleanup-worktree`. Standard library only. What each does and does not do is in the lab's loop skill.
 

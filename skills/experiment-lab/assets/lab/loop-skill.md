@@ -38,14 +38,17 @@ This is a stage of its own and the one where research is won or lost. There are 
 What is required is to **cross the idea with what the lab already knows**, because an idea that ignores it either repeats old work or misses the reason the last attempt failed:
 
 ```bash
-uv run scripts/lab.py context-pack   # writes cortex/query_pack.md: purpose, gaps, journal, cortex index
+uv run scripts/lab.py context-pack   # writes cortex/query_pack.md: purpose, gap map, journal, cortex index
 ```
+
+The pack is a first look, not the sources: a part that did not fit ends at a line marked **[CUT]** that names the file to open.
 
 - `cortex/purpose.md`: does the idea serve what the lab is for?
 - `cortex/gap_map.md` and `JOURNAL.md` → Active Sparks: is it one of the open questions, or does it open a better one?
+- `JOURNAL.md` → Experiment Matrix: is an experiment on this idea already open (`OPEN` in the Verdict column)? Then continue it (`mount-exp`), do not open a second one.
 - `JOURNAL.md` → Anti-Repeat Banlist: was it already refuted? Under which conditions?
 - `cortex/findings/`, `cortex/tensions/` and earlier `experiments/*/postmortem.md`: what did earlier rounds learn that changes this idea? Follow a findings page down to the claims it cites: each says whether the lab saw it (`experiment`) or someone else reports it (`quote`), and under which conditions. `uv run .agents/skills/cortex/scripts/cortex.py claims --grep <term>` searches all claims by a word, including those no page cites yet.
-- `cortex/systems/<repo>.md`: can it be said in the repo's Experiment Language? Which extension point does it go into, and which shared components does it use? Creativity belongs in the idea, not in a new vocabulary or a new codebase. If the idea does not fit, that is the first thing to settle: either changing the frame is the idea, or the frame change is an experiment of its own that comes first.
+- `cortex/systems/<repo>.md`: can it be said in the repo's Experiment Language? Which extension point does it go into, and which shared components does it use? Creativity belongs in the idea, not in a new vocabulary or a new codebase. If the idea does not fit, that is the first thing to settle: either changing the language is the idea, or that change is an experiment of its own that comes first. A target with no system page yet gets one before its first experiment: write it from `cortex/systems/_TEMPLATE.md`, which also says what to do when the target is new or empty, and add it to `cortex/index.md`.
 
 Run `uv run scripts/lab.py sync-repos` and then `check-drift` when the base branch may have moved. It reports whether the code a system page describes has changed since the page was written; it updates nothing.
 
@@ -53,7 +56,7 @@ Run `uv run scripts/lab.py sync-repos` and then `check-drift` when the base bran
 
 On a wide request, when experiments have closed since the cortex was last reviewed (`cortex/log.md`), hand a `cortex review` to a subagent before choosing: a direction chosen from a stale cortex is chosen badly.
 
-Ideas you considered and dropped are candidate Sparks; keep them in the plan.
+Ideas you considered and dropped are written in the plan, under Alternatives considered. One that is worth an experiment of its own is also written as a Spark in `JOURNAL.md` → Active Sparks, now, while the reason is fresh.
 
 </Find-a-direction>
 
@@ -65,7 +68,7 @@ Open the experiment:
 uv run scripts/lab.py new-exp --repo <target-repo> --name <worktree-name> [--base-branch exp/<earlier-exp-name>]
 ```
 
-This creates the branch `exp/<exp-name>` and its worktree `.targets/worktrees/<exp-name>/`, puts `plan.md` and `log.md` in the worktree under `notes/<exp-name>/`, and creates the lab folder `experiments/<exp-name>/` for the closing record. The two folders have different names on purpose: `notes/` is the experiment's own working memory inside the target repo, and `experiments/` exists only in the lab. Use `--base-branch` when the idea builds on an earlier experiment's code, for example the branch named by `> Branch:` on the system page; the new branch then also carries that experiment's plan and log, which is where to read how its code came to be. The default base is the repo's `default_branch`.
+This creates the branch `exp/<exp-name>` and its worktree `.targets/worktrees/<exp-name>/`, puts `plan.md` and `log.md` in the worktree under `notes/<exp-name>/`, creates the lab folder `experiments/<exp-name>/` for the closing record, and adds the experiment's row to the journal's matrix, marked `OPEN`. Commit and push the lab repo after it: the folder and the row are how another session finds this experiment. The two folders have different names on purpose: `notes/` is the experiment's own working memory inside the target repo, and `experiments/` exists only in the lab. Use `--base-branch` when the idea builds on an earlier experiment's code, for example the branch named by `> Branch:` on the system page; the new branch then also carries that experiment's plan and log, which is where to read how its code came to be. The default base is the repo's `default_branch`.
 
 Plan and log live next to the code because they change with it: one commit holds a round's code and what the round taught. Commit them on the experiment branch, starting with the first version of the plan.
 
@@ -87,7 +90,7 @@ The plan holds:
 Each round, in the worktree `.targets/worktrees/<exp-name>/` on branch `exp/<exp-name>` (in a new session or a fresh clone, `uv run scripts/lab.py mount-exp --exp <id>` brings the worktree back from the pushed branch):
 
 1. **Implement** the next step of the plan, in the repo's Experiment Language: put the idea in at its extension point, use the shared components as they are, and make a variant a config value, not a copied script. When you need something the shared set lacks (a metric, a view of the data, a plot), write it as a shared component in the shared style, not as a one-off inside the experiment. When a shared component is wrong, fix it there and note it in the plan. Read your diff against the base before committing: it should read as the idea and nothing else. Commit to the experiment branch; remote runners ship committed code only.
-2. **Run** it. During rounds you are free to measure however is useful: a short training run, a probe, a notebook, the repo's own checks. The final evaluation script is not required here. `uv run scripts/lab.py run --exp <id> -- '<command>'` runs a command in the worktree with the lab's `.env`, `$LAB_ROOT` and `$EXP_DIR` set. Heavy runs go where `AGENTS.md` says. Running is the expensive part of a round, so get the most out of each run: before starting, write in the log what question the run answers, what you will look at while it runs, and what would make you stop it early. Then watch it while it runs, with the target's own observation tools (system page), and stop a run that has already answered its question or cannot.
+2. **Run** it. During rounds you are free to measure however is useful: a short training run, a probe, a notebook, the repo's own checks. The final evaluation script is not required here. `uv run scripts/lab.py run --exp <id> -- '<command>'` runs a command in the worktree with the lab's `.env`, `$LAB_ROOT` and `$EXP_DIR` set. Heavy runs go where `AGENTS.md` says. Running is the expensive part of a round, so get the most out of each run: before starting, write in the experiment log what question the run answers, what you will look at while it runs, and what would make you stop it early. Then watch it while it runs, with the target's own observation tools (system page), and stop a run that has already answered its question or cannot.
 3. **Analyze** what came back. Look at cases and traces, not only at the number, and ask why it moved or did not.
 4. **Write the round into the experiment log** (`notes/<exp-name>/log.md` in the worktree): what was tried, what was seen, what was decided, and where the run's files are (`notes/<exp-name>/runs/<nn>-<short-name>/`, small files only). A failed round is logged like any other; say whether the failure was technical or a real result.
 5. **Update the plan** if the round changed what we know. Commit code, log and plan together and push the branch, so the round survives the session.
@@ -132,7 +135,7 @@ A conclusion is what [What-to-tell-the-lab] selects: something a different exper
 - Write it as a claim in `cortex/claims/` (from `claims/_TEMPLATE.md`): one sentence, `status: provisional`, the anchor `experiment::` with this experiment's name, the round and the commit, and the conditions it was seen under.
 - Work it into the `cortex/findings/<topic>.md` page it changes, citing it: `(provisional, [[claims/<claim>]])`. If it disagrees with a claim the lab already holds, write the tension; do not overwrite the older claim.
 - If it changes an open gap, update `cortex/gap_map.md`. Update `cortex/index.md` when a page is added.
-- Run the cortex check (`cortex/profile.md` §6), and note in the experiment log which claim was written ("Told the lab").
+- Run the cortex check (`cortex/profile.md` §6), commit and push the lab repo, and note in the experiment log which claim was written ("Told the lab").
 
 Then go back to the top of the loop.
 
@@ -146,26 +149,27 @@ A technical failure (OOM, missing credential, typo) is never a conclusion about 
 
 <Close-the-experiment>
 
-1. **Final evaluation**, if the target repo has an `evaluate.py`:
+1. **Final evaluation.** Commit first, then:
    ```bash
    uv run scripts/lab.py evaluate --exp <id>
    ```
-   Compare the metrics with the repo's baseline in `JOURNAL.md` → Current Frontier, and check that both were measured with the same evaluation version (`eval_script_sha` in `results.json`). If the repo has no evaluation yet, the experiment closes with its conclusion and no number; say so in the postmortem.
+   It saves the experiment's code change to `patch.diff` and runs the target repo's `evaluate.py`. Compare the metrics with the repo's baseline in `JOURNAL.md` → Current Frontier, and check that both were measured with the same evaluation version. If the repo has no `evaluate.py` yet, the command still saves `patch.diff` and says there is no evaluation: the experiment closes with its conclusion and no number; say so in the postmortem.
 2. **Write `postmortem.md`** in the lab folder `experiments/<exp-name>/`: the verdict, why things went the way they did (cite rounds from the log), what happened to each provisional claim, and one or two Sparks.
-   - `HYPOTHESIS_SUPPORTED`: the idea worked. The result improved, or it held equal within noise while the code or prompt got simpler (Simplicity Criterion, `cortex/purpose.md`).
+   - `HYPOTHESIS_SUPPORTED`: the idea worked. The result is a good one by this lab's own measure, `cortex/purpose.md` §3 (How Results Are Judged), which also says whether an equal result with simpler code counts.
    - `HYPOTHESIS_REFUTED`: the idea ran cleanly and did not work. Add it to the Anti-Repeat Banlist as `[pattern] -> [why it failed] -> [unless condition X changes] ([[claims/<claim>]])`.
    - `INFRA_INCONCLUSIVE`: a technical blocker prevented a real test. Nothing is written about the idea: no claim, no findings line, no Banlist entry. Claims from earlier rounds that ran cleanly are still settled on their own evidence.
 3. **Record it**:
    ```bash
    uv run scripts/lab.py record-verdict --exp <id> --verdict <VERDICT> --metric-delta "<delta or 'no metric'>" --summary "<one-line lesson>"
    ```
-   This adds the row to the experiment matrix and a line to `cortex/log.md`. By hand: copy the Sparks into `JOURNAL.md` → Active Sparks, and update Current Frontier if this is a new best number, with the evaluation version beside it.
-4. **Settle the cortex**: `uv run .agents/skills/cortex/scripts/cortex.py claims --from <exp-name> --status provisional` lists what this experiment still owes. Confirm or withdraw each claim, revise the findings pages that cited a withdrawn one (`cortex.py links claims/<claim>` shows them), and drop "provisional" from the citations of the confirmed ones. When the idea ran cleanly, write its final conclusion as a claim as well (`confirmed`, anchored to the closing round): the findings page and the Banlist entry cite it, and without it the experiment's main result is in no page. Update `gap_map.md` and `index.md`, and run the cortex check. Then the Experiment Language: if the experiment is kept and it added a shared component, fixed one, or changed the frame, update the system page (components table, extension points, vocabulary) and point the page at the branch (`> Branch: exp/<exp-name>`, `Fingerprint: git:<sha>`), so the next experiment starts from it. If it left the language as it was, say so in the postmortem.
-5. **Push the branch**, whatever the verdict, with the final plan and log on it, and do not merge it:
+   This completes the experiment's row in the journal's matrix. By hand: copy the Sparks into `JOURNAL.md` → Active Sparks, and update Current Frontier if this is a new best number, with its evaluation version beside it.
+4. **Settle the cortex**: `uv run .agents/skills/cortex/scripts/cortex.py claims --from <exp-name> --status provisional` lists what this experiment still owes. Confirm or withdraw each claim, revise the findings pages that cited a withdrawn one (`cortex.py links claims/<claim>` shows them), and drop "provisional" from the citations of the confirmed ones. When the idea ran cleanly, write its final conclusion as a claim as well (`confirmed`, anchored to the closing round): the findings page and the Banlist entry cite it, and without it the experiment's main result is in no page. Update `gap_map.md` and `index.md`, and run the cortex check. Then decide whether the experiment is kept (`AGENTS.md` §2) and write the reason on the postmortem's Branch line. If it is kept and it added a shared component, fixed one, or changed the language itself, update the system page (components table, extension points, vocabulary) and point the page at the branch (`> Branch: exp/<exp-name>`, `Fingerprint: git:<sha>`), so the next experiment starts from it. If it left the language as it was, say so in the postmortem.
+5. **Push both repositories.** The branch, whatever the verdict, with the final plan and log on it, and do not merge it:
    ```bash
    git -C .targets/repos/<repo> push -u origin exp/<exp-name>
    ```
-6. Optionally `uv run scripts/lab.py cleanup-worktree --exp <id>`. The branch and the experiment folder stay.
+   Then commit and push the lab repo: the experiment's folder, the journal and the cortex.
+6. Optionally `uv run scripts/lab.py cleanup-worktree --exp <id>`. The branch and the lab folder stay.
 
 After closing, the lab folder does not change, except for a re-evaluation added to `results.json` ([Evaluation-API]).
 
@@ -176,22 +180,22 @@ After closing, the lab folder does not change, except for a re-evaluation added 
 The one thing the tools enforce is that every final evaluation of a target repo is run the same way:
 
 - The script is **`evaluate.py` at the root of the target repo**. It is part of the repo's code and travels with the experiment branch.
-- `lab.py evaluate` runs `uv run evaluate.py` in the experiment's worktree, with no arguments. The script reads what it needs from the environment: `$EXP_DIR` (this experiment's folder, for outputs), `$LAB_ROOT`, and the lab's `.env` variables (names in `.env.example`).
+- `lab.py evaluate` runs `uv run evaluate.py` in the experiment's worktree, with no arguments. The script reads what it needs from the environment: `$LAB_ROOT`, the lab's `.env` variables (names in `.env.example`), and `$EXP_DIR`, the experiment's lab folder `experiments/<exp-name>/`. A file the evaluation writes to `$EXP_DIR` (per-case scores, a report) becomes part of the closing record. Files of a round never go there; they go to `notes/<exp-name>/runs/`.
 - **The last line of stdout is one JSON object of metrics.** Progress goes to stderr or to earlier lines. Exit code 0 means the evaluation ran.
-- When the script calls an external benchmark, it adds that benchmark's name and version to the JSON as `"eval_version"`.
+- When the script calls an external benchmark, it adds that benchmark's name and version to the JSON as `"eval_version"`, so that a new benchmark version counts as a new evaluation version.
 
-`lab.py evaluate` saves the full output to `evaluate.log`, the metrics, the commit and the git hash of `evaluate.py` (`eval_script_sha`) to `results.json`, and the branch's diff to `patch.diff`. It exits non-zero when the script is missing, fails, times out or prints no JSON line, and then writes no metrics.
+`lab.py evaluate` first saves the experiment's code change against its base to `patch.diff`: the branch's diff without the notes folder and without the skills the lab copied in. Then it runs the script and saves the full output to `evaluate.log`, and the metrics, the commit and the **evaluation version** to `results.json`. The evaluation version (`evaluation_version`) is the git hash of the `evaluate.py` that ran, followed by `+<eval_version>` when the JSON has one. The command exits non-zero when the script fails, times out or prints no JSON line, and then writes no metrics. When the repo has no `evaluate.py`, it saves `patch.diff`, says that there is no evaluation yet, and exits zero.
 
-Nothing protects the evaluation code; it is often external anyway. What keeps numbers honest is the recorded version: two results are comparable only when their `eval_script_sha` (and `eval_version`) match.
+Nothing protects the evaluation code; it is often external anyway. What keeps numbers honest is the recorded version: two results are comparable only when their `evaluation_version` is the same.
 
-**When the evaluation changes, the experiments are measured again.** `evaluate.py` lives on experiment branches, so a change made in one experiment does not reach the others by itself. Say in the log and the postmortem that the evaluation changed, then re-run it on every experiment whose number is still being compared (at least the Frontier's):
+**When the evaluation changes, the experiments are measured again.** `evaluate.py` lives on experiment branches, so a change made in one experiment does not reach the others by itself. Say in the experiment log and the postmortem that the evaluation changed, then re-run it on every experiment whose number is still being compared (at least the Frontier's):
 
 ```bash
 uv run scripts/lab.py mount-exp --exp <older-id>          # if its worktree was cleaned up
 uv run scripts/lab.py evaluate --exp <older-id> --eval-from exp/<exp-with-the-new-evaluation>
 ```
 
-`--eval-from` runs that branch's `evaluate.py` on the older experiment's code without committing it there. The earlier measurement is kept in `results.json` under `earlier_evaluations`. Update Current Frontier with the new numbers and version. If the new script needs code the older branch does not have, the run fails; say so in the journal, and do not compare that experiment's old number with new ones.
+`--eval-from` runs that branch's `evaluate.py` on the older experiment's code without committing it there. The earlier measurement is kept in `results.json` under `earlier_evaluations`. Update Current Frontier with the new numbers and version. If the new script needs code the older branch does not have, the run fails. `lab.py` records the failed attempt in that experiment's `results.json` (`failed_evaluations`), and its old number stays there under its old evaluation version. Do not compare that number with new ones; if it is the Frontier's, the Frontier row keeps the old version beside it, which is what shows the mismatch.
 
 Building or changing the evaluation of a repo is itself an experiment.
 
@@ -204,15 +208,17 @@ All commands run from the lab root as `uv run scripts/lab.py <command>`.
 | Command | Does | Does not |
 |---|---|---|
 | `init` | Creates `.targets/` and the cortex folders (`claims/`, `findings/`, `tensions/`, `systems/`, `sources/text/`) in a fresh lab or clone | |
-| `sync-repos [--repo <name>]` | Clones or fetches the repos in `repos.yaml` into `.targets/repos/` | |
-| `context-pack` | Compiles `cortex/query_pack.md` | Choose a direction |
+| `sync-repos [--repo <name>]` | Clones or fetches the repos in `repos.yaml` into `.targets/repos/`; names a target that has no system page | Write the page |
+| `context-pack` | Compiles `cortex/query_pack.md` from the purpose, the gap map, the journal and the cortex index. A part that does not fit is cut at a line marked **[CUT]**; from the matrix it shows the open experiments and the latest closed ones | Choose a direction, replace reading the sources |
 | `check-drift` | Reports system pages whose monitored code changed since their `Fingerprint` | Update any page |
-| `new-exp --repo <r> --name <n> [--base-branch <b>] [--title <t>] [--id <hh>]` | Creates the branch and worktree with `notes/<exp-name>/{plan.md, log.md}` in it, the lab folder `experiments/<exp-name>/`, and copies the lab's skills into the worktree | Fill the plan, commit |
+| `new-exp --repo <r> --name <n> [--base-branch <b>] [--title <t>] [--id <hh>]` | Creates the branch and worktree with `notes/<exp-name>/{plan.md, log.md}` in it, the lab folder `experiments/<exp-name>/` and the experiment's row in the journal's matrix (`OPEN`), and copies the lab's skills into the worktree | Fill the plan, commit or push either repository |
 | `mount-exp --exp <id>` | Re-creates the worktree of an existing experiment from its branch | |
 | `run --exp <id> -- '<command>'` | Runs a round's command in the worktree with `.env`, `$LAB_ROOT` and `$EXP_DIR` set; output is shown as it comes | Record anything |
-| `evaluate --exp <id> [--eval-from <branch>] [--timeout <sec>]` | Runs the target's `evaluate.py`; writes `evaluate.log`, `results.json`, `patch.diff` (the diff is saved even when the repo has no evaluation yet) | Check scopes, run tests, compare with the baseline |
-| `record-verdict --exp <id> --verdict <V> --metric-delta "<d>" --summary "<s>"` | Sets the verdict in `results.json`, adds the matrix row and a log line | Update Frontier, Sparks or the Banlist |
-| `cleanup-worktree --exp <id>` | Removes the worktree | Delete the branch or the experiment folder |
+| `evaluate --exp <id> [--eval-from <branch>] [--timeout <sec>]` | Writes `patch.diff`, then runs the target's `evaluate.py` and writes `evaluate.log` and `results.json`. With no `evaluate.py` in the repo it writes `patch.diff` only and says so | Check scopes, run tests, compare with the baseline |
+| `record-verdict --exp <id> --verdict <V> --metric-delta "<d>" --summary "<s>"` | Sets the verdict in `results.json` and completes the experiment's row in the matrix | Update Frontier, Sparks or the Banlist |
+| `cleanup-worktree --exp <id>` | Removes the worktree | Delete the branch or the lab folder |
+
+`new-exp`, `evaluate` and `record-verdict` each add a line to `cortex/log.md`. No other command changes a file the lab repo tracks, so reading (`context-pack`, `check-drift`) and setting up a clone (`init`, `sync-repos`, `mount-exp`) leave nothing to commit.
 
 The experiment log, the plan, the cortex and the journal's Frontier, Sparks and Banlist are edited by hand. They carry judgment, so no command writes them.
 
@@ -222,12 +228,12 @@ The experiment log, the plan, the cortex and the journal's Frontier, Sparks and 
 
 A request: "try reinforcement-learning fine-tuning on the base model and see if it gets anywhere."
 
-1. **Direction.** `context-pack`, then read the gap map and the target's system page. The lab has a Spark asking for a leak-free prediction task; an RL objective needs a reward, and the reward needs that task. The cortex also holds a `quote` claim from a paper: GRPO converged faster than PPO there and collapsed in reward after many steps. Nobody in the lab has seen that, so it goes into the plan as something to watch for, not as a known fact. Two alternatives are noted and dropped (supervised answer-token loss only; a tabular baseline first), and kept as Sparks.
-2. **Plan.** `new-exp --repo model-repo --name rl/grpo --base-branch exp/01-model-init/pipeline` creates `02-model-rl/grpo`; the branch carries experiment 01's code. Day-one plan, committed on the branch: the idea (GRPO on the base model), what is known (the frame from experiment 01, the GPU's memory limit), open questions (reward definition, group size, library or plain PyTorch), stopping point ("enough: a reward curve that rises on held-out patients. Not worth more: three reward designs with no movement, or about 10 GPU hours").
+1. **Direction.** `context-pack`, then read the gap map and the target's system page. The lab has a Spark asking for a leak-free prediction task; an RL objective needs a reward, and the reward needs that task. The cortex also holds a `quote` claim from a paper: GRPO converged faster than PPO there and collapsed in reward after many steps. Nobody in the lab has seen that, so it goes into the plan as something to watch for, not as a known fact. Two alternatives are considered and dropped: a supervised answer-token loss only, and a tabular baseline first. Both go into the plan's Alternatives considered; the tabular baseline is worth an experiment of its own, so it is also written as a Spark in the journal.
+2. **Plan.** `new-exp --repo model-repo --name rl/grpo --base-branch exp/01-model-init/pipeline` creates `02-model-rl/grpo`; the branch carries experiment 01's code. Day-one plan, committed on the branch: the idea (GRPO on the base model), what is known (the shared components from experiment 01, the GPU's memory limit), open questions (reward definition, group size, library or plain PyTorch), stopping point ("enough: a reward curve that rises on held-out patients. Not worth more: three reward designs with no movement, or about 10 GPU hours").
 3. **Round 1.** Implement a reward from the 24-month outcome, run 50 steps. Reward is flat. Analysis shows the model answers in free text the reward parser rejects. Log the round; update the plan: constrain the answer format. This is about this experiment's code, so nothing is told to the lab.
 4. **Round 2.** Reward rises on train and not on held-out patients. Analysis: the record still contains outcome fields. Every experiment that trains on records is affected, so this leaves the log as an **interim conclusion**: a provisional claim in `cortex/claims/`, anchored to this experiment, round 2 and its commit, cited from the `findings/` page on training data; gap map updated. Plan rewritten: render only fields known at prediction time.
 5. **Rounds 3-5.** Held-out reward now rises slowly. The stopping point's budget is reached; the decision to continue for two more rounds, and why, goes into the log.
-6. **Final conclusion.** The result is reached. `evaluate` runs the repo's `evaluate.py`; the metrics are compared with the Frontier baseline measured at the same `eval_script_sha`. Postmortem, `record-verdict`, Sparks and Frontier updated, the provisional leakage claim confirmed, branch pushed.
+6. **Final conclusion.** The result is reached. `evaluate` runs the repo's `evaluate.py`; the metrics are compared with the Frontier baseline, which has the same evaluation version. Postmortem, `record-verdict`, Sparks and Frontier updated, the provisional leakage claim confirmed, the branch and the lab repo pushed.
 
 Had round 2 shown that GRPO cannot work on this model at all, the experiment would have closed there as `HYPOTHESIS_REFUTED`, with "try PPO" as a Spark for a new experiment.
 

@@ -15,7 +15,7 @@ description: <the words someone planning a different experiment would search for
 - stated::<who>, YYYY-MM-DD — <in what context>
 
 ## Conditions
-<Target repo and branch, model, data and split, metric and evaluation version (`eval_script_sha`), what was held fixed. For a quote: the source's own setting. A reader uses this to decide whether the claim applies to their experiment.>
+<Target repo and branch, model, data and split, metric and evaluation version (`evaluation_version` in the experiment's `results.json`), what was held fixed. For a quote: the source's own setting. A reader uses this to decide whether the claim applies to their experiment.>
 
 ## Relations
 - supports::[[claims/<other>]] — <why>
