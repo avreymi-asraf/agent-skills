@@ -39,6 +39,7 @@ Two templates, for the two places an experiment lives. `start-branch/` is what t
 
 - `start-branch/AGENTS.md`: for whoever works a try, who has only the experiment repo. Which branch they are on and what to do there, the structure of the branch, how a try is worked, what it may write, the glossary of the terms a try meets (the lab's `AGENTS.md` holds the whole one), what always holds. Its last two items are the lab's own answers on heavy runs and data, the same as in the lab's `AGENTS.md`.
 - `start-branch/notes/plan.md`, written on the start branch and carried by every try: the idea (stable), what we know and how we will do it (rewritten), the Experiment Language block (extension point, shared components used, what stays fixed for every try, what is added to the shared set), open questions, stopping point, the `data_source` line, and `This Try`, where a try's brief is written when it is opened.
+- `start-branch/EXPERIMENT_LANGUAGE.md`: the form of an Experiment Language (mental model, vocabulary, shared components, extension points, what a run leaves behind, commands). `new-exp` puts it on the start branch only when the base has none, so the try that builds the first one sees the form.
 - `start-branch/notes/log.md`, on a try branch: one entry per round with Tried, Run plan, Saw, Decided, For the lab, Signal, and one entry per try taken in by a reduce. The run plan is written before the run, because running is the expensive part of a round.
 - `tries.md`, in the lab folder: the map of tries. One line per try: the try branch, its status, a comment of at most 100 characters. Kept this small on purpose: it is what a managing session reads, and a file per try grew into a second copy of the try's notes.
 - `lab-steps.md`, in the lab folder: one lab step record per lab step, with the answers to a try's questions.
@@ -59,9 +60,13 @@ When adding a command, keep to that line. A command that refuses to continue unt
 
 ## System page per experiment repo (`cortex/systems/<repo>.md`)
 
-Overview, then the Experiment Language: the mental model, the vocabulary, a table of shared components (data, run entry and config, runner, observation and analysis, evaluation) with where each lives, the extension points where an idea goes in, what a run leaves behind, commands, data source and rules. Then checks and measurements, and known limits. This is the page a lab's experiments depend on most ([One-code-language-per-repo] in the skill); write it with the care of an interface many people will build on, and keep it true to the code. The header lines (`> Repo: ... | Fingerprint: git:<sha>`, `> Monitored:`, optional `> Branch:`) let `check-drift` report when the code moved since the page was written.
+Overview; where the Experiment Language is (`EXPERIMENT_LANGUAGE.md` on the branch `> Branch:` names) with one line on what an idea may change; data source and rules; checks and measurements; known limits. The header lines (`> Repo: ... | Fingerprint: git:<sha>`, `> Monitored:`, optional `> Branch:`) let `check-drift` report when the code moved since the page was written. The page also carries, in a comment, the form of `EXPERIMENT_LANGUAGE.md` for the experiment that writes it first.
 
-*Shows when wrong:* each experiment brings its own loader, loop and file layout; an experiment's diff is mostly plumbing; the analysis tool from one experiment does not open the runs of another; nobody can tell whether a difference in results came from the idea.
+## `EXPERIMENT_LANGUAGE.md`, in the experiment repo
+
+The Experiment Language itself: the mental model, the vocabulary, a table of shared components (data, run entry and config, runner, observation and analysis, evaluation) with where each lives, the extension points where an idea goes in, what a run leaves behind, commands. It lives at the root of the experiment repo and not in the lab, because a try session sees only its branch; it travels with the code and changes in the same commit as the code it describes. This is the file a lab's experiments depend on most ([One-code-language-per-repo] in the skill); write it with the care of an interface many people will build on.
+
+*Shows when wrong:* each experiment brings its own loader, loop and file layout; an experiment's diff is mostly plumbing; the analysis tool from one experiment does not open the runs of another; nobody can tell whether a difference in results came from the idea. A second copy of the language in the lab drifts from the code, and the try session follows the code.
 
 ## `JOURNAL.md`
 

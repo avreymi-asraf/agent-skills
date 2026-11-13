@@ -1,6 +1,6 @@
 # The evaluation API
 
-The one contract the tools enforce: every evaluation of an experiment repo is run the same way. An evaluation is run in a lab step, on one commit of one try. It can be run on any try, and on several tries of one experiment. Inside a round, a try measures however is useful; that is not an evaluation.
+The one contract the tools enforce: every evaluation of an experiment repo is run the same way. An evaluation is run in a lab step, on one commit of one try. It can be run on any live try, and on several tries of one experiment; on a try that ended, only to measure it again after the evaluation changed (below). Inside a round, a try measures however is useful; that is not an evaluation.
 
 ## The contract
 

@@ -58,9 +58,11 @@ def main() -> None:
     lab = args.destination.resolve()
 
     written, kept = [], []
-    sources = [(p, lab_path(p.relative_to(SCAFFOLD).as_posix())) for p in SCAFFOLD.rglob("*") if p.is_file()]
-    sources += [(p, f"{START_BRANCH_DIR}/{p.relative_to(EXPERIMENT_SCAFFOLD).as_posix()}")
-                for p in EXPERIMENT_SCAFFOLD.rglob("*") if p.is_file()]
+    def files(root: Path) -> list:   # the scaffold's own files, without what running its scripts left behind
+        return [p for p in root.rglob("*") if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"]
+
+    sources = [(p, lab_path(p.relative_to(SCAFFOLD).as_posix())) for p in files(SCAFFOLD)]
+    sources += [(p, f"{START_BRANCH_DIR}/{p.relative_to(EXPERIMENT_SCAFFOLD).as_posix()}") for p in files(EXPERIMENT_SCAFFOLD)]
     for src, rel in sorted(sources, key=lambda item: item[1]):
         dst = lab / rel
         if dst.exists():
