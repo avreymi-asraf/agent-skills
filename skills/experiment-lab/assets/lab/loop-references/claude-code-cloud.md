@@ -36,7 +36,7 @@ The try already exists: `lab.py new-try` wrote its try record and pushed its try
 | Setting | Value for a try session |
 |---|---|
 | `source_url` | The experiment repo |
-| `source_revision` | The try branch, e.g. `observe/02-probes/trl-fix-lr`. **Always set it**: without it the session starts on the empty default branch. |
+| `source_revision` | The try branch, e.g. `02-probes/trl-fix-lr`. **Always set it**: without it the session starts on the empty default branch. |
 | `outcome_branch` | The same try branch |
 | `prompt` | The opening message below |
 | `environment_id` | An environment that has the secrets a run needs (`.env.example` in the lab names them) |
@@ -49,11 +49,11 @@ The opening message is short, because everything else is committed on the branch
 
 ```text
 You are working one try of an experiment. You are on its try branch and you push to this same branch.
-Read AGENTS.md at the repository root, then notes/observe/02-probes/plan.md: the first plan, and under
+Read AGENTS.md at the repository root, then notes/02-probes/plan.md: the first plan, and under
 "This try" your brief.
 
-Experiment: observe/02-probes
-Your try:   trl-fix-lr        (branch observe/02-probes/trl-fix-lr)
+Experiment: 02-probes
+Your try:   trl-fix-lr        (branch 02-probes/trl-fix-lr)
 The lab:    attach <owner>/<lab repo> for reading (add_repo, access read) when you need the cortex or
             your own try record. Never write to it. What the lab should know goes in your log, under
             "For the lab".

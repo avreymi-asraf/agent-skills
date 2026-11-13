@@ -2,7 +2,7 @@
 
 Every term of the lab, with one meaning each. Use the word exactly as written here, in plans, logs, briefs, records, reports, code and the cortex. A new word is read as a new thing, so do not use a synonym: say "experiment repo" and never "target repo", "try" and never "feature" or "sub-experiment", "start branch" and never "the experiment's main".
 
-The running example: experiment repo `model-repo` (short name `model`), idea `observe`, sub-idea `probes`, id `02`.
+The running example: experiment repo `model-repo` (short name `model`), idea `probes`, id `02`.
 
 ## 1. Places
 
@@ -19,7 +19,7 @@ The running example: experiment repo `model-repo` (short name `model`), idea `ob
 | Term | Meaning | Is not |
 |---|---|---|
 | **Experiment** | One direction inside an experiment repo, pursued until there is a conclusion. It is saved: it has a lab folder, a row in the journal, a first plan, a map of its tries, lab step records, claims and a postmortem. An experiment with a single try is normal. | One run. One try. If the idea itself is replaced, the experiment closes and a new one opens. |
-| **Idea**, **sub-idea** | The two levels of an experiment's name, broad to specific. Experiments that share an idea are siblings in name only; which code an experiment starts from is its base, not its name. | A parent-child link. |
+| **Idea** | The topic part of an experiment's name (`<id>-<idea>`). Which code an experiment starts from is its base, not its name. | A parent-child link. |
 | **Try** | One attempt at realising an experiment, on its own try branch, recorded in the map of tries from the moment it is opened. Several tries of one experiment run at the same time, mostly competing, sometimes cooperating. What makes a try different from its siblings is written in its plan. | An experiment: it has no journal row and no verdict. A round. |
 | **Round** | One pass of implement → run → analyze inside a try. A round can be long. One log entry per round. | A try (a try has many rounds). |
 | **Reduce** | The operation that takes two or more tries and leaves one: the chosen code, and the conclusions synthesized by meaning, in one try (an existing one, or a new one opened for it). Every other try leaves the map, as `merged` (some of its code entered) or `dropped` (only its lessons entered). Dropping a weaker try and keeping its few lessons is the most common reduce, and it is how a try ends. | A plain `git merge`. A deletion of a branch: the branches stay in git as history. |
@@ -33,21 +33,21 @@ The running example: experiment repo `model-repo` (short name `model`), idea `ob
 
 | Term | Form | Example |
 |---|---|---|
-| **Experiment name** | `<idea>/<id>-<sub-idea>` | `observe/02-probes` |
+| **Experiment name** | `<id>-<idea>` | `02-probes` |
 | **Id** | Two lowercase hex digits, unique in the whole lab, given by `new-exp` | `02` |
-| **Start branch** | `<experiment name>/main` | `observe/02-probes/main` |
+| **Start branch** | `<experiment name>/main` | `02-probes/main` |
 | **Try name** | One segment, lowercase words joined by hyphens, never `main`, never a `/` | `trl-fix-lr` |
-| **Try branch** | `<experiment name>/<try name>` | `observe/02-probes/trl-fix-lr` |
-| **Notes** | `notes/<experiment name>/` on a branch | `notes/observe/02-probes/plan.md` |
-| **Lab folder** | `experiments/<repo short name>/<experiment name>/` in the lab | `experiments/model/observe/02-probes/` |
-| **Try record** | `<lab folder>/tries/<try name>.md` | `experiments/model/observe/02-probes/tries/trl-fix-lr.md` |
+| **Try branch** | `<experiment name>/<try name>` | `02-probes/trl-fix-lr` |
+| **Notes** | `notes/<experiment name>/` on a branch | `notes/02-probes/plan.md` |
+| **Lab folder** | `experiments/<repo short name>/<experiment name>/` in the lab | `experiments/model/02-probes/` |
+| **Try record** | `<lab folder>/tries/<try name>.md` | `experiments/model/02-probes/tries/trl-fix-lr.md` |
 | **Lab step files** | `<lab folder>/tries/<try name>/<short commit>/` | `…/tries/trl-fix-lr/3f9a2c1/evaluate.log` |
-| **Local worktree** | `.repos/worktrees/<repo short name>/<experiment name>/<try name>/` in the lab's folder (git-ignored) | `.repos/worktrees/model/observe/02-probes/trl-fix-lr/` |
+| **Local worktree** | `.repos/worktrees/<repo short name>/<experiment name>/<try name>/` in the lab's folder (git-ignored) | `.repos/worktrees/model/02-probes/trl-fix-lr/` |
 
 Rules for names:
 
-- `<idea>` and `<sub-idea>` are lowercase words joined by hyphens, at most 16 characters each.
-- The id belongs to the experiment, not to the idea: `observe/02-probes` and `observe/07-alerts` share an idea. Commands take the id alone (`--exp 02`) or the full name.
+- `<idea>` is one segment: lowercase words joined by hyphens, never a `/`.
+- Commands take the id alone (`--exp 02`) or the full name (`--exp 02-probes`).
 - The experiment repo is not part of the name; it is the folder level `<repo short name>` in the lab (`short_name` in `repos.yaml`).
 - No prefix such as `exp/`. Everything under `<experiment name>/` in the experiment repo is that experiment: its start branch and its try branches.
 - A try that is the result of a reduce is named like any try. When it takes tries that share a prefix, that prefix is a natural name (`trl` for `trl-fix-lr` and `trl-d-lr`).

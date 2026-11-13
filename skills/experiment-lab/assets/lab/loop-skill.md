@@ -11,7 +11,7 @@ The lab searches by keeping many directions alive and reducing them. An **experi
 
 ```
         LAB  (cortex, journal, lab folders with the map of tries, lab.py)            EXPERIMENT REPO
-find a direction ─▶ open the experiment ───────────────────────────▶ observe/02-probes/main   start branch (a template)
+find a direction ─▶ open the experiment ───────────────────────────▶ 02-probes/main   start branch (a template)
                     open a try ──── try record: live ──────────────▶   ├─ …/trl-fix-lr   rounds: implement → run → analyze
                     open a try ──── try record: live ──────────────▶   ├─ …/trl-d-lr
                     reduce ──────── records: merged / dropped ─────▶   └─ …/trl          the one that remains
@@ -43,11 +43,11 @@ The terms, with their exact forms, are in [glossary.md](references/glossary.md).
 
 | Thing | Name | Example |
 |---|---|---|
-| Experiment | `<idea>/<id>-<sub-idea>` | `observe/02-probes` |
-| Start branch | `<experiment name>/main` | `observe/02-probes/main` |
-| Try branch | `<experiment name>/<try name>` | `observe/02-probes/trl-fix-lr` |
+| Experiment | `<id>-<idea>` | `02-probes` |
+| Start branch | `<experiment name>/main` | `02-probes/main` |
+| Try branch | `<experiment name>/<try name>` | `02-probes/trl-fix-lr` |
 | Notes, on a branch | `notes/<experiment name>/` | `plan.md`, `log.md`, `runs/` |
-| Lab folder | `experiments/<repo short name>/<experiment name>/` | `experiments/model/observe/02-probes/` |
+| Lab folder | `experiments/<repo short name>/<experiment name>/` | `experiments/model/02-probes/` |
 | Try record, in the lab folder | `tries/<try name>.md` | `tries/trl-fix-lr.md` |
 
 The id is two hex digits, unique in the lab, so `--exp 02` names the experiment everywhere. The name is the topic; which code an experiment starts from is its **base**, and it can be any earlier try branch.
@@ -107,7 +107,7 @@ Ideas you considered and dropped are written in the first plan, under Alternativ
 Only through the lab, whoever does it, person or agent:
 
 ```bash
-uv run scripts/lab.py new-exp --repo <experiment repo> --name <idea>/<sub-idea> [--base <branch>]
+uv run scripts/lab.py new-exp --repo <experiment repo> --name <idea> [--base <branch>]
 ```
 
 It gives the id, writes the lab folder and the journal row (`OPEN`) and publishes them to the lab's default branch, which is what reserves the id and lets any other session find the experiment. Then it creates the start branch from the base, with the lab kit and the notes on it. Write the first plan, commit it on the start branch and push ([operations.md](references/operations.md) §1). After that the start branch is not touched again.
@@ -256,14 +256,14 @@ After closing, the lab folder does not change, except for a later evaluation add
 A request: "try reinforcement-learning fine-tuning on the base model and see if it gets anywhere."
 
 1. **Direction.** `context-pack`, then the gap map and the repo's Experiment Language. An RL objective needs a reward, and the reward needs the leak-free prediction task a Spark asks for. The cortex holds a `quote` claim: GRPO converged faster than PPO in a paper and collapsed in reward after many steps. Nobody in the lab has seen that, so it goes into the plan as something to watch for.
-2. **Open.** `new-exp --repo model-repo --name rl/grpo --base init/01-pipeline/first` creates experiment `rl/02-grpo` and its start branch `rl/02-grpo/main`. The first plan is committed there: the idea, the open questions (reward definition, group size), what stays fixed (the held-out patients, the reward curve as the shared measurement), the stopping point ("enough: a reward curve that rises on held-out patients. Not worth more: three reward designs with no movement, or about 10 GPU hours").
+2. **Open.** `new-exp --repo model-repo --name grpo --base 01-pipeline/first` creates experiment `02-grpo` and its start branch `02-grpo/main`. The first plan is committed there: the idea, the open questions (reward definition, group size), what stays fixed (the held-out patients, the reward curve as the shared measurement), the stopping point ("enough: a reward curve that rises on held-out patients. Not worth more: three reward designs with no movement, or about 10 GPU hours").
 3. **Tries.** `new-try` twice, with briefs: `reward-outcome` and `reward-shaped`, competing. Each has a try record (`live`) and a pushed try branch with its brief in the plan; a try session is started on each.
 4. **`reward-outcome`.** Round 1: reward is flat, the parser rejects free text. That is about this try's code: `For the lab` says None. Round 2: reward rises on train and not on held-out patients, because the record still contains outcome fields. Every experiment that trains on records is affected, so the entry carries a `lesson` note with the commit, the run and the conditions. Signal `ready`.
 5. **`reward-shaped`** crashes on memory twice, then runs and shows no movement. Signal `failed`; the log says the last result was a real one.
-6. **Lab step on `reward-outcome`.** `inbox` shows the leak lesson. The repo has no `evaluate.py` yet, so the record says "evaluation: not run" and gives the conclusion. The lesson becomes a provisional claim anchored to `rl/02-grpo`, try `reward-outcome`, round 2 and its commit, cited from the findings page on training data.
+6. **Lab step on `reward-outcome`.** `inbox` shows the leak lesson. The repo has no `evaluate.py` yet, so the record says "evaluation: not run" and gives the conclusion. The lesson becomes a provisional claim anchored to `02-grpo`, try `reward-outcome`, round 2 and its commit, cited from the findings page on training data.
 7. **Reduce.** `reward-shaped` is dropped into `reward-outcome`: no code enters, one log entry says what it tried and saw, and its try record says `dropped`, into `reward-outcome`. The remaining try's plan is rewritten: render only fields known at prediction time. Its signal is `working`.
 8. **More rounds** on `reward-outcome`, then a second lab step on it. The stopping point's budget is reached; the decision to go on for one more try, and why, is in the lab step record.
-9. **Close.** The two lab step records are aggregated into the postmortem. `record-verdict --kept reward-outcome`: the experiment is kept for the leak-free rendering it added, the leak claim is confirmed, the system page names `rl/02-grpo/reward-outcome`, and the lab is published.
+9. **Close.** The two lab step records are aggregated into the postmortem. `record-verdict --kept reward-outcome`: the experiment is kept for the leak-free rendering it added, the leak claim is confirmed, the system page names `02-grpo/reward-outcome`, and the lab is published.
 
 Had `reward-outcome` shown that GRPO cannot work on this model at all, the experiment would have closed as `HYPOTHESIS_REFUTED`, with "try PPO" as a Spark. Had `reward-shaped` turned into a method of its own, it would have become a new experiment opened from its try branch.
 

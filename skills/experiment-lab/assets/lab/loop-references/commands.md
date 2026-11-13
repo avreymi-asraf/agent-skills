@@ -2,7 +2,7 @@
 
 All commands run from the lab root as `uv run scripts/lab.py <command>`, from a checkout of the lab's default branch. They exist only in the lab; a try session never needs them.
 
-`--exp` takes the id (`02`) or the full experiment name (`observe/02-probes`). `--try` takes a try name.
+`--exp` takes the id (`02`) or the full experiment name (`02-probes`). `--try` takes a try name.
 
 "Publishes" below means: commits the lab's change, pulls with rebase, and pushes to the lab's default branch, retrying when the push is rejected. A command that publishes fails, and creates no branch, when the id or the try name it wanted was taken meanwhile.
 
@@ -12,7 +12,7 @@ All commands run from the lab root as `uv run scripts/lab.py <command>`, from a 
 | `sync-repos [--repo <name>]` | Clones or fetches the repos in `repos.yaml` into `.repos/clones/`; names an experiment repo that has no system page | Write the page |
 | `context-pack` | Compiles `cortex/query_pack.md` from the purpose, the gap map, the journal and the cortex index. A part that does not fit is cut at a line marked **[CUT]** | Choose a direction, replace reading the sources |
 | `check-drift` | Reports system pages whose monitored code changed since their `Fingerprint` | Update any page |
-| `new-exp --repo <r> --name <idea>/<sub-idea> [--base <branch>] [--title <t>] [--id <hh>]` | Gives the id; writes the lab folder and the journal row (`OPEN`) and publishes them; then creates the start branch from the base in a local worktree, with the lab kit and the notes (first plan template, empty log) | Write the first plan, commit or push the start branch |
+| `new-exp --repo <r> --name <idea> [--base <branch>] [--title <t>] [--id <hh>]` | Gives the id; writes the lab folder and the journal row (`OPEN`) and publishes them; then creates the start branch from the base in a local worktree, with the lab kit and the notes (first plan template, empty log) | Write the first plan, commit or push the start branch |
 | `new-try --exp <id> --name <try name> (--brief <text> \| --brief-file <file>) [--base <branch>]` | Writes the try record (status `live`, base, brief) and publishes it; then creates the try branch from the base (default: the start branch), commits the current lab kit and the brief into the plan's `This try` section, and pushes the try branch | Start a session; work the try |
 | `mount --exp <id> --try <try name>` | Creates the local worktree of a try from its pushed branch | |
 | `tries [--exp <id>] [--all]` | Prints the map: per live try its status, its signal and last commit date as read from its branch, who works it, and its last lab step. Flags a live try whose branch is missing. With `--all`, also the tries that left the map and into what | Change anything |

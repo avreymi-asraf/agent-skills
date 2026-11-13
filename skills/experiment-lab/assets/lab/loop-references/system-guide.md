@@ -8,7 +8,7 @@ The lab searches the way a breeder does. It keeps many directions alive, starts 
 
 ```
 experiment repo   one big idea or method                           (model-repo)
-└─ experiment     one direction, started from any earlier try      (observe/02-probes)
+└─ experiment     one direction, started from any earlier try      (02-probes)
    └─ try         one attempt, in parallel with others             (trl-fix-lr, trl-d-lr, ...)
       └─ round    implement → run → analyze
 ```

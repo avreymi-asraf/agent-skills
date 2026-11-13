@@ -4,7 +4,7 @@ How each operation is done. Every operation is written as what it **finds**, the
 
 Working a try (§3) needs only the experiment repo and is given in plain git. Every other operation is done in the lab, with the experiment repo at hand, and uses `uv run scripts/lab.py` ([commands.md](commands.md)).
 
-The examples use experiment `observe/02-probes` in `model-repo`. In the commands, `E=observe/02-probes`.
+The examples use experiment `02-probes` in `model-repo`. In the commands, `E=02-probes`.
 
 ## 0. Writing the lab's records
 
@@ -20,10 +20,10 @@ The map of tries, the lab step records, the cortex and the journal are the lab's
 **Finds:** an idea crossed with what the lab knows, and a base: the try branch named by `> Branch:` on the system page, or any other try branch or start branch.
 
 ```bash
-uv run scripts/lab.py new-exp --repo model-repo --name observe/probes --base observe/01-training/first
+uv run scripts/lab.py new-exp --repo model-repo --name probes --base 01-training/first
 ```
 
-It gives the id, writes the lab folder and the journal row (`OPEN`) and publishes them, which reserves the id. Then it creates the start branch `observe/02-probes/main` from the base in a local worktree, with the lab kit and `notes/$E/{plan.md, log.md}` in it.
+It gives the id, writes the lab folder and the journal row (`OPEN`) and publishes them, which reserves the id. Then it creates the start branch `02-probes/main` from the base in a local worktree, with the lab kit and `notes/$E/{plan.md, log.md}` in it.
 
 Then, by hand:
 
@@ -43,7 +43,7 @@ uv run scripts/lab.py new-try --exp 02 --name trl-fix-lr --brief-file <file> [--
 ```
 
 1. It writes the try record `tries/trl-fix-lr.md` in the lab folder (status `live`, the base, the brief) and publishes it, which reserves the try name.
-2. It creates the try branch `observe/02-probes/trl-fix-lr` from the base (default: the start branch), makes its first commit (the current lab kit, and the brief written into `notes/$E/plan.md` under `This try`), and pushes it.
+2. It creates the try branch `02-probes/trl-fix-lr` from the base (default: the start branch), makes its first commit (the current lab kit, and the brief written into `notes/$E/plan.md` under `This try`), and pushes it.
 
 Whoever works the try then starts **on the try branch and pushes to the same branch**: locally `uv run scripts/lab.py mount --exp 02 --try trl-fix-lr`, in the cloud a try session ([claude-code-cloud.md](claude-code-cloud.md)). Write who works it (a person's name, or the session) in the try record's `worked_by` line.
 
