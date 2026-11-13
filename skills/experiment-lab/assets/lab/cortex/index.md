@@ -8,7 +8,7 @@
 * [[gap_map]]: open questions
 * [[log]]: chronological record of cortex and lab operations
 
-## Target Systems (`systems/`)
+## Experiment Repo Systems (`systems/`)
 
 ## Findings (`findings/`)
 

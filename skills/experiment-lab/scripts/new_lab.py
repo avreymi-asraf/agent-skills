@@ -28,6 +28,18 @@ RENAMED = {
     "lab-AGENTS.md": "AGENTS.md",
     "loop-skill.md": ".agents/skills/experiment-lab-loop/SKILL.md",
 }
+# Scaffold folder -> folder in the lab: the loop skill's references, stored beside it for the same reason.
+RENAMED_DIRS = {
+    "loop-references/": ".agents/skills/experiment-lab-loop/references/",
+}
+
+
+def lab_path(rel: str) -> str:
+    """Where a scaffold file lands in the lab."""
+    for src, dst in RENAMED_DIRS.items():
+        if rel.startswith(src):
+            return dst + rel[len(src):]
+    return RENAMED.get(rel, rel)
 # Every skill the lab's own content names (AGENTS.md, the loop skill). A lab must be whole wherever it
 # is cloned, so it gets its own copy of each one that is installed next to this skill. When the scaffold
 # starts naming another skill, add it here.
@@ -44,7 +56,7 @@ def main() -> None:
     written, kept = [], []
     for src in sorted(p for p in SCAFFOLD.rglob("*") if p.is_file()):
         rel = src.relative_to(SCAFFOLD).as_posix()
-        dst = lab / RENAMED.get(rel, rel)
+        dst = lab / lab_path(rel)
         if dst.exists():
             kept.append(dst)
             continue
@@ -85,7 +97,7 @@ def main() -> None:
               "install them into the lab's .agents/skills/ and commit.")
     slots = []
     for path in sorted(lab.rglob("*.md")):
-        if {".targets", ".venv"} & set(path.parts):
+        if {".targets", ".repos", ".venv"} & set(path.parts):
             continue
         for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if "{{FILL:" in line:

@@ -1,7 +1,7 @@
 # Purpose (`purpose.md`)
 
 ## 1. What This Lab Is For
-{{FILL: two or three sentences in the user's terms. What is being researched, on which target repos, with which data.}}
+{{FILL: two or three sentences in the user's terms. What is being researched, on which experiment repos, with which data.}}
 
 ## 2. The Far Goal
 {{FILL: the hardest thing the user wants to hand to this lab one day, in their words. An agent holding a wide task judges its choices against this. If the user has not said yet, write "Not written yet" and that an agent holding a wide task should say in its report which reading of the purpose it worked from.}}

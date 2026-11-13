@@ -4,9 +4,9 @@
 
 ## 1. Current Frontier (Best Verified Baselines)
 
-> One baseline per target repo and task, shared by all experiments. A number is written with the evaluation version it was measured with (`evaluation_version` from that experiment's `results.json`).
+> One baseline per experiment repo and task, shared by all experiments. A number is written with the evaluation version it was measured with (`evaluation_version` from that experiment's `results.json`).
 
-| Target Repo | Task / Benchmark | Best Branch / Commit | Metric | Evaluation Version | Provenance Experiment |
+| Experiment Repo | Task / Benchmark | Best Branch / Commit | Metric | Evaluation Version | Provenance Experiment |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ## 2. Active Sparks (Ideas Waiting to Be Tried)
@@ -17,7 +17,7 @@
 
 > One row per experiment, written by `scripts/lab.py`: `new-exp` adds it with **OPEN** in the Verdict column, `record-verdict` completes it. A row that says OPEN is an experiment someone may be working on.
 
-| Exp | Opened | Closed | Target Repo (`Branch`) | Idea | Metric vs. Baseline | Verdict | One-Line Takeaway |
+| Exp | Opened | Closed | Experiment Repo (`Branch`) | Idea | Metric vs. Baseline | Verdict | One-Line Takeaway |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ## 4. Anti-Repeat Banlist

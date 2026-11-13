@@ -14,14 +14,14 @@ The cortex is the `cortex/` folder. Two of its layers also reach outside it: the
 
 | Layer | Where | Holds |
 |---|---|---|
-| Sources | `experiments/<exp-name>/` and the experiment's branch | What the lab did. This is what an `experiment` anchor points at. |
+| Sources | `experiments/<repo short name>/<experiment name>/` (with its try records) and the experiment's try branches | What the lab did. This is what an `experiment` anchor points at. |
 | | `cortex/sources/<source-id>.md`, `cortex/sources/text/` | What was read from outside: the note, and the text that was actually read, stored by `cortex.py store` as it was fetched. The original stays where it was published (the note's `location`); a file that exists nowhere else goes to `cortex/sources/raw/`. A source whose text could not be obtained is a note with `read: not obtained`: a lead, with no claims. |
 | Claims | `cortex/claims/` | One claim per file |
 | Synthesis | `cortex/findings/<topic>.md` | What the lab knows about a topic, citing claims |
 | | `cortex/tensions/` | Two claims that disagree, and what would settle it |
 | | `cortex/gap_map.md` | The open questions, one row each |
 | | `JOURNAL.md` (lab root) | Frontier, Sparks, Banlist |
-| | `cortex/systems/<repo>.md` | A target's Experiment Language. Anchored to the code (`anchor: code`, `Fingerprint`), not to claims. |
+| | `cortex/systems/<repo>.md` | An experiment repo's system page: what it is for, the kept try branch, data and environment notes, and a pointer to `EXPERIMENT_LANGUAGE.md` on that branch. Anchored to the code (`anchor: code`, `Fingerprint`), not to claims. |
 | Map | `cortex/index.md`, `cortex/log.md` | `index.md`: one line per page, kept by hand. `log.md`: appended by `lab.py` when an experiment is opened, evaluated or closed, and by a review. |
 
 Templates: `claims/_TEMPLATE.md`, `findings/_TEMPLATE.md`, `sources/_TEMPLATE.md`, `systems/_TEMPLATE.md`. A tension uses the skill's template.
@@ -30,7 +30,7 @@ Templates: `claims/_TEMPLATE.md`, `findings/_TEMPLATE.md`, `sources/_TEMPLATE.md
 
 | Anchor | What it earns in this lab |
 |---|---|
-| `experiment` | **The lab saw it.** Names the experiment, the round and the commit. Its Conditions name the model, the data and split, and the evaluation version, so a reader can tell whether it applies to their experiment. |
+| `experiment` | **The lab saw it.** Names the experiment, the try, the round and the commit. Its Conditions name the model, the data and split, and the evaluation version, so a reader can tell whether it applies to their experiment. |
 | `quote` | **Someone else reports it.** For this lab it is a hypothesis until an experiment tests it. It can open a gap or a Spark and shape a plan. It cannot put an idea on the Banlist or a number on the Frontier. |
 | `stated` | **The user said it.** For facts about the data, the environment or the goal that nothing else records. |
 
@@ -65,7 +65,8 @@ Fusion here is driven by the experiment loop, not by a schedule.
 | Moment in the loop | What happens in the cortex |
 |---|---|
 | Finding a direction | Read (`ask`): findings, tensions, the gap map, the Banlist. Reading from outside to answer a gap is `investigate`: it starts from the gap's row and ends by updating that row. |
-| A round ends with something to tell the lab | Write the claim (`provisional`, `experiment` anchor), then work it into the findings page it changes, citing it. If it disagrees with a claim the lab holds, write the tension. Update the gap it touches. |
+| A round ends with something to tell the lab | The try writes a note to the lab in its log and nothing in the cortex. |
+| A lab step on a try | For each `lesson` note: write the claim (`provisional`, `experiment` anchor), then work it into the findings page it changes, citing it. If it disagrees with a claim the lab holds, write the tension. Update the gap it touches. A `source` note is an `add`; a `correction` is settled as section 4 says; a `question` is an `ask`, then an `investigate`. |
 | The experiment closes | List its open claims and settle each one, `confirmed` or `withdrawn`. Revise the pages that cited a withdrawn claim, and drop "provisional" from the citations of confirmed ones. If the idea ran cleanly, its final conclusion is written as a claim too: it is what a findings page and a Banlist entry cite. |
 | From time to time, and before a wide request that will choose a direction | `review`, with the additions in section 7. |
 
@@ -102,4 +103,4 @@ Read, besides `cortex/`: `JOURNAL.md`, and every `experiments/*/postmortem.md` a
 - **System pages.** Read the diff `check-drift` points at and see what on the page is no longer so.
 - **One experiment's detail.** Settings and debugging of a single experiment in a findings page. They belong in that experiment's log.
 
-Experiment folders are evidence: do not edit them. To check a claim against its experiment, read the postmortem; the plan and the log are in `notes/<exp-name>/` on the experiment's branch (`uv run scripts/lab.py mount-exp --exp <id>`). Append one line to `cortex/log.md`: `## [YYYY-MM-DD HH:MM] review | cortex — <what was fixed, how many items reported>`.
+Experiment folders are evidence: do not edit them. To check a claim against its experiment, read the postmortem; the try records are in its lab folder, and the plan and the log are in `notes/<experiment name>/` on the try branch the claim names (`uv run scripts/lab.py mount --exp <id> --try <try name>`). Append one line to `cortex/log.md`: `## [YYYY-MM-DD HH:MM] review | cortex — <what was fixed, how many items reported>`.
