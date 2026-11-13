@@ -1,6 +1,6 @@
 # Lab steps of `<experiment name>`
 
-> One entry per lab step, added at the end, never rewritten. The experiment's conclusion is what these entries show together. Each lab step's files (`evaluate.log`, `patch.diff`, `metrics.json`) are in `steps/<try name>-<short commit>/`.
+> One entry per lab step, added at the end, never rewritten, headed by the try it looked at; `Lab step <n>` counts that try's lab steps. The experiment's conclusion is what these entries show together. Each lab step's files (`evaluate.log`, `patch.diff`, `metrics.json`) are in `steps/<try name>-<short commit>/`.
 
 <!-- The form of an entry. Add entries below this comment; leave the comment as it is.
 

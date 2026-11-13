@@ -25,7 +25,7 @@ There are two levels of sessions. A **try session** works one try and sees only 
 - **[Find-a-direction]**: choosing the idea, crossed with what the lab knows.
 - **[Open-the-experiment]**: the start branch and the first plan.
 - **[Work-in-rounds]**: opening a try, and what a try does.
-- **[Reduce]**: several tries become one; the others leave the map.
+- **[Reduce]**: several tries become one; the others end, as `merged` or `dropped`.
 - **[What-to-tell-the-lab]**: what stays in a log and what every other experiment needs. The hardest judgment in the loop.
 - **[Lab-step]**: one try reviewed, evaluated and told to the lab; how knowledge is asked for.
 - **[Manage-many-tries]**: the long-running session that holds the process and not the content.
@@ -33,7 +33,7 @@ There are two levels of sessions. A **try session** works one try and sees only 
 - **[References]**: the system guide, the operations, cloud sessions, the evaluation API, the commands.
 - **[Example]**: one experiment from idea to close.
 
-How far to carry a request (one operation, guided step by step, or a whole experiment) is set by the request; see the lab's `AGENTS.md` §1, which also holds the rules that always hold. Companion skills: `cortex` for the operations on the lab's knowledge base (`add`, `investigate`, `ask`, `verify`, `review`), with this lab's layout and statuses in `cortex/profile.md`; `code-as-tools` when writing experiment code; `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
+How far to carry a request (one operation, guided step by step, or a whole experiment) is set by the request; see the lab's `AGENTS.md` §1; what holds for every request is its §5. Companion skills: `cortex` for the operations on the lab's knowledge base (`add`, `investigate`, `ask`, `verify`, `review`), with this lab's layout and statuses in `cortex/profile.md`; `code-as-tools` when writing experiment code; `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
 
 </experiment-lab-loop>
 
@@ -55,7 +55,7 @@ The id is two hex digits, unique in the lab, so `--exp 02` names the experiment 
 
 **The start branch is only a template.** It holds the lab kit, the first plan and an empty log. Tries start from it, and nothing enters it afterwards. An experiment's result is never "on main": it is on try branches, and what the lab concluded from them is in the lab folder.
 
-**The lab says what exists.** A try exists from the moment the lab records it, and it is live as long as its line in the map of tries (`tries.md`) says `live`. It stops being live when a reduce takes it into another try (`merged` or `dropped`), when a lab step ends it (`dropped`), or when its experiment closes (`closed`). Git decides none of this: a branch that exists, is old, or was merged somewhere proves nothing. Branches of tries that left the map stay as history; nobody works or reads them again.
+**The lab says what exists.** A try exists from the moment the lab records it, and it is live as long as its line in the map of tries (`tries.md`) says `live`. It stops being live when a reduce takes it into another try (`merged` or `dropped`), when a lab step ends it (`dropped`), or when its experiment closes (`closed`). Git decides none of this: a branch that exists, is old, or was merged somewhere proves nothing. Branches of tries that ended stay as history; nobody works or reads them again.
 
 **Who may write what.** Reading is open everywhere. Writing is not:
 
@@ -132,7 +132,7 @@ The first plan holds:
 **Opening a try** is done in the lab, with a **brief**: what to try and what makes this try different, whether it competes or cooperates with which tries, how far to go, when to stop and flag.
 
 ```bash
-uv run scripts/lab.py new-try --exp <id> --name <try name> --brief-file <file> [--base <branch>]
+uv run scripts/lab.py new-try --exp <id> --name <try name> --comment "<what it tries>" --brief-file <file> [--base <branch>]
 ```
 
 It writes the try's line in `tries.md` (the try branch, `live`, a comment of at most 100 characters saying what it tries) and publishes it, then creates the try branch from the start branch (which already holds the lab kit and the notes), writes the brief in the plan's `This Try` section, and pushes it. So whoever works the try **starts on the try branch and pushes to the same branch**: a local worktree (`lab.py mount`), or a try session in the cloud ([claude-code-cloud.md](references/claude-code-cloud.md)). An experiment with one try is normal, especially at the beginning. Competing tries do not read each other, so their results can be told apart.
@@ -160,7 +160,7 @@ Tries produce a mess, and that is fine: plans that changed, logs full of dead en
 2. For each other try: bring it in without committing, **decide which code enters** (all, part or none), and **synthesize the notes by meaning**, not by text: rewrite the target's plan in place, and append one entry to its log saying what that try attempted, what it saw, what entered and why.
 3. Push the target, then **update the map**: each reduced try's line says `merged` or `dropped`, into which try, and in its comment how it ended.
 
-Very often a reduce is simply dropping the weaker try and keeping its few lessons. This is how a try ends: it is not deleted, it leaves the map, and its line says where what it taught went. The lesson of a failure is often what the remaining try most needs; a technical failure gets an entry that says it was technical. When two tries reached contradicting lessons and the evidence does not decide, keep both and say so; do not pick one.
+Very often a reduce is simply dropping the weaker try and keeping its few lessons. This is how a try ends: it is not deleted, and its line in the map says `merged` or `dropped` and where what it taught went. The lesson of a failure is often what the remaining try most needs; a technical failure gets an entry that says it was technical. When two tries reached contradicting lessons and the evidence does not decide, keep both and say so; do not pick one.
 
 What whoever continues the target does not need is dropped on purpose. The notes to the lab that no lab step has read yet are the exception: they are carried over word for word. After a reduce the target's signal is `working`, because the combined code has not been run; running it is its next round.
 
@@ -194,7 +194,7 @@ A note to the lab is written for a reader who has not seen the try: one sentence
 
 <Lab-step>
 
-A **lab step** is done in the lab on **one chosen try** ([operations.md](references/operations.md) §5). It can be any live try, not only the newest or the best, and one try can have several. It is the only way anything from an experiment repo enters the lab.
+A **lab step** is done in the lab on **one chosen try** ([operations.md](references/operations.md) §5). It can be any live try, not only the newest or the best, and one try can have several. It is the only way anything from an experiment repo enters the cortex.
 
 1. **Read what is new**: `lab.py inbox --exp <id> --try <try name>` shows the try's signal and the notes to the lab added since its last lab step.
 2. **Review the try**: its plan, its log, its code change against the experiment's base. Does the diff read as the idea? Did it run cleanly? Do the runs support what the log says?
@@ -263,7 +263,7 @@ A request: "try reinforcement-learning fine-tuning on the base model and see if 
 5. **`reward-shaped`** crashes on memory twice, then runs and shows no movement. Signal `failed`; the log says the last result was a real one.
 6. **Lab step on `reward-outcome`.** `inbox` shows the leak lesson. The repo has no `evaluate.py` yet, so the record says "evaluation: not run" and gives the conclusion. The lesson becomes a provisional claim anchored to `02-grpo`, try `reward-outcome`, round 2 and its commit, cited from the topic page on training data.
 7. **Reduce.** `reward-shaped` is dropped into `reward-outcome`: no code enters, one log entry says what it tried and saw, and its line in the map says `dropped → reward-outcome`. The remaining try's plan is rewritten: render only fields known at prediction time. Its signal is `working`.
-8. **More rounds** on `reward-outcome`, then a second lab step on it. The stopping point's budget is reached; the decision to go on for one more try, and why, is in the lab step record.
+8. **More rounds** on `reward-outcome`, then a second lab step on it. The stopping point's budget is reached; the decision to go on for one more round, and why, is in the lab step record.
 9. **Close.** The two lab step records are aggregated into the postmortem. `record-verdict --kept reward-outcome`: the experiment is kept for the leak-free rendering it added, the leak claim is confirmed, the system page names `02-grpo/reward-outcome`, and the lab is published.
 
 Had `reward-outcome` shown that GRPO cannot work on this model at all, the experiment would have closed as `HYPOTHESIS_REFUTED`, with "try PPO" as a Spark. Had `reward-shaped` turned into a method of its own, it would have become a new experiment opened from its try branch.

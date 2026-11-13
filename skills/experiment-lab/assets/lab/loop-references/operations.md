@@ -17,7 +17,7 @@ The map of tries, the lab step records, the cortex and the journal are the lab's
 
 ## 1. Open an experiment (lab)
 
-**Finds:** an idea crossed with what the lab knows, and a base: the try branch named by `> Branch:` on the system page, or any other try branch or start branch.
+**Finds:** an idea crossed with what the lab knows, and a base: the try branch named by `> Branch:` on the system page, or any other try branch or start branch; with no `--base`, the repo's default branch, which is right only while no experiment on the repo is kept.
 
 ```bash
 uv run scripts/lab.py new-exp --repo model-repo --name probes --base 01-training/first
@@ -85,7 +85,7 @@ Commit code, log and plan together and push after every round that matters.
 
 ## 4. Reduce (lab)
 
-**Finds:** two or more live tries of one experiment, and a decision about which one is the **target**: an existing try that nobody is working at that moment, or a new try opened for the reduce. Every other try will leave the map.
+**Finds:** two or more live tries of one experiment, and a decision about which one is the **target**: an existing try that nobody is working at that moment, or a new try opened for the reduce. Every other try will end, as `merged` or `dropped`.
 
 1. **The target.** For a new one, open a try (§2) whose base is the try branch that holds the code to start from, and whose brief says which tries it reduces. Work in the target's working copy.
 2. **One other try at a time**, here `trl-d-lr`:
@@ -113,10 +113,10 @@ Commit code, log and plan together and push after every round that matters.
    - Do not copy the other try's log. What whoever continues the target does not need is dropped here, on purpose. When two tries reached contradicting lessons and the evidence does not decide, keep both and say so.
    - Of the other try's run files, keep only those a carried lesson cites. When both tries used the same run name the files conflict: keep the target's, and cite the other try's by its branch and commit.
 5. **Commit the merge**: stage what you chose by name (`git add <paths>`, never `git add -A`), then `git commit`. Go on to the next try. After the last one, push the target. Its signal is `working`: the combined code has not been run yet, and running it is the target's next round.
-6. **Update the map**, in the lab: change each reduced try's line in `tries.md` to `merged → <try name>` or `dropped → <try name>`, and its comment to how it ended (`lab.py set-try`). What entered and which lessons were carried is in the target's log, in the entry of step 4. A new target that was opened from one of the tries takes that try off the map too. Publish (§0).
+6. **Update the map**, in the lab: change each reduced try's line in `tries.md` to `merged → <try name>` or `dropped → <try name>`, and its comment to how it ended (`lab.py set-try`). What entered and which lessons were carried is in the target's log, in the entry of step 4. A new target that was opened from one of the tries ends that try too (`merged → <target>`). Publish (§0).
 7. **Report** in a few lines: the target, what entered from each try, what was left out and why, the lessons. This report is all a managing session reads of a reduce.
 
-**Leaves:** one live try holding the chosen code and the synthesized notes; the others off the map, each line saying merged or dropped and into what. Their branches stay in git as history. No one works, reduces or reads them again, and a person may delete them.
+**Leaves:** one live try holding the chosen code and the synthesized notes; the others ended, each line saying merged or dropped and into what. Their branches stay in git as history. No one works, reduces or reads them again, and a person may delete them.
 
 ## 5. Lab step (lab)
 
@@ -175,7 +175,7 @@ The details of each step are in the skill's [Close-the-experiment].
 
 ## 7. A try becomes an experiment (lab)
 
-When a try turns out to be a direction of its own, it does not grow inside its experiment. Whoever works it says so in the try log, sets the signal to `ready`, pushes and stops. In the lab, a new experiment is opened with that try branch as its base (§1). The try itself gets a lab step that records why, and its status is set to `dropped`, with a line naming the new experiment.
+When a try turns out to be a direction of its own, it does not grow inside its experiment. Whoever works it says so in the try log, sets the signal to `ready`, pushes and stops. In the lab, a new experiment is opened with that try branch as its base (§1). The try itself gets a lab step that records why, and its status is set to `dropped`, with a comment naming the new experiment.
 
 ## 8. Manage many tries (lab, a managing session)
 

@@ -40,7 +40,7 @@ The cortex is the `cortex/` folder. Where the `cortex` skill says *page*, read a
 | | `cortex/gap_map.md` | What the cortex should know and does not, one row each |
 | Map | `cortex/index.md` | The map of the field: its areas, and under each the topic pages. An area with nothing under it shows where the cortex is thin. Kept by hand, in the same commit as the page. |
 | | `cortex/log.md` | One line per operation on the cortex, and per experiment opened, evaluated or closed |
-| Beside the knowledge | `cortex/purpose.md`, `cortex/systems/<repo>.md` | What the lab is for; and one system page per experiment repo (its Experiment Language, anchored to the code). They live here so that everything a reader needs is in one place; they are about the lab, not about the field. |
+| Beside the knowledge | `cortex/purpose.md`, `cortex/systems/<repo>.md` | What the lab is for; and one system page per experiment repo (where its Experiment Language is, its data and its limits, anchored to the code). They live here so that everything a reader needs is in one place; they are about the lab, not about the field. |
 
 Templates: `sources/_TEMPLATE.md`, `claims/_TEMPLATE.md`, `topics/_TEMPLATE.md`, `systems/_TEMPLATE.md`. A tension uses the skill's template.
 

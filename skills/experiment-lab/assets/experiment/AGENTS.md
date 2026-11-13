@@ -28,7 +28,7 @@ this branch
     └── runs/<nn>-<short-name>/    the files of each run
 ```
 
-What reaches the lab from here is only what is written in `log.md` under `For the lab`, and only when the lab comes for it in a **lab step**. The lab also reads the **signal** of the last log entry to know where the try stands.
+What reaches the lab from here is only what is written in `log.md` under `For the lab`, and only when the lab comes for it in a **lab step**. The lab also reads the **signal** of the last log entry to know where the try stands. What comes back is in the lab's records: the answer to a `question` note is in the lab step record of this try, in the experiment's `lab-steps.md` in the lab. Where the lab is: the message that opened your session names it; a local worktree sits inside the lab's folder, under `.repos/worktrees/`. How to read it: the `experiment-lab-loop` skill → Lab-step, "Asking, from a try".
 
 ## 3. How a Try Is Worked
 
@@ -72,11 +72,11 @@ The terms a try meets. Use each word exactly as written; a synonym is read as a 
 | **Signal** | The last line of the last log entry: `working`, `ready` (for a lab step or a reduce), `failed` (nothing worth keeping; say whether technical or a real result), `blocked` (a question must be answered first). | The status in the map, which the lab owns. |
 | **Note to the lab** | One item under `For the lab` in a log entry: `lesson` (seen in a round), `source` (found outside), `correction` (a claim of the cortex looks wrong), `question`. One sentence, its anchor, its conditions. | A claim. It becomes one only in a lab step. |
 | **Lab step** | What the lab does on one chosen try: review it, evaluate it when that is possible, write the conclusions into the lab. | Part of working a try. |
-| **Reduce** | The lab's operation that turns two or more tries into one: the chosen code and the conclusions, in one try. The others leave the map as `merged` or `dropped`. It is how a try ends. | A plain `git merge`. |
+| **Reduce** | The lab's operation that turns two or more tries into one: the chosen code and the conclusions, in one try. The others end as `merged` or `dropped`. It is how a try ends. | A plain `git merge`. |
 | **Cortex** | The lab's knowledge base of its field, from every source; most of it from outside the lab. Read it when the try needs to know something. | A record of experiments. Something a try writes. |
 | **Journal** | The lab's `JOURNAL.md`: the path of the research. | A knowledge base. |
 | **Experiment Language** | The shared code language of this repo: its concepts, its shared components, its extension points. `EXPERIMENT_LANGUAGE.md` at the root, changed like code. | The lab kit. |
-| **Lab kit** | This file and `.agents/skills/`: what the lab committed on the start branch so that a checkout is a whole system. | Part of a try's code change. |
+| **Lab kit** | This file, `CLAUDE.md` and `GEMINI.md` (which only point to it) and `.agents/skills/`: what the lab committed on the start branch so that a checkout is a whole system. | Part of a try's code change. |
 | **Evaluation** | One run of the repo's `evaluate.py` on one commit of a try, done by the lab in a lab step. | A measurement inside a round, which a try makes however is useful. |
 | **Technical failure** | A crash, out-of-memory, missing credential or typo. | A result about the idea. |
 | **Session** | One person or agent working in one working copy. A **try session** works one try and has only this repo. | A runtime. A conversation. |
@@ -90,7 +90,7 @@ The terms a try meets. Use each word exactly as written; a synonym is read as a 
 5. **Secrets come only from environment variables**, the ones the lab names in its `.env.example` and gives to the session's environment. Never a value in git, logs or notes.
 6. **Python is `uv`, and only `uv`:** `uv run`, `uv add`, `uv sync`.
 7. **Where heavy runs go:** {{FILL: the same answer as item 10 of §5 in the lab's `AGENTS.md`.}}
-8. **Data:** {{FILL: the same answer as item 11 of §5 in the lab's `AGENTS.md`.}}
+8. **Data:** {{FILL: the same answer as item 11 of §5 in the lab's `AGENTS.md`, written out here: a try session does not read the lab's system pages.}}
 
 ## 7. What You Learned Goes Somewhere
 

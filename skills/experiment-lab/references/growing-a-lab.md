@@ -36,7 +36,7 @@ Ask instead what the behavior is for, who needs it, and which part of the lab ca
 | Something decided when an experiment opens | The plan template |
 | Something settled when it closes | The postmortem template and the closing steps of the loop skill |
 | What is worth writing to the cortex, and how far it is trusted | `cortex/profile.md` and the claim, topic page and source templates |
-| How code is written in an experiment repo | The system page (Experiment Language) |
+| How code is written in an experiment repo | `EXPERIMENT_LANGUAGE.md` in the experiment repo (the Experiment Language) |
 | A mechanical step that keeps coming out wrong | `scripts/lab.py`: make the right path the easy one |
 | What a word means | The vocabulary in `AGENTS.md`, once, with an example |
 | Something the user wants always | "What always holds" in `AGENTS.md`, with its reason |
@@ -64,8 +64,8 @@ A wrong belief produces a family of mistakes; the one the user rejected only sur
 |---|---|---|
 | "An experiment is a test that passes or fails." | Closed as refuted after one failed run; a crash counted as a result; the plan never edited after day one; work stops dead at the stopping point | The vocabulary; a plan template that reads as a contract; a log template with no place for the kind of failure |
 | "The job is to produce a number." | Evaluation on leaked data; the best seed reported; numbers from two evaluation versions compared; a threshold tuned on held-out data | `purpose.md` §3 is empty or generic; data rules missing from the system page |
-| "This experiment is my codebase." | A private loader; a copied script per variant; a shared component forked; a diff that is mostly plumbing | The Experiment Language is not on the system page, or did not reach the subagent that wrote the code |
-| "The cortex is where things get written down." | One experiment's settings in a topic page; a claim per sentence of a paper; a page per source. Or the opposite: a lesson everyone needs, left in a branch log | `cortex/profile.md` §1 does not say what is worth writing from each kind of source; the log template has no `Told the lab` line |
+| "This experiment is my codebase." | A private loader; a copied script per variant; a shared component forked; a diff that is mostly plumbing | `EXPERIMENT_LANGUAGE.md` is missing or vague, or did not reach the subagent that wrote the code |
+| "The cortex is where things get written down." | One experiment's settings in a topic page; a claim per sentence of a paper; a page per source. Or the opposite: a lesson everyone needs, left in a branch log | `cortex/profile.md` §1 does not say what is worth writing from each kind of source; the log template has no `For the lab` line |
 | "What is written in the cortex is known." | A paper's result presented as the lab's finding; a Banlist entry that rests on a quote; a plan built on a withdrawn claim; two contradicting results averaged into "mixed" | The anchor of a claim does not reach the page; the topic page template has no `Rests on` line; nothing asks for a tension |
 | "The cortex is the memory of our experiments." | Nothing added unless a gap asks; outside results treated as second-rate; directions that only follow the last experiment; a field the lab does not know | The vocabulary and `cortex/profile.md` §1 describe the cortex by the experiments; a `quote` anchor is called a hypothesis |
 | "A new direction is the next item on the list." | Ten experiments on one knob; never reading outside the lab; never questioning the task itself | The far goal is unwritten; every Spark is a follow-up, because that is what the postmortem asks for |
@@ -80,7 +80,7 @@ A lab has more levels of memory than most systems, and each lesson belongs to on
 
 | True for | Written in |
 |---|---|
-| This Try | `notes/<experiment name>/` on its try branch: `plan.md`, `log.md` |
+| This try | `notes/<experiment name>/` on its try branch: `plan.md`, `log.md` |
 | This experiment | The lab step record of the try that showed it, in the lab folder's `lab-steps.md` |
 | The research: a different experiment should know it | The cortex: a claim, and the topic page or gap it changes |
 | How this lab works | The lab's own files: `AGENTS.md`, its `experiment-lab-loop` skill, the templates, `cortex/profile.md`, `lab.py` |

@@ -14,8 +14,8 @@
 
 ## 3. What Went Into the Cortex and the Journal
 * **Claims from this experiment:** [Each one by file name: confirmed or withdrawn, and why. None may stay provisional. The claim that states the final conclusion, if the idea ran cleanly. Older claims this experiment's result disagrees with, and what happened to each: tension, withdrawn or superseded.]
-* **Experiment Language:** [Unchanged | shared components added or fixed, extension points or vocabulary changed, and where the system page was updated. Does the kept try's `patch.diff` (its code change against the experiment's base) read as the idea only? If not, what else is in it and why.]
-* **Other cortex changes:** [`topics/`, `gap_map.md`, the system page, if the Experiment Language changed.]
+* **Experiment Language:** [Unchanged | shared components added or fixed, extension points or vocabulary changed, in `EXPERIMENT_LANGUAGE.md` on the kept try branch, which the system page's `> Branch:` line now names. Does the kept try's `patch.diff` (its code change against the experiment's base) read as the idea only? If not, what else is in it and why.]
+* **Other cortex changes:** [`topics/`, `gap_map.md`, the system page (`> Branch:`, Fingerprint, data and limits).]
 * **Anti-Repeat Banlist entry (if refuted):** [`[pattern] -> [why it failed] -> [unless condition X changes] ([[claims/<claim>]])`]
 
 ## 4. Sparks

@@ -52,7 +52,7 @@ The rules are meaning, not locks. The hosting does not stop anyone from pushing 
 | Lab step | Lab | A lab step record; claims, topic pages, gap map, journal |
 | Close | Lab | The postmortem, the verdict, settled claims, the kept try, no live tries |
 | Manage many tries | Lab, in a managing session | The map, kept current |
-| Delete branches of tries that left the map | Hosting, by a person (a cloud agent cannot) | A shorter branch list |
+| Delete branches of tries that ended | Hosting, by a person (a cloud agent cannot) | A shorter branch list |
 
 "Lab" means the lab with the experiment repo at hand: a local clone of the lab (which keeps the experiment repos under `.repos/`), or a cloud session attached to both.
 

@@ -412,7 +412,7 @@ def need_try(exp: Experiment, try_name: str, live: bool = False) -> dict:
              "A try is opened with `new-try`.")
     if live and row["status"] != "live":
         fail(f"Try '{try_name}' of {exp.name} is not live (the map says: {row['status']}"
-             + (f" → {row['into']}" if row["into"] else "") + "). A try that left the map is not worked again.")
+             + (f" → {row['into']}" if row["into"] else "") + "). A try that ended is not worked again.")
     return row
 
 
@@ -747,9 +747,12 @@ def create_start_branch(exp: "Experiment") -> None:
     print(f"               On it: the lab kit (AGENTS.md, .agents/skills/) and {NOTES_DIR}/{name}/ (plan.md, log.md)")
     for note in kit_notes:
         print(f"[NOTE] {note}")
-    if not (worktree / "EXPERIMENT_LANGUAGE.md").exists():
-        print("[NOTE] The base has no EXPERIMENT_LANGUAGE.md. Then the first job of this experiment is to connect the pipeline "
-              "and write it (see the system page template).")
+    language, form = worktree / "EXPERIMENT_LANGUAGE.md", START_BRANCH_DIR / "EXPERIMENT_LANGUAGE.md"
+    if not language.exists():
+        if form.exists():
+            language.write_text(fill(form.read_text(encoding="utf-8"), values), encoding="utf-8")
+        print("[NOTE] The base has no EXPERIMENT_LANGUAGE.md" + ("; its form is now on the start branch" if form.exists() else "")
+              + ". The first job of this experiment is to connect the pipeline and write it.")
     note_missing_system_page(exp.repo)
     print(f"[NEXT] Write the first plan in {rel(notes_dir)}/plan.md (leave `This Try` empty), then commit and push the start branch:")
     print(f"         git -C {rel(worktree)} add -A && git -C {rel(worktree)} commit -m 'Open {name}: lab kit and first plan'")
@@ -864,7 +867,7 @@ def cmd_new_try(args: argparse.Namespace) -> None:
     # A line that is live with no branch anywhere is a `new-try` that stopped half way: this run finishes it.
     repair = (row := exp.try_row(args.name)) is not None and row["status"] == "live" and remote_or_local(exp.clone, exp.branch(args.name)) is None
     if row and not repair:
-        fail(f"{exp.name} already has a try '{args.name}' on its map. A try name is used once, also after the try left the map.")
+        fail(f"{exp.name} already has a try '{args.name}' on its map. A try name is used once, also after the try ended.")
     if problem := comment_problem(args.comment):
         fail(problem)
     brief = Path(args.brief_file).read_text(encoding="utf-8") if args.brief_file else args.brief
@@ -996,7 +999,7 @@ def cmd_tries(args: argparse.Namespace) -> None:
         for r in table:
             print("  " + "  ".join(r[i].ljust(widths[i]) for i in range(5)) + "  " + r[5])
         if not args.all and len(rows) > len(live):
-            print(f"  ({len(rows) - len(live)} more left the map; --all shows them)")
+            print(f"  ({len(rows) - len(live)} more ended; --all shows them)")
 
 
 def cmd_inbox(args: argparse.Namespace) -> None:
@@ -1264,7 +1267,7 @@ def main() -> None:
 
     p = sub.add_parser("tries", help="Print the map of tries, with each live try's signal and last commit as read from its branch")
     p.add_argument("--exp", help=exp_help + " (default: every open experiment)")
-    p.add_argument("--all", action="store_true", help="Also the tries that left the map")
+    p.add_argument("--all", action="store_true", help="Also the tries that ended")
 
     p = sub.add_parser("inbox", help="A try's signal and its notes to the lab added since its last lab step")
     p.add_argument("--exp", required=True, help=exp_help)
@@ -1311,4 +1314,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except BrokenPipeError:   # the output was piped into a command that stopped reading (`| head`)
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+        sys.exit(0)
