@@ -22,7 +22,7 @@ The cortex is the `cortex/` folder. One of its layers also reaches outside it: t
 | Layer | Where | Holds |
 |---|---|---|
 | Sources | `cortex/sources/<source-id>.md`, `cortex/sources/text/` | What was read from outside, of any kind (paper, article, documentation, dataset, code, talk, conversation): the note, and the text that was actually read, stored by `cortex.py store` as it was fetched. The original stays where it was published (the note's `location`); a file that exists nowhere else goes to `cortex/sources/raw/`. A source whose text could not be obtained is a note with `read: not obtained`: a lead, with no claims. |
-| | `experiments/<repo short name>/<experiment name>/` (with its try records) and the experiment's try branches | What the lab did. This is what an `experiment` anchor points at. |
+| | `experiments/<repo short name>/<experiment name>/` (with its map of tries and lab step records) and the experiment's try branches | What the lab did. This is what an `experiment` anchor points at. |
 | Claims | `cortex/claims/` | One claim per file |
 | Synthesis | `cortex/findings/<topic>.md` | What is known about a topic, citing claims of every anchor |
 | | `cortex/tensions/` | Two claims that disagree, and what would settle it |
@@ -114,4 +114,4 @@ Read, besides `cortex/`: `JOURNAL.md`, and every `experiments/<repo short name>/
 - **System pages.** Read the diff `check-drift` points at and see what on the page is no longer so.
 - **One experiment's detail.** Settings and debugging of a single experiment in a findings page. They belong in that experiment's log.
 
-Experiment folders are evidence: do not edit them. To check a claim against its experiment, read the postmortem; the try records are in its lab folder, and the plan and the log are in `notes/<experiment name>/` on the try branch the claim names (`uv run scripts/lab.py mount --exp <id> --try <try name>`). Append one line to `cortex/log.md`: `## [YYYY-MM-DD HH:MM] review | cortex — <what was fixed, how many items reported>`.
+Experiment folders are evidence: do not edit them. To check a claim against its experiment, read the postmortem; the map of tries and the lab step records are in its lab folder, and the plan and the log are in `notes/<experiment name>/` on the try branch the claim names (`uv run scripts/lab.py mount --exp <id> --try <try name>`). Append one line to `cortex/log.md`: `## [YYYY-MM-DD HH:MM] review | cortex — <what was fixed, how many items reported>`.

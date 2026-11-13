@@ -26,7 +26,7 @@ The running example: experiment repo `model-repo` (short name `model`), idea `pr
 | **Lab step** | The operation done in the lab on one chosen try: review it, run the evaluation on it when one is possible, and write the conclusions into the lab (a lab step record, the cortex, the journal). It can be done on any try, at any time, and several times in one experiment. The only way anything from an experiment repo enters the cortex. | Part of working a try. Something reserved for one special branch or for the end. |
 | **Close** | The decision, made in the lab, that an experiment has reached its conclusion. The experiment's conclusion is the aggregation of its lab step records. | Something git shows. An experiment can close while tries are still on the map; closing takes them off it. |
 | **Base** | The branch and commit an experiment or a try starts from. An experiment can start from any try branch or start branch of its repo. A try starts from its experiment's start branch or from another try branch. | Something the name shows. The base of a pull request, which is always called "the pull request's base". |
-| **Brief** | What whoever opens a try tells whoever works it: what to try and what makes it different, whether it competes or cooperates with which tries, how far to go, when to stop and flag. It is written in the try record and in the try's plan when the try is opened. | Something said only in a prompt or a conversation. |
+| **Brief** | What whoever opens a try tells whoever works it: what to try and what makes it different, whether it competes or cooperates with which tries, how far to go, when to stop and flag. It is written in the try's plan, under `This Try`, when the try is opened; the map holds only a short comment. | Something said only in a prompt or a conversation. |
 | **Kept** | An experiment is kept when one of its try branches becomes the base later experiments start from; the system page's `> Branch:` line names that try branch. Decided at close, apart from the verdict. | The verdict. A refuted experiment can be kept for a component it added. |
 
 ## 3. Branches and names
@@ -40,8 +40,9 @@ The running example: experiment repo `model-repo` (short name `model`), idea `pr
 | **Try branch** | `<experiment name>/<try name>` | `02-probes/trl-fix-lr` |
 | **Notes** | `notes/<experiment name>/` on a branch | `notes/02-probes/plan.md` |
 | **Lab folder** | `experiments/<repo short name>/<experiment name>/` in the lab | `experiments/model/02-probes/` |
-| **Try record** | `<lab folder>/tries/<try name>.md` | `experiments/model/02-probes/tries/trl-fix-lr.md` |
-| **Lab step files** | `<lab folder>/tries/<try name>/<short commit>/` | `…/tries/trl-fix-lr/3f9a2c1/evaluate.log` |
+| **Map of tries** | `<lab folder>/tries.md` | `experiments/model/02-probes/tries.md` |
+| **Lab step records** | `<lab folder>/lab-steps.md` | `experiments/model/02-probes/lab-steps.md` |
+| **Lab step files** | `<lab folder>/steps/<try name>-<short commit>/` | `…/steps/trl-fix-lr-3f9a2c1/evaluate.log` |
 | **Local worktree** | `.repos/worktrees/<repo short name>/<experiment name>/<try name>/` in the lab's folder (git-ignored) | `.repos/worktrees/model/02-probes/trl-fix-lr/` |
 
 Rules for names:
@@ -54,15 +55,15 @@ Rules for names:
 
 **Start branch.** A template: the lab kit, the first plan and an empty log, on top of the experiment's base. `new-exp` writes it, and nothing enters it afterwards. Tries start from it. It is never worked on, never evaluated, and never the place where an experiment's result is.
 
-**Map of tries.** The try records of an experiment, in the lab. It says which tries exist and where each stands, and it is the only definition of a try being live or done: git ancestry and the existence of a branch decide nothing. `lab.py tries` prints it.
+**Map of tries.** One file per experiment, `tries.md` in its lab folder, with one line per try: the try branch, the status, and a comment of at most 100 characters (while live: what it tries; afterwards: how it ended). Nothing else is kept per try in the lab: the brief and the base are in the try's plan, and what lab steps concluded is in `lab-steps.md`. It says which tries exist and where each stands, and it is the only definition of a try being live or done: git ancestry and the existence of a branch decide nothing. `lab.py tries` prints it.
 
-**Status** (of a try, in its try record). Owned by the lab:
+**Status** (of a try, in its line of the map). Owned by the lab:
 
 | Status | Meaning |
 |---|---|
 | `live` | The try is in play: being worked, waiting for a lab step or a reduce, or waiting for an answer. |
-| `merged` | A reduce took code from it into the try named in `into`. |
-| `dropped` | A reduce took only its lessons into the try named in `into`; or, with no `into`, a lab step recorded its conclusion and it was ended. |
+| `merged` | A reduce took code from it into the try the line names (`merged → <try>`). |
+| `dropped` | A reduce took only its lessons into the try the line names (`dropped → <try>`); or, with no try named, a lab step recorded its conclusion and it was ended. |
 | `closed` | Its experiment closed while it was live. |
 
 A try that is not `live` is never worked, reduced or read again. Its branch stays in git as history and may be deleted by a person; nothing depends on it.
@@ -76,8 +77,8 @@ A try that is not `live` is never worked, reduced or read again. Its branch stay
 | **Log** (`log.md`) | Append-only: one entry per round, and one entry per try taken in by a reduce. Every entry's heading carries the try name. "The log" is this file; `cortex/log.md` is always called by its path. | The plan. |
 | **Signal** | The line of a try log's last entry by which the try tells the lab where its work stands: `working`, `ready` (for a lab step or a reduce), `failed` (nothing worth keeping; say whether technical or a real result), `blocked` (a question must be answered first). `lab.py tries` reads it from the branch and shows it next to the status. | The status, which the lab owns. A message in a conversation. |
 | **Note to the lab** | One item under the heading `For the lab` in a log entry, written for a lab step. Four kinds: `lesson` (seen in a round; anchor: commit and run), `source` (found outside; anchor: link and the quoted words), `correction` (a claim the cortex holds looks wrong; anchor: the claim and the evidence), `question` (something neither the cortex nor the round could answer). Form: one sentence, the anchor, the conditions. | A claim. It becomes one, or changes one, only in a lab step. |
-| **Try record** | The lab's file for one try: who and what it is (experiment, try, branch, base, status, `into`, who works it), its brief, the answers to its questions, one lab step record per lab step, and how it ended. Written only in the lab. A try may read its own record. | The try's notes, which live on its branch. |
-| **Lab step record** | A section of a try record, one per lab step: the commit that was reviewed, the evaluation's result or why none was run, the conclusions, and what was written to the cortex and the journal. | A claim. A log entry. |
+| **Line of the map** | The lab's whole record of one try: its try branch, its status, and a comment of at most 100 characters. Written only in the lab. | A file per try. The try's notes, which live on its branch. |
+| **Lab step record** | An entry in the experiment's `lab-steps.md`, one per lab step, headed by the try name: the commit that was reviewed, the evaluation's result or why none was run, the conclusions, the answers to the try's questions, and what was written to the cortex and the journal. | A claim. A log entry. |
 | **Lab kit** | The files the lab commits on a start branch and refreshes at the opening of every try, so that a working copy is a whole system with nothing else attached: `AGENTS.md` (the rules for working a try; its first line names the lab commit it came from) and the lab's skills (`.agents/skills/`, linked from `.claude/skills/`). Owned by the lab, never edited in a try, not part of a try's code change. | The Experiment Language page, which belongs to the experiment repo's code. |
 
 ## 5. Knowledge

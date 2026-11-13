@@ -53,7 +53,7 @@ Clone the lab into an empty folder and run every command against a scratch exper
 
 ## 5. Housekeeping
 
-A lab that has run for a while collects leftovers that later agents read as state: worktrees of closed experiments, branches that are no experiment or try, try records still `live` that nobody works, Sparks that were done, experiments opened and never closed (rows still marked `OPEN` in the journal's matrix). List them for the user with what each is; remove only what the user confirms. The cortex's own upkeep is the `cortex` skill's review, with the lab's additions in `cortex/profile.md`.
+A lab that has run for a while collects leftovers that later agents read as state: worktrees of closed experiments, branches that are no experiment or try, lines of a map of tries still `live` that nobody works, Sparks that were done, experiments opened and never closed (rows still marked `OPEN` in the journal's matrix). List them for the user with what each is; remove only what the user confirms. The cortex's own upkeep is the `cortex` skill's review, with the lab's additions in `cortex/profile.md`.
 
 ## Signs, and the part they point to
 
@@ -77,6 +77,6 @@ A lab that has run for a while collects leftovers that later agents read as stat
 | The agent picks a direction that serves nothing | The far goal is missing, or is template text | `purpose.md` |
 | A subagent did its piece correctly and the whole is wrong | The brief dropped the reason | `AGENTS.md` attention section |
 | Runs are started and only read when they finish; GPU time is spent on runs that answer nothing | Nothing asks for a run plan before the run, or the repo has no tools for watching one | Log template, system page (Observation) |
-| A cloud session cannot continue an experiment | Something was not pushed, or a path is machine-specific | What always holds; the try record; `mount` |
+| A cloud session cannot continue an experiment | Something was not pushed, or a path is machine-specific | What always holds; the map of tries; `mount` |
 
 When a sign appears after a real request the user rejected, it is a reject: open an entry in `.grow-autonomy/rejects.md` first, then follow `grow-autonomy` to the root. Do not fix signs one by one; several usually share a root.

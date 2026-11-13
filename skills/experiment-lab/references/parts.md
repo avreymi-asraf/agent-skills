@@ -37,7 +37,8 @@ It lives in `.agents/skills/experiment-lab-loop/` with a relative link from `.cl
 
 - `notes/plan.md`, written on the start branch and carried by every try: the idea (stable), what we know and how we will do it (rewritten), the Experiment Language block (extension point, shared components used, what stays fixed for every try, what is added to the shared set), open questions, stopping point, the `data_source` line, and `This Try`, where a try's brief is written when it is opened.
 - `notes/log.md`, on a try branch: one entry per round with Tried, Run plan, Saw, Decided, For the lab, Signal, and one entry per try taken in by a reduce. The run plan is written before the run, because running is the expensive part of a round.
-- `tries/_TEMPLATE.md`, in the lab folder: the try record. Status, base, who works it, the brief, the answers to its questions, one lab step record per lab step, how it ended.
+- `tries.md`, in the lab folder: the map of tries. One line per try: the try branch, its status, a comment of at most 100 characters. Kept this small on purpose: it is what a managing session reads, and a file per try grew into a second copy of the try's notes.
+- `lab-steps.md`, in the lab folder: one lab step record per lab step, with the answers to a try's questions.
 - `postmortem.md`, in the lab folder: verdict, the final conclusion as the lab step records show it together and why we stopped, why it went this way, what happened to each provisional claim, what happened to the Experiment Language, Sparks.
 - `results.json`, in the lab folder: written by the CLI. Its `verdict` is `OPEN` until `record-verdict`, and `evaluation_version` is what makes two numbers comparable.
 
@@ -47,7 +48,7 @@ A section in a template is a behavior. "For the lab" in every round entry is wha
 
 ## `scripts/lab.py`
 
-Mechanical steps only. It gives ids and names; writes the lab folder, the journal row and the try records and publishes them before it creates the start branch or a try branch; prints the map of tries; runs a command in a try's worktree with `.env`, `$LAB_ROOT` and `$EXP_DIR` set; saves a try's code change, runs the evaluation on it and records what it measured; completes the matrix row with the verdict. (The shipped `lab.py` still implements the earlier single-branch form; the loop skill's `references/commands.md` says what it has to do.) It does not choose a direction, fill a plan, compare with the baseline, or write to the Frontier, the Sparks or the Banlist: those carry judgment and are written by hand.
+Mechanical steps only. It gives ids and names; writes the lab folder, the journal row and the lines of the map of tries and publishes them before it creates the start branch or a try branch; prints the map of tries; runs a command in a try's worktree with `.env`, `$LAB_ROOT` and `$EXP_DIR` set; saves a try's code change, runs the evaluation on it and records what it measured; completes the matrix row with the verdict. (The shipped `lab.py` still implements the earlier single-branch form; the loop skill's `references/commands.md` says what it has to do.) It does not choose a direction, fill a plan, compare with the baseline, or write to the Frontier, the Sparks or the Banlist: those carry judgment and are written by hand.
 
 When adding a command, keep to that line. A command that refuses to continue until a condition holds is a gate, and belongs to the mistake in [What-the-loop-needs] 1. A command may say what it noticed (an experiment repo with no system page, a part cut from the context pack, the lab repo left to push): a printed line reaches the agent at the moment it matters and blocks nothing.
 
@@ -67,7 +68,7 @@ The path of the research, growing like a tree in its direction, holding only wha
 
 The lab's knowledge base of its field, built with the `cortex` skill: as wide a collection as the lab can build of what is known that may advance the research. Most of it comes from outside, and the lab's experiments are one kind of source among the others. Three layers, with different rules:
 
-- **Sources.** What was read from outside, of any kind (`cortex/sources/`: a note per source and the text that was actually read), and the experiments themselves (the lab folder with its try records, and the try branches).
+- **Sources.** What was read from outside, of any kind (`cortex/sources/`: a note per source and the text that was actually read), and the experiments themselves (the lab folder with its map of tries and lab step records, and the try branches).
 - **Claims** (`cortex/claims/`). One sentence per file, with an anchor (`experiment`: name, try, round, commit; `quote`: the source's words; `stated`: the user), the conditions it holds under, and a status. A claim is corrected in place only at its blind verification; after that, and for an `experiment` claim from the start, it changes status and is never rewritten (the profile's §4). An interim conclusion enters here as `provisional` and is settled when its experiment closes.
 - **Synthesis.** `findings/` (what is known about a topic, citing claims of every anchor), `tensions/` (two claims that disagree), `gap_map.md` (open questions). These are rewritten whenever understanding changes. Also `index.md` and `log.md`.
 
@@ -90,7 +91,7 @@ The operations on the lab's knowledge base: add a source (the main way the corte
 | | Next to the code | In the lab |
 |---|---|---|
 | Where | Experiment repo, try branch `<experiment name>/<try name>`, `notes/<experiment name>/` | `experiments/<repo short name>/<experiment name>/` |
-| Holds | `plan.md`, `log.md`, `runs/` | `results.json`, `postmortem.md`, and the map of tries: `tries/<try name>.md` with its lab step records, and each lab step's files (`evaluate.log`, `patch.diff`, `metrics.json`) |
+| Holds | `plan.md`, `log.md`, `runs/` | `results.json`, `postmortem.md`, the map of tries `tries.md`, the lab step records `lab-steps.md`, and each lab step's files (`evaluate.log`, `patch.diff`, `metrics.json`) |
 | For | Whoever continues or reduces this try | Whoever does a different try or a different experiment |
 | Changes | Every round, committed with the code | Written when an experiment or a try is opened, at every reduce and lab step, and at close; then fixed |
 

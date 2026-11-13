@@ -35,4 +35,4 @@ data_source: "<repo>@<ref>:<path>"  # e.g. data-repo@main:data/samples/v1 (never
 [Free text. What result would be enough. What would make it not worth continuing: a budget of GPU hours or rounds, a sign that the idea is exhausted. Reaching it is the moment to decide, with a reason, whether to conclude or go on.]
 
 ## 5. This Try
-[Empty on the start branch. `new-try` writes the try's brief here: what to try and what makes this try different from its siblings, whether it competes or cooperates with which tries, how far to go, when to stop and flag. Whoever works the try adds how it will do it and its own open questions.]
+[Empty on the start branch. `new-try` writes here the base the try starts from (branch and commit) and the try's brief: what to try and what makes this try different from its siblings, whether it competes or cooperates with which tries, how far to go, when to stop and flag. Whoever works the try adds how it will do it and its own open questions.]

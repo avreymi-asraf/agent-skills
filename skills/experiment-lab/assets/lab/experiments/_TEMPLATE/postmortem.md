@@ -1,7 +1,7 @@
 # Postmortem: `<exp-name>`
 
 * **Verdict:** `[HYPOTHESIS_SUPPORTED | HYPOTHESIS_REFUTED | INFRA_INCONCLUSIVE]`
-* **Tries:** [Each try that had a lab step, with its record `tries/<try name>.md` and the commit of its last lab step. Tries that were merged or dropped, and into what.]
+* **Tries:** [Each try that had a lab step, with the commit of its last lab step (`lab-steps.md`). Tries that were merged or dropped, and into what.]
 * **Kept:** `[Kept, because <what later experiments get by starting from it>: the try branch <exp-name>/<try name> is named by the system page's "> Branch:" line | Not kept, because <why none of its tries is a base for others>]` (no branch is merged into the experiment repo's default branch)
 
 ## 1. The Final Conclusion

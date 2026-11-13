@@ -17,7 +17,7 @@ Three kinds of agents work in a lab, and each has a different picture:
 | Agent | Has from the start | Gets only if |
 |---|---|---|
 | The one holding the request, at the lab root | `AGENTS.md`, the names of the skills | It loads the loop skill (the request is about an experiment); it opens `cortex/purpose.md`, `cortex/profile.md`, the system page |
-| One working a try, in a try session | The lab kit on its try branch (the try `AGENTS.md`, the lab's skills), `EXPERIMENT_LANGUAGE.md`, its plan with the brief | It attaches the lab for reading: the cortex, the journal, its own try record. The lab's `AGENTS.md` is not on its branch |
+| One working a try, in a try session | The lab kit on its try branch (the try `AGENTS.md`, the lab's skills), `EXPERIMENT_LANGUAGE.md`, its plan with the brief | It attaches the lab for reading: the cortex, the journal, the lab step records of its experiment. The lab's `AGENTS.md` is not on its branch |
 | A subagent | Its brief | The brief carries it. It sees no conversation, no file already read |
 
 Most rejects on wide requests are found in the third row. The subagent did its piece correctly, and the reason for the piece never reached it.
@@ -52,7 +52,7 @@ A lab leaves an unusually good trail, because its agents write their decisions d
 
 - **The request,** worded as it was given, and how much it left to the lab.
 - **Which agent decided:** the one holding the request, or a subagent. For a subagent, find the brief it was given.
-- **What it had read by then.** The try's `plan.md` with its brief and its history (`git log -p -- notes/<experiment name>/plan.md` on the try branch), the round entries in `log.md` (`Run plan`, `Decided`, `For the lab`), the try record with its lab step records, the claims written from it (`cortex.py claims --from <experiment name>`), `cortex/log.md`, the postmortem, the experiment's diff against its base. When session transcripts exist, `audit-agent-context` with traces shows which files were opened and in what order.
+- **What it had read by then.** The try's `plan.md` with its brief and its history (`git log -p -- notes/<experiment name>/plan.md` on the try branch), the round entries in `log.md` (`Run plan`, `Decided`, `For the lab`), the experiment's map of tries and lab step records, the claims written from it (`cortex.py claims --from <experiment name>`), `cortex/log.md`, the postmortem, the experiment's diff against its base. When session transcripts exist, `audit-agent-context` with traces shows which files were opened and in what order.
 
 Then name, in one sentence, what the agent believed that made its action look right. If you cannot, you are still looking at the symptom.
 
@@ -81,7 +81,7 @@ A lab has more levels of memory than most systems, and each lesson belongs to on
 | True for | Written in |
 |---|---|
 | This try | `notes/<experiment name>/` on its try branch: `plan.md`, `log.md` |
-| This experiment | The lab step record of the try that showed it, in the lab folder |
+| This experiment | The lab step record of the try that showed it, in the lab folder's `lab-steps.md` |
 | The research: a different experiment should know it | The cortex: a claim, and the findings page or gap it changes |
 | How this lab works | The lab's own files: `AGENTS.md`, its `experiment-lab-loop` skill, the templates, `cortex/profile.md`, `lab.py` |
 | Any lab | The scaffold in this skill (`assets/lab/`), proposed to the user and changed here, not by re-copying over a living lab |

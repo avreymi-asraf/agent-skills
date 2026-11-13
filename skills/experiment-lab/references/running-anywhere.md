@@ -34,7 +34,7 @@ Experiment code runs headless: a missing value fails fast with a clear message a
 
 - Experiment repos are registered with HTTPS urls; a cloud runtime has no SSH key.
 - A cloud agent session usually reaches only the repositories attached to it. A lab session needs the lab repo and every experiment repo it will touch; a try session needs only the experiment repo, and attaches the lab for reading. The loop skill's `references/claude-code-cloud.md` says how, for Claude Code. Put the lab's setup (`uv sync`, `lab.py sync-repos`) in the environment's setup script.
-- A session elsewhere sees only what is pushed. Push the try branch after every round that matters, and publish the lab's records to its default branch whenever they changed: an experiment or a try opened, a reduce, a lab step, a close. `mount` finds a try through its try record in the lab repo and then brings the worktree back from the pushed branch.
+- A session elsewhere sees only what is pushed. Push the try branch after every round that matters, and publish the lab's records to its default branch whenever they changed: an experiment or a try opened, a reduce, a lab step, a close. `mount` finds a try through its line in the map of tries in the lab repo and then brings the worktree back from the pushed branch.
 - The shared components later experiments build on live on a kept, pushed try branch that the system page names (`> Branch:`). Nothing is merged into the experiment repo's default branch.
 
 ## Test it

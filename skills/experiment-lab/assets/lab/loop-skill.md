@@ -12,8 +12,8 @@ The lab searches by keeping many directions alive and reducing them. An **experi
 ```
         LAB  (cortex, journal, lab folders with the map of tries, lab.py)            EXPERIMENT REPO
 find a direction ─▶ open the experiment ───────────────────────────▶ 02-probes/main   start branch (a template)
-                    open a try ──── try record: live ──────────────▶   ├─ …/trl-fix-lr   rounds: implement → run → analyze
-                    open a try ──── try record: live ──────────────▶   ├─ …/trl-d-lr
+                    open a try ──── a line in tries.md: live ──────▶   ├─ …/trl-fix-lr   rounds: implement → run → analyze
+                    open a try ──── a line in tries.md: live ──────▶   ├─ …/trl-d-lr
                     reduce ──────── records: merged / dropped ─────▶   └─ …/trl          the one that remains
 claims, findings ◀─ lab step on a chosen try ◀── notes to the lab, evaluation ◀── any try branch
 close ◀──────────── the lab step records, aggregated
@@ -48,13 +48,14 @@ The terms, with their exact forms, are in [glossary.md](references/glossary.md).
 | Try branch | `<experiment name>/<try name>` | `02-probes/trl-fix-lr` |
 | Notes, on a branch | `notes/<experiment name>/` | `plan.md`, `log.md`, `runs/` |
 | Lab folder | `experiments/<repo short name>/<experiment name>/` | `experiments/model/02-probes/` |
-| Try record, in the lab folder | `tries/<try name>.md` | `tries/trl-fix-lr.md` |
+| Map of tries, in the lab folder | `tries.md` | a line: `02-probes/trl-fix-lr` · `live` · a comment of at most 100 characters |
+| Lab step records, in the lab folder | `lab-steps.md` | an entry: `trl-fix-lr · Lab step 2 · …` |
 
 The id is two hex digits, unique in the lab, so `--exp 02` names the experiment everywhere. The name is the topic; which code an experiment starts from is its **base**, and it can be any earlier try branch.
 
 **The start branch is only a template.** It holds the lab kit, the first plan and an empty log. Tries start from it, and nothing enters it afterwards. An experiment's result is never "on main": it is on try branches, and what the lab concluded from them is in the lab folder.
 
-**The lab says what exists.** A try exists from the moment the lab records it, and it is live as long as its try record says `live`. It stops being live when a reduce takes it into another try (`merged` or `dropped`), when a lab step ends it (`dropped`), or when its experiment closes (`closed`). Git decides none of this: a branch that exists, is old, or was merged somewhere proves nothing. Branches of tries that left the map stay as history; nobody works or reads them again.
+**The lab says what exists.** A try exists from the moment the lab records it, and it is live as long as its line in the map of tries (`tries.md`) says `live`. It stops being live when a reduce takes it into another try (`merged` or `dropped`), when a lab step ends it (`dropped`), or when its experiment closes (`closed`). Git decides none of this: a branch that exists, is old, or was merged somewhere proves nothing. Branches of tries that left the map stay as history; nobody works or reads them again.
 
 **Who may write what.** Reading is open everywhere. Writing is not:
 
@@ -89,7 +90,7 @@ The pack is a first look, not the sources: a part that did not fit ends at a lin
 - `cortex/gap_map.md` and `JOURNAL.md` → Active Sparks: is it one of the open questions, or does it open a better one?
 - `JOURNAL.md` → Experiment Matrix: is an experiment on this idea already open (`OPEN` in the Verdict column)? Then open a try in it; do not open a second experiment.
 - `JOURNAL.md` → Anti-Repeat Banlist: was it already refuted? Under which conditions?
-- `cortex/findings/`, `cortex/tensions/`, and the postmortems and try records in `experiments/`: what did earlier work learn that changes this idea? Follow a findings page down to the claims it cites: each says whether the lab saw it (`experiment`) or someone else reports it (`quote`), and under which conditions. `uv run .agents/skills/cortex/scripts/cortex.py claims --grep <term>` searches all claims by a word.
+- `cortex/findings/`, `cortex/tensions/`, and the postmortems and lab step records in `experiments/`: what did earlier work learn that changes this idea? Follow a findings page down to the claims it cites: each says whether the lab saw it (`experiment`) or someone else reports it (`quote`), and under which conditions. `uv run .agents/skills/cortex/scripts/cortex.py claims --grep <term>` searches all claims by a word.
 - `EXPERIMENT_LANGUAGE.md` on the kept try branch (the system page `cortex/systems/<repo>.md` names it): can the idea be said in the repo's Experiment Language? Which extension point does it go into, and which shared components does it use? Creativity belongs in the idea, not in a new vocabulary or a new codebase. If the idea does not fit, that is the first thing to settle: either changing the language is the idea, or that change is an experiment of its own that comes first. An experiment repo with no Experiment Language yet gets one from its first experiment, whose one job is to connect the pipeline end to end.
 
 Run `uv run scripts/lab.py sync-repos` and then `check-drift` when the base may have moved.
@@ -134,7 +135,7 @@ The first plan holds:
 uv run scripts/lab.py new-try --exp <id> --name <try name> --brief-file <file> [--base <branch>]
 ```
 
-It writes the try record (status `live`) and publishes it, then creates and pushes the try branch with the current lab kit and the brief in the plan's `This try` section. So whoever works the try **starts on the try branch and pushes to the same branch**: a local worktree (`lab.py mount`), or a try session in the cloud ([claude-code-cloud.md](references/claude-code-cloud.md)). An experiment with one try is normal, especially at the beginning. Competing tries do not read each other, so their results can be told apart.
+It writes the try's line in `tries.md` (the try branch, `live`, a comment of at most 100 characters saying what it tries) and publishes it, then creates and pushes the try branch with the current lab kit and the brief in the plan's `This try` section. So whoever works the try **starts on the try branch and pushes to the same branch**: a local worktree (`lab.py mount`), or a try session in the cloud ([claude-code-cloud.md](references/claude-code-cloud.md)). An experiment with one try is normal, especially at the beginning. Competing tries do not read each other, so their results can be told apart.
 
 **Working the try.** Start by reading `AGENTS.md` and `EXPERIMENT_LANGUAGE.md` at the root, and the plan with its brief. A try writes code and the notes on its own branch, and nothing else: not another branch, not the lab kit, not the lab. Each round:
 
@@ -157,9 +158,9 @@ Tries produce a mess, and that is fine: plans that changed, logs full of dead en
 
 1. Choose the **target**: an existing try that nobody is working at that moment, or a new try opened for the reduce (so reducing into a new try is also opening a try).
 2. For each other try: bring it in without committing, **decide which code enters** (all, part or none), and **synthesize the notes by meaning**, not by text: rewrite the target's plan in place, and append one entry to its log saying what that try attempted, what it saw, what entered and why.
-3. Push the target, then **update the map**: each reduced try's record says `merged` or `dropped`, and into which try.
+3. Push the target, then **update the map**: each reduced try's line says `merged` or `dropped`, into which try, and in its comment how it ended.
 
-Very often a reduce is simply dropping the weaker try and keeping its few lessons. This is how a try ends: it is not deleted, it leaves the map, and its record says where what it taught went. The lesson of a failure is often what the remaining try most needs; a technical failure gets an entry that says it was technical. When two tries reached contradicting lessons and the evidence does not decide, keep both and say so; do not pick one.
+Very often a reduce is simply dropping the weaker try and keeping its few lessons. This is how a try ends: it is not deleted, it leaves the map, and its line says where what it taught went. The lesson of a failure is often what the remaining try most needs; a technical failure gets an entry that says it was technical. When two tries reached contradicting lessons and the evidence does not decide, keep both and say so; do not pick one.
 
 What whoever continues the target does not need is dropped on purpose. The notes to the lab that no lab step has read yet are the exception: they are carried over word for word. After a reduce the target's signal is `working`, because the combined code has not been run; running it is its next round.
 
@@ -170,7 +171,7 @@ What whoever continues the target does not need is dropped on purpose. The notes
 Work is written for two readers, and the second needs far less than the first.
 
 - **The log and the plan on the try branch** are for whoever continues *this try*, or reduces it. They hold everything, including what turned out not to matter: settings, dead ends, debugging, partial numbers.
-- **The lab** (the try record with its lab step records, the cortex, the journal, and the postmortem at the end) is for whoever does a *different* try or a *different* experiment and will never open this branch. Their attention is scarce, and every line written there is read by all of them.
+- **The lab** (the lab step records, the cortex, the journal, and the postmortem at the end) is for whoever does a *different* try or a *different* experiment and will never open this branch. Their attention is scarce, and every line written there is read by all of them.
 
 Most of what happens in a round stays in the log. The question for each thing you learned is: **would someone working on a different idea do their work differently if they knew this?** If yes, write it as a **note to the lab**, under `For the lab` in the log entry.
 
@@ -198,14 +199,14 @@ A **lab step** is done in the lab on **one chosen try** ([operations.md](referen
 1. **Read what is new**: `lab.py inbox --exp <id> --try <try name>` shows the try's signal and the notes to the lab added since its last lab step.
 2. **Review the try**: its plan, its log, its code change against the experiment's base. Does the diff read as the idea? Did it run cleanly? Do the runs support what the log says?
 3. **Evaluate, when one is possible**: `lab.py evaluate --exp <id> --try <try name>` ([evaluation.md](references/evaluation.md)). With no `evaluate.py` in the repo the lab step has no number, and says so.
-4. **Write the conclusions into the lab**: a **lab step record** in the try record (the commit, the evaluation's result, what this try shows about the idea and what it does not), and one change in the cortex per note:
+4. **Write the conclusions into the lab**: a **lab step record** in the lab folder's `lab-steps.md` (the try, the commit, the evaluation's result, what this try shows about the idea and what it does not), and one change in the cortex per note:
    - `lesson`: an **interim conclusion**. A claim in `cortex/claims/`: one sentence, `status: provisional`, anchor `experiment::` with the experiment, the try, the round and the commit, and the conditions. Work it into the findings page it changes, citing it; write a tension if it disagrees with a claim the lab holds; update the gap it touches.
    - `source`: the source and its `quote` claims (`cortex add`).
    - `correction`: what `cortex/profile.md` §4 says for the case: a tension, or the older claim withdrawn or superseded.
-   - `question`: try to answer it, from the cortex and then from outside (`cortex investigate`), and write the answer in the try record under `Answers`. Only what stays open goes to the user, and to the gap map.
+   - `question`: try to answer it, from the cortex and then from outside (`cortex investigate`), and write the answer in the lab step record, under `Answers`. Only what stays open goes to the user, and to the gap map.
 5. Run the cortex check (`cortex/profile.md` §6) and publish the lab to its default branch at once: what is not there does not exist for anyone else.
 
-**Asking, from a try.** Any working copy reads the lab from its default branch (locally the lab's folder, after a pull; in a cloud session the lab is attached for reading). The cortex knows: use it, and cite the claim in the log. The cortex does not know and the outside world may: investigate, and write what was found as a `source` note, not into the cortex. Only the user knows, or it is a decision: write a `question` note, state the assumption the try continues under, and continue or stop as the brief says; the answer arrives in the try record.
+**Asking, from a try.** Any working copy reads the lab from its default branch (locally the lab's folder, after a pull; in a cloud session the lab is attached for reading). The cortex knows: use it, and cite the claim in the log. The cortex does not know and the outside world may: investigate, and write what was found as a `source` note, not into the cortex. Only the user knows, or it is a decision: write a `question` note, state the assumption the try continues under, and continue or stop as the brief says; the answer arrives in a lab step record (`lab-steps.md` in the experiment's lab folder).
 
 A lab step adds the try's part to the cortex; it is not the cortex's main supply, which is `cortex add` at any time. The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn`. Nothing is deleted, and the findings pages are rewritten freely to say what the lab now knows. A technical failure (OOM, missing credential, typo) is never a conclusion about the idea.
 
@@ -227,7 +228,7 @@ A try session that died leaves a `live` try whose signal is still `working`: sta
 
 Closing is a decision made in the lab: the stopping point was reached, or the idea is exhausted. The experiment's conclusion is **the aggregation of its lab step records**: whether an effective approach was found and which direction to take next. A number is evidence for that when the repo has an evaluation; it is not the definition of it. Nothing in git forces or forbids a close, and live tries do not block it ([operations.md](references/operations.md) §6).
 
-1. **Every live try first**: a lab step, when it holds something the conclusion should rest on; otherwise one line in its try record saying why it needs none.
+1. **Every live try first**: a lab step, when it holds something the conclusion should rest on; otherwise its comment in the map says why it needs none.
 2. **Write `postmortem.md`** in the lab folder, from the lab step records: what each try showed, what they show together, the verdict, why things went the way they did, what happened to each provisional claim, and one or two Sparks.
    - `HYPOTHESIS_SUPPORTED`: the idea worked, by this lab's own measure, `cortex/purpose.md` §3.
    - `HYPOTHESIS_REFUTED`: the idea ran cleanly and did not work. Add it to the Anti-Repeat Banlist as `[pattern] -> [why it failed] -> [unless condition X changes] ([[claims/<claim>]])`.
@@ -257,11 +258,11 @@ A request: "try reinforcement-learning fine-tuning on the base model and see if 
 
 1. **Direction.** `context-pack`, then the gap map and the repo's Experiment Language. An RL objective needs a reward, and the reward needs the leak-free prediction task a Spark asks for. The cortex holds a `quote` claim: GRPO converged faster than PPO in a paper and collapsed in reward after many steps. Nobody in the lab has seen that, so it goes into the plan as something to watch for.
 2. **Open.** `new-exp --repo model-repo --name grpo --base 01-pipeline/first` creates experiment `02-grpo` and its start branch `02-grpo/main`. The first plan is committed there: the idea, the open questions (reward definition, group size), what stays fixed (the held-out patients, the reward curve as the shared measurement), the stopping point ("enough: a reward curve that rises on held-out patients. Not worth more: three reward designs with no movement, or about 10 GPU hours").
-3. **Tries.** `new-try` twice, with briefs: `reward-outcome` and `reward-shaped`, competing. Each has a try record (`live`) and a pushed try branch with its brief in the plan; a try session is started on each.
+3. **Tries.** `new-try` twice, with briefs: `reward-outcome` and `reward-shaped`, competing. Each has a line in `tries.md` (`live`) and a pushed try branch with its brief in the plan; a try session is started on each.
 4. **`reward-outcome`.** Round 1: reward is flat, the parser rejects free text. That is about this try's code: `For the lab` says None. Round 2: reward rises on train and not on held-out patients, because the record still contains outcome fields. Every experiment that trains on records is affected, so the entry carries a `lesson` note with the commit, the run and the conditions. Signal `ready`.
 5. **`reward-shaped`** crashes on memory twice, then runs and shows no movement. Signal `failed`; the log says the last result was a real one.
 6. **Lab step on `reward-outcome`.** `inbox` shows the leak lesson. The repo has no `evaluate.py` yet, so the record says "evaluation: not run" and gives the conclusion. The lesson becomes a provisional claim anchored to `02-grpo`, try `reward-outcome`, round 2 and its commit, cited from the findings page on training data.
-7. **Reduce.** `reward-shaped` is dropped into `reward-outcome`: no code enters, one log entry says what it tried and saw, and its try record says `dropped`, into `reward-outcome`. The remaining try's plan is rewritten: render only fields known at prediction time. Its signal is `working`.
+7. **Reduce.** `reward-shaped` is dropped into `reward-outcome`: no code enters, one log entry says what it tried and saw, and its line in the map says `dropped → reward-outcome`. The remaining try's plan is rewritten: render only fields known at prediction time. Its signal is `working`.
 8. **More rounds** on `reward-outcome`, then a second lab step on it. The stopping point's budget is reached; the decision to go on for one more try, and why, is in the lab step record.
 9. **Close.** The two lab step records are aggregated into the postmortem. `record-verdict --kept reward-outcome`: the experiment is kept for the leak-free rendering it added, the leak claim is confirmed, the system page names `02-grpo/reward-outcome`, and the lab is published.
 

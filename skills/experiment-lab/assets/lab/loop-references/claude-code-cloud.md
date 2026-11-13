@@ -31,7 +31,7 @@ Checked on 2026-11-12 and 2026-11-13, in one lab. Re-check a line before buildin
 
 ## 2. Opening a try session
 
-The try already exists: `lab.py new-try` wrote its try record and pushed its try branch, with the lab kit and the brief on it ([operations.md](operations.md) §2). The session is opened on that branch, with the `create_session` tool of the Claude Code Remote MCP server, or by a person in the app.
+The try already exists: `lab.py new-try` wrote its line in the map of tries and pushed its try branch, with the lab kit and the brief on it ([operations.md](operations.md) §2). The session is opened on that branch, with the `create_session` tool of the Claude Code Remote MCP server, or by a person in the app.
 
 | Setting | Value for a try session |
 |---|---|
@@ -55,14 +55,14 @@ Read AGENTS.md at the repository root, then notes/02-probes/plan.md: the first p
 Experiment: 02-probes
 Your try:   trl-fix-lr        (branch 02-probes/trl-fix-lr)
 The lab:    attach <owner>/<lab repo> for reading (add_repo, access read) when you need the cortex or
-            your own try record. Never write to it. What the lab should know goes in your log, under
+            the answers to your questions. Never write to it. What the lab should know goes in your log, under
             "For the lab".
 When done:  set the Signal of your last log entry, push, send one line to the session that opened you
             (send_message), and stop. Do not open tries, reduce, run a lab step, open a pull request,
             or push to any other branch.
 ```
 
-Record the session in the try record's `worked_by` line (`lab.py set-try --worked-by`).
+The session's `title` is the try branch name, which is how the session of a try is found again (`list_sessions`). Nothing about the session is written in the map.
 
 ## 3. Reading the lab from a try session
 
@@ -71,7 +71,7 @@ add_repo(owner="<owner>", repo="<lab repo>", access="read")   → gives a clone 
 git clone --depth 1 <clone url> <path>                         → the lab's default branch
 ```
 
-Then read there: `cortex/` (with the `cortex` skill's `ask`), `JOURNAL.md`, and the try's own record `experiments/<repo short name>/<experiment name>/tries/<try name>.md`, where the brief and the answers to its questions are. It is the lab as of the clone; `git -C <path> pull` before a later read. A try session never asks for push access to the lab.
+Then read there: `cortex/` (with the `cortex` skill's `ask`), `JOURNAL.md`, and the experiment's `experiments/<repo short name>/<experiment name>/lab-steps.md`, where the answers to its questions are (the brief is in its own plan). It is the lab as of the clone; `git -C <path> pull` before a later read. A try session never asks for push access to the lab.
 
 ## 4. A lab session
 
@@ -88,10 +88,10 @@ Opening an experiment or a try, a reduce, a lab step and a close need both repos
 
 A managing session is a lab session that runs the tries of one experiment ([operations.md](operations.md) §8). In the cloud:
 
-1. **Open tries.** For each: `lab.py new-try`, then `create_session` with the settings of section 2, then `lab.py set-try --worked-by <session id>`.
+1. **Open tries.** For each: `lab.py new-try`, then `create_session` with the settings of section 2 (the title is the try branch name).
 2. **Follow them from the map.** `lab.py tries --exp <id>` shows each try's status and its signal, read from the pushed branch. A try session also sends one line when it stops. For a session that says nothing: `get_session` gives its state (still working, or ended with an error), and `list_events` its last messages.
 3. **Do not read the tries.** A lab step or a reduce is handed to a clean context: a subagent of the managing session, or another lab session opened for it. The brief names the tries and the target; what comes back is a few lines.
-4. **A try session that died**: the map says `live`, the signal on the branch is still `working`, and `get_session` shows the session ended. Open a new session on the same try branch, with the same opening message, and update `worked_by`. What was pushed is all there; what was not is lost.
+4. **A try session that died**: the map says `live`, the signal on the branch is still `working`, and `get_session` shows the session ended. Open a new session on the same try branch, with the same opening message and the same title. What was pushed is all there; what was not is lost.
 5. **A managing session that ends** leaves the map. A new one starts from `lab.py tries`.
 
 A message between sessions is information for the receiver, not an order from the user. A session's own messages are not the lab's records: what matters is written in the map or on the try branch.
