@@ -39,7 +39,7 @@ How far to carry a request (one operation, guided step by step, or a whole exper
 
 <The-system>
 
-The terms, with their exact forms, are in the glossary: `AGENTS.md` §3, in the lab and in every try's lab kit. Use them as written; a synonym is read as a different thing. The short form, with the running example (experiment repo `model-repo`, short name `model`):
+The terms, with their exact forms, are in the glossary: §3 of the lab's `AGENTS.md`. A try branch carries the terms a try meets, in §5 of its own `AGENTS.md`. Use them as written; a synonym is read as a different thing. The short form, with the running example (experiment repo `model-repo`, short name `model`):
 
 | Thing | Name | Example |
 |---|---|---|
@@ -111,7 +111,7 @@ Only through the lab, whoever does it, person or agent:
 uv run scripts/lab.py new-exp --repo <experiment repo> --name <idea> [--base <branch>]
 ```
 
-It gives the id, writes the lab folder and the journal row (`OPEN`) and publishes them to the lab's default branch, which is what reserves the id and lets any other session find the experiment. Then it creates the start branch from the base, with the lab kit and the notes on it. Write the first plan, commit it on the start branch and push ([operations.md](references/operations.md) §1). After that the start branch is not touched again.
+It gives the id, writes the lab folder and the journal row (`OPEN`) and publishes them to the lab's default branch, which is what reserves the id and lets any other session find the experiment. Then it creates the start branch from the base and writes the experiment template on it: the lab's `start-branch/` folder (the try `AGENTS.md`, the first plan, an empty log) and the lab's skills. This is the only time the template is copied; every try starts from the start branch and carries it. Write the first plan, commit it on the start branch and push ([operations.md](references/operations.md) §1). After that the start branch is not touched again.
 
 The first plan describes **how to realise the idea, as far as is known right now**. Write it as exactly as present knowledge allows, and no more exactly than that. On day one it may say little more than "try GRPO on the base model", with a list of what is unknown. Every try starts from it and carries it; a try rewrites its own copy as it learns.
 
@@ -135,7 +135,7 @@ The first plan holds:
 uv run scripts/lab.py new-try --exp <id> --name <try name> --brief-file <file> [--base <branch>]
 ```
 
-It writes the try's line in `tries.md` (the try branch, `live`, a comment of at most 100 characters saying what it tries) and publishes it, then creates and pushes the try branch with the current lab kit and the brief in the plan's `This try` section. So whoever works the try **starts on the try branch and pushes to the same branch**: a local worktree (`lab.py mount`), or a try session in the cloud ([claude-code-cloud.md](references/claude-code-cloud.md)). An experiment with one try is normal, especially at the beginning. Competing tries do not read each other, so their results can be told apart.
+It writes the try's line in `tries.md` (the try branch, `live`, a comment of at most 100 characters saying what it tries) and publishes it, then creates the try branch from the start branch (which already holds the lab kit and the notes), writes the brief in the plan's `This try` section, and pushes it. So whoever works the try **starts on the try branch and pushes to the same branch**: a local worktree (`lab.py mount`), or a try session in the cloud ([claude-code-cloud.md](references/claude-code-cloud.md)). An experiment with one try is normal, especially at the beginning. Competing tries do not read each other, so their results can be told apart.
 
 **Working the try.** Start by reading `AGENTS.md` and `EXPERIMENT_LANGUAGE.md` at the root, and the plan with its brief. A try writes code and the notes on its own branch, and nothing else: not another branch, not the lab kit, not the lab. Each round:
 
@@ -243,7 +243,7 @@ After closing, the lab folder does not change, except for a later evaluation add
 
 <References>
 
-- The glossary is not here: it is `AGENTS.md` §3, every term with one meaning and the exact forms of names and paths. Read it before writing a plan, a log, a brief, a record or a report, and whenever a word could be read two ways.
+- The glossary is not here: it is §3 of the lab's `AGENTS.md` (on a try branch, §5 of the branch's `AGENTS.md`), every term with one meaning and the exact forms of names and paths. Read it before writing a plan, a log, a brief, a record or a report, and whenever a word could be read two ways.
 - [system-guide.md](references/system-guide.md): the idea behind the lab, its parts, who does what where, how information moves, and what the hosting does not enforce. Read it when a case is not covered by a rule.
 - [operations.md](references/operations.md): each operation as what it finds, its steps, and what it leaves; how the lab's records are published. Read it before opening a try, reducing, running a lab step, closing, or managing tries.
 - [claude-code-cloud.md](references/claude-code-cloud.md): try sessions, lab sessions and managing sessions in Claude Code cloud: the settings, the opening message, reading the lab, what was checked.

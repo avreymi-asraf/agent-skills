@@ -23,7 +23,7 @@ The map of tries, the lab step records, the cortex and the journal are the lab's
 uv run scripts/lab.py new-exp --repo model-repo --name probes --base 01-training/first
 ```
 
-It gives the id, writes the lab folder and the journal row (`OPEN`) and publishes them, which reserves the id. Then it creates the start branch `02-probes/main` from the base in a local worktree, with the lab kit and `notes/$E/{plan.md, log.md}` in it.
+It gives the id, writes the lab folder and the journal row (`OPEN`) and publishes them, which reserves the id. Then it creates the start branch `02-probes/main` from the base in a local worktree, and writes the experiment template on it, from the lab's `start-branch/` folder: the lab kit (the try `AGENTS.md`, the lab's skills) and `notes/$E/{plan.md, log.md}`. Tries take all of it from the start branch; it is copied from the lab this once.
 
 Then, by hand:
 
@@ -47,7 +47,7 @@ uv run scripts/lab.py new-try --exp 02 --name trl-fix-lr --comment "fixed lr 1e-
    | `02-probes/trl-fix-lr` | live | fixed lr 1e-5 on the full split |
    ```
    The comment is at most 100 characters and says what the try tries. Everything longer belongs in the brief.
-2. It creates the try branch `02-probes/trl-fix-lr` from the base (default: the start branch), makes its first commit (the current lab kit, and the base and the brief written into `notes/$E/plan.md` under `This try`), and pushes it.
+2. It creates the try branch `02-probes/trl-fix-lr` from the base (default: the start branch), makes its first commit (the base and the brief written into `notes/$E/plan.md` under `This try`), and pushes it.
 
 Whoever works the try then starts **on the try branch and pushes to the same branch**: locally `uv run scripts/lab.py mount --exp 02 --try trl-fix-lr`, in the cloud a try session ([claude-code-cloud.md](claude-code-cloud.md)).
 

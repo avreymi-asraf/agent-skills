@@ -39,7 +39,7 @@ The rules are meaning, not locks. The hosting does not stop anyone from pushing 
 | Start branch | Experiment repo, `<experiment name>/main` | The template tries start from: lab kit, first plan, empty log | `new-exp` and the opening commit, once |
 | Try branch | Experiment repo, `<experiment name>/<try name>` | One attempt: its code and its notes | `new-try` (first commit), whoever works the try, a reduce into it |
 | Experiment Language | Experiment repo, `EXPERIMENT_LANGUAGE.md` | The shared code language every experiment on the repo uses | A try whose experiment's idea changes it |
-| Lab kit | Experiment repo, `AGENTS.md`, `.agents/skills/` | Makes a checkout self-sufficient | The lab only (`new-exp`, `new-try`) |
+| Lab kit | Experiment repo, `AGENTS.md`, `.agents/skills/` | Makes a checkout self-sufficient | The lab only, once, on the start branch (`new-exp`, from the lab's `start-branch/` folder); tries inherit it |
 
 ## 3. Who does what, and where
 

@@ -9,7 +9,7 @@ Holds the picture and nothing procedural:
 1. What the lab is, in one paragraph, and a pointer to `cortex/purpose.md`.
 2. How far to go comes with the request: small stays small, wide is carried through and ends with a report.
 3. Structure: the two kinds of repository, the tree of the lab and of an experiment repo, how the work and the knowledge move, and where things live as one table.
-4. The glossary: every term of the lab, one meaning each, with the exact form of every name and path and what each term is not. It is the authority, and the only copy: the loop skill and its references point here. A try's lab kit carries it too.
+4. The glossary: every term of the lab, one meaning each, with the exact form of every name and path and what each term is not. It is the authority, and the only copy: the loop skill and its references point here. A try's `AGENTS.md` (`start-branch/AGENTS.md`) holds the short form, with the terms a try meets.
 5. A pointer to the loop skill, and when not to load it; a pointer to the `cortex` skill for work on the lab's knowledge base.
 6. What always holds: a short list, each item with its reason. The Experiment Language comes first. The last items are this lab's own (evaluation, where runs go, data).
 7. Attention: what to keep in the main context, what to hand to a subagent, what a brief must carry.
@@ -29,14 +29,17 @@ What the lab is for, the far goal, and how results are judged. The far goal is i
 
 The only description of the loop. Its topics: the system (names, who may write what), find a direction (the one fixed step is crossing the idea with what the lab knows), open the experiment, open a try and work it in rounds, reduce, what to tell the lab, the lab step, managing many tries, close the experiment, and one worked example. Its `references/` hold the system guide, each operation as what it finds and what it leaves, working from Claude Code cloud sessions, the evaluation as this lab does it, and the CLI's commands with what each does not do.
 
-It lives in `.agents/skills/experiment-lab-loop/` with a relative link from `.claude/skills/`, and the lab commits it on every try branch as part of the lab kit, so a try session working inside the experiment repo has it too.
+It lives in `.agents/skills/experiment-lab-loop/` with a relative link from `.claude/skills/`, and the lab commits it on the start branch as part of the lab kit, from where every try branch carries it, so a try session working inside the experiment repo has it too.
 
 *Shows when wrong:* agents load it for requests that are not about an experiment (the description is too wide), or do not load it at all (`AGENTS.md` does not point to it).
 
-## Templates (`experiments/_TEMPLATE/`)
+## Templates (`start-branch/` and `experiments/_TEMPLATE/`)
 
-- `notes/plan.md`, written on the start branch and carried by every try: the idea (stable), what we know and how we will do it (rewritten), the Experiment Language block (extension point, shared components used, what stays fixed for every try, what is added to the shared set), open questions, stopping point, the `data_source` line, and `This Try`, where a try's brief is written when it is opened.
-- `notes/log.md`, on a try branch: one entry per round with Tried, Run plan, Saw, Decided, For the lab, Signal, and one entry per try taken in by a reduce. The run plan is written before the run, because running is the expensive part of a round.
+Two templates, for the two places an experiment lives. `start-branch/` is what the experiment's start branch is given, once, when it is opened; every try starts from the start branch and so carries it. `experiments/_TEMPLATE/` is the experiment's lab folder.
+
+- `start-branch/AGENTS.md`: for whoever works a try, who has only the experiment repo. Which branch they are on and what to do there, the structure of the branch, how a try is worked, what it may write, the glossary of the terms a try meets (the lab's `AGENTS.md` holds the whole one), what always holds. Its last two items are the lab's own answers on heavy runs and data, the same as in the lab's `AGENTS.md`.
+- `start-branch/notes/plan.md`, written on the start branch and carried by every try: the idea (stable), what we know and how we will do it (rewritten), the Experiment Language block (extension point, shared components used, what stays fixed for every try, what is added to the shared set), open questions, stopping point, the `data_source` line, and `This Try`, where a try's brief is written when it is opened.
+- `start-branch/notes/log.md`, on a try branch: one entry per round with Tried, Run plan, Saw, Decided, For the lab, Signal, and one entry per try taken in by a reduce. The run plan is written before the run, because running is the expensive part of a round.
 - `tries.md`, in the lab folder: the map of tries. One line per try: the try branch, its status, a comment of at most 100 characters. Kept this small on purpose: it is what a managing session reads, and a file per try grew into a second copy of the try's notes.
 - `lab-steps.md`, in the lab folder: one lab step record per lab step, with the answers to a try's questions.
 - `postmortem.md`, in the lab folder: verdict, the final conclusion as the lab step records show it together and why we stopped, why it went this way, what happened to each provisional claim, what happened to the Experiment Language, Sparks.

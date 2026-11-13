@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Create a research lab repository from this skill's scaffold (assets/lab).
+"""Create a research lab repository from this skill's scaffolds (assets/lab, and assets/experiment as start-branch/).
 
     uv run scripts/new_lab.py <destination> --name "<lab name>"
 
@@ -31,6 +31,10 @@ RENAMED = {
 RENAMED_DIRS = {
     "loop-references/": ".agents/skills/experiment-lab-loop/references/",
 }
+# The second scaffold: what one experiment's start branch holds (the try AGENTS.md, the first plan, an
+# empty log). The lab keeps it in this folder and writes it on a start branch when an experiment is opened.
+EXPERIMENT_SCAFFOLD = SCAFFOLD.parent / "experiment"
+START_BRANCH_DIR = "start-branch"
 
 
 def lab_path(rel: str) -> str:
@@ -53,9 +57,11 @@ def main() -> None:
     lab = args.destination.resolve()
 
     written, kept = [], []
-    for src in sorted(p for p in SCAFFOLD.rglob("*") if p.is_file()):
-        rel = src.relative_to(SCAFFOLD).as_posix()
-        dst = lab / lab_path(rel)
+    sources = [(p, lab_path(p.relative_to(SCAFFOLD).as_posix())) for p in SCAFFOLD.rglob("*") if p.is_file()]
+    sources += [(p, f"{START_BRANCH_DIR}/{p.relative_to(EXPERIMENT_SCAFFOLD).as_posix()}")
+                for p in EXPERIMENT_SCAFFOLD.rglob("*") if p.is_file()]
+    for src, rel in sorted(sources, key=lambda item: item[1]):
+        dst = lab / rel
         if dst.exists():
             kept.append(dst)
             continue
