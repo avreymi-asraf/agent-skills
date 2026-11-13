@@ -49,7 +49,7 @@ The terms, with their exact forms, are in the glossary: §3 of the lab's `AGENTS
 | Notes, on a branch | `notes/<experiment name>/` | `plan.md`, `log.md`, `runs/` |
 | Lab folder | `experiments/<repo short name>/<experiment name>/` | `experiments/model/02-probes/` |
 | Map of tries, in the lab folder | `tries.md` | a line: `02-probes/trl-fix-lr` · `live` · a comment of at most 100 characters |
-| Lab step records, in the lab folder | `lab-steps.md` | an entry: `trl-fix-lr · Lab step 2 · …` |
+| Lab step records, in the lab folder | `lab-steps.md` | an entry: ``## `trl-fix-lr` · Lab step 2 · <date> · commit `<sha>` `` |
 
 The id is two hex digits, unique in the lab, so `--exp 02` names the experiment everywhere. The name is the topic; which code an experiment starts from is its **base**, and it can be any earlier try branch.
 
@@ -123,7 +123,7 @@ The first plan holds:
 - **Stopping point**, in free text: what result would be enough, and what would make it not worth continuing (a budget of GPU hours or rounds, a sign that the idea is exhausted). Reaching it does not stop the work mechanically. It is the moment to decide: conclude, or go on with a reason. On a wide request you make that decision and report it; otherwise you bring it to the user.
 - **Experiment Language**: the extension point the idea goes into, the shared components it uses, **what stays fixed for every try** (the data and split, and the measurement competing tries will be compared on), and anything it adds to the shared set.
 - `data_source: <repo>@<ref>:<path>` in the frontmatter, never a local path.
-- **This try**: empty on the start branch. Each try's brief is written here when the try is opened.
+- **This Try**: empty on the start branch. Each try's brief is written here when the try is opened.
 
 </Open-the-experiment>
 
@@ -135,7 +135,7 @@ The first plan holds:
 uv run scripts/lab.py new-try --exp <id> --name <try name> --brief-file <file> [--base <branch>]
 ```
 
-It writes the try's line in `tries.md` (the try branch, `live`, a comment of at most 100 characters saying what it tries) and publishes it, then creates the try branch from the start branch (which already holds the lab kit and the notes), writes the brief in the plan's `This try` section, and pushes it. So whoever works the try **starts on the try branch and pushes to the same branch**: a local worktree (`lab.py mount`), or a try session in the cloud ([claude-code-cloud.md](references/claude-code-cloud.md)). An experiment with one try is normal, especially at the beginning. Competing tries do not read each other, so their results can be told apart.
+It writes the try's line in `tries.md` (the try branch, `live`, a comment of at most 100 characters saying what it tries) and publishes it, then creates the try branch from the start branch (which already holds the lab kit and the notes), writes the brief in the plan's `This Try` section, and pushes it. So whoever works the try **starts on the try branch and pushes to the same branch**: a local worktree (`lab.py mount`), or a try session in the cloud ([claude-code-cloud.md](references/claude-code-cloud.md)). An experiment with one try is normal, especially at the beginning. Competing tries do not read each other, so their results can be told apart.
 
 **Working the try.** Start by reading `AGENTS.md` and `EXPERIMENT_LANGUAGE.md` at the root, and the plan with its brief. A try writes code and the notes on its own branch, and nothing else: not another branch, not the lab kit, not the lab. Each round:
 
@@ -216,7 +216,7 @@ A lab step adds the try's part to the cortex; it is not the cortex's main supply
 
 When an experiment has more tries than one session can hold in view, a long-running lab session, the **managing session**, runs them ([operations.md](references/operations.md) §8). It holds the process and not the content:
 
-- It reads the **map** (`lab.py tries`: each try's status, signal, who works it, its last lab step) and decides the next move: open tries and start a try session for each, ask for a lab step, ask for a reduce, answer a blocked try, close.
+- It reads the **map** (`lab.py tries`: each try's status, signal, last commit, comment and last lab step) and decides the next move: open tries and start a try session for each, ask for a lab step, ask for a reduce, answer a blocked try, close.
 - It **never loads a try's log, plan or code** into its own context. Reduces and lab steps are handed to a clean context (a subagent, or another lab session) with a brief, and come back as a few lines. That report and the map are all the managing session knows of a try.
 - Everything it decides is written in the map before the next move. If it ends, another one continues from the map.
 
@@ -235,7 +235,7 @@ Closing is a decision made in the lab: the stopping point was reached, or the id
    - `INFRA_INCONCLUSIVE`: a technical blocker prevented a real test. Nothing is written about the idea: no claim, no line in a topic page, no Banlist entry. Claims from rounds that ran cleanly are still settled on their own evidence.
 3. **Settle the cortex.** `cortex.py claims --from <experiment name> --status provisional` lists what this experiment still owes: confirm or withdraw each, revise the topic pages that cited a withdrawn one, and drop "provisional" from the citations of confirmed ones. When the idea ran cleanly, write its final conclusion as a claim as well (`confirmed`, anchored to the try and commit it rests on): without it the experiment's main result is in no page. Update `gap_map.md` and `index.md`, and run the cortex check.
 4. **Kept or not.** Decide which try branch later experiments should start from (it added or fixed a shared component, changed the Experiment Language, or holds the new best result), apart from the verdict, and write the reason in the postmortem. If kept, point the system page at it (`> Branch: <experiment name>/<try name>`, `Fingerprint: git:<sha>`).
-5. **Record it**: `uv run scripts/lab.py record-verdict --exp <id> --verdict <VERDICT> --kept <try name|none> --metric-delta "<delta or 'no metric'>" --summary "<one-line lesson>"`. It completes the journal row and sets every try that is still `live` to `closed`. By hand: copy the Sparks into Active Sparks, and update Current Frontier if a lab step gave a new best number.
+5. **Record it**: `uv run scripts/lab.py record-verdict --exp <id> --verdict <VERDICT> --kept <try name|none> --metric-delta "<delta or 'no metric'>" --summary "<one-line lesson>"`. It completes the journal row, sets every try that is still `live` to `closed`, and publishes, together with whatever else was written in the lab's records and not published yet (the postmortem, the claims). A verdict is recorded once. By hand, and then `lab.py publish`: copy the Sparks into Active Sparks, and update Current Frontier if a lab step gave a new best number.
 
 After closing, the lab folder does not change, except for a later evaluation added as a new lab step record. No branch is merged into the experiment repo's default branch.
 

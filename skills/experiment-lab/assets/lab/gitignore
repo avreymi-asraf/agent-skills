@@ -1,5 +1,5 @@
-# Clones of target repos and experiment worktrees, managed by scripts/lab.py
-.targets/
+# Clones of experiment repos and local worktrees of tries, managed by scripts/lab.py
+.repos/
 
 # Rebuilt by `lab.py context-pack`
 cortex/query_pack.md

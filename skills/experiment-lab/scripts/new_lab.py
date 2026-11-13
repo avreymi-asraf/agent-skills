@@ -22,6 +22,7 @@ SCAFFOLD = Path(__file__).resolve().parent.parent / "assets" / "lab"
 # Scaffold path -> path in the lab, for files that cannot keep their real name inside a skill.
 RENAMED = {
     "gitignore": ".gitignore",
+    "gitattributes": ".gitattributes",
     "env.example": ".env.example",
     "rejects.md": ".grow-autonomy/rejects.md",
     # Stored under another name so no agent tool loads the scaffold as a live skill.
@@ -102,7 +103,7 @@ def main() -> None:
               "install them into the lab's .agents/skills/ and commit.")
     slots = []
     for path in sorted(lab.rglob("*.md")):
-        if {".targets", ".repos", ".venv"} & set(path.parts):
+        if {".repos", ".venv"} & set(path.parts):
             continue
         for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if "{{FILL:" in line:

@@ -11,7 +11,7 @@ The examples use experiment `02-probes` in `model-repo`. In the commands, `E=02-
 The map of tries, the lab step records, the cortex and the journal are the lab's **records**. Everyone reads them from the lab's default branch, so a record that is not there does not exist for anyone else.
 
 - Do lab operations from a checkout of the lab's default branch.
-- Write, commit, then publish at once: `git pull --rebase origin <default branch>` and `git push origin HEAD:<default branch>`. If the push is rejected, pull and push again.
+- Write, then publish at once: `uv run scripts/lab.py publish -m "<what changed>"`. It commits every change in `experiments/`, `cortex/` and `JOURNAL.md`, pulls with rebase, and pushes to the default branch, again when the push is rejected. The commands that write a record themselves (`new-exp`, `new-try`, `set-try`, `record-verdict`) publish it themselves.
 - Two writers at the same time mostly touch different files (one per claim) or different lines (one line per try in `tries.md`, one entry per lab step at the end of `lab-steps.md`), which the rebase puts together. When they collide on an experiment id or a try name, the second one takes another id or name. This is why `new-exp` and `new-try` publish the lab's record **before** they create the branch.
 - Changes to how the lab works (skills, `lab.py`, `AGENTS.md`, templates) are a different thing: they go on a branch of their own and are merged when the user says so.
 
@@ -27,7 +27,7 @@ It gives the id, writes the lab folder and the journal row (`OPEN`) and publishe
 
 Then, by hand:
 
-1. Write the first plan in `notes/$E/plan.md`: the idea, why it is worth trying, the stopping point, what stays fixed for every try (data, split, the measurement tries will be compared on), and the realisation as far as it is honestly known. It may be short. Leave `This try` empty.
+1. Write the first plan in `notes/$E/plan.md`: the idea, why it is worth trying, the stopping point, what stays fixed for every try (data, split, the measurement tries will be compared on), and the realisation as far as it is honestly known. It may be short. Leave `This Try` empty.
 2. Commit it on the start branch together with what `new-exp` wrote, and push.
 
 **Leaves:** a start branch that tries start from and that nothing enters again; a lab folder and an `OPEN` row that let any later session find the experiment.
@@ -47,7 +47,7 @@ uv run scripts/lab.py new-try --exp 02 --name trl-fix-lr --comment "fixed lr 1e-
    | `02-probes/trl-fix-lr` | live | fixed lr 1e-5 on the full split |
    ```
    The comment is at most 100 characters and says what the try tries. Everything longer belongs in the brief.
-2. It creates the try branch `02-probes/trl-fix-lr` from the base (default: the start branch), makes its first commit (the base and the brief written into `notes/$E/plan.md` under `This try`), and pushes it.
+2. It creates the try branch `02-probes/trl-fix-lr` from the base (default: the start branch), makes its first commit (the base and the brief written into `notes/$E/plan.md` under `This Try`), and pushes it.
 
 Whoever works the try then starts **on the try branch and pushes to the same branch**: locally `uv run scripts/lab.py mount --exp 02 --try trl-fix-lr`, in the cloud a try session ([claude-code-cloud.md](claude-code-cloud.md)).
 
@@ -55,11 +55,11 @@ Whoever works the try then starts **on the try branch and pushes to the same bra
 
 ## 3. Work a try (experiment repo)
 
-**Finds:** its try branch, and on it `AGENTS.md`, `EXPERIMENT_LANGUAGE.md`, and `notes/$E/plan.md` with the first plan and, under `This try`, the brief.
+**Finds:** its try branch, and on it `AGENTS.md`, `EXPERIMENT_LANGUAGE.md`, and `notes/$E/plan.md` with the first plan and, under `This Try`, the brief.
 
 A try works in rounds (the skill's [Work-in-rounds]). What a try may write: code, in the Experiment Language, and the notes on its own branch. It does not write another branch, the lab kit, or anything in the lab. It may read the lab, including its experiment's `lab-steps.md`, where the answers to its questions are.
 
-First, rewrite the plan's `This try` section in your own words if the brief leaves the realisation open: how this try will do it, its open questions.
+First, rewrite the plan's `This Try` section in your own words if the brief leaves the realisation open: how this try will do it, its open questions.
 
 One log entry per round, appended to `notes/$E/log.md`:
 
@@ -113,7 +113,7 @@ Commit code, log and plan together and push after every round that matters.
    - Do not copy the other try's log. What whoever continues the target does not need is dropped here, on purpose. When two tries reached contradicting lessons and the evidence does not decide, keep both and say so.
    - Of the other try's run files, keep only those a carried lesson cites. When both tries used the same run name the files conflict: keep the target's, and cite the other try's by its branch and commit.
 5. **Commit the merge**: stage what you chose by name (`git add <paths>`, never `git add -A`), then `git commit`. Go on to the next try. After the last one, push the target. Its signal is `working`: the combined code has not been run yet, and running it is the target's next round.
-6. **Update the map**, in the lab: change each reduced try's line in `tries.md` to `merged → <target>` or `dropped → <target>`, and its comment to how it ended (`lab.py set-try`). What entered and which lessons were carried is in the target's log, in the entry of step 4. A new target that was opened from one of the tries takes that try off the map too. Publish (§0).
+6. **Update the map**, in the lab: change each reduced try's line in `tries.md` to `merged → <try name>` or `dropped → <try name>`, and its comment to how it ended (`lab.py set-try`). What entered and which lessons were carried is in the target's log, in the entry of step 4. A new target that was opened from one of the tries takes that try off the map too. Publish (§0).
 7. **Report** in a few lines: the target, what entered from each try, what was left out and why, the lessons. This report is all a managing session reads of a reduce.
 
 **Leaves:** one live try holding the chosen code and the synthesized notes; the others off the map, each line saying merged or dropped and into what. Their branches stay in git as history. No one works, reduces or reads them again, and a person may delete them.
@@ -167,7 +167,7 @@ Commit code, log and plan together and push after every round that matters.
 2. **Aggregate.** Write `postmortem.md` in the lab folder from the lab step records: what each try showed, what they show together, the verdict, why things went this way, one or two Sparks.
 3. **Settle the cortex**: every provisional claim of this experiment becomes `confirmed` or `withdrawn`; when the idea ran cleanly, its final conclusion is written as a claim too.
 4. **Kept or not**: name the try branch later experiments should start from, or say why none.
-5. **Record it**: `uv run scripts/lab.py record-verdict --exp 02 ...`. It sets the verdict and the kept try, completes the journal row, and sets every try that is still `live` to `closed`. Publish (§0).
+5. **Record it**: `uv run scripts/lab.py record-verdict --exp 02 ...`. It sets the verdict and the kept try, completes the journal row, and sets every try that is still `live` to `closed`. It publishes this together with everything written in steps 2 to 4 that is not published yet. What is written by hand afterwards (Frontier, Sparks, the Banlist) is published with `lab.py publish`.
 
 The details of each step are in the skill's [Close-the-experiment].
 

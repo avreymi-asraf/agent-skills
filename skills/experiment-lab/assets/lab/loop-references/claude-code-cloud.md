@@ -27,7 +27,7 @@ Checked on 2026-11-12 and 2026-11-13, in one lab. Re-check a line before buildin
 | A session created by another session can send it a message when it is done | Checked |
 | `environment_id`: which environment (secrets, network) the session is built from. Default: the opener's environment | Not checked |
 | `add_repo` with access `push` from inside a session | Not checked |
-| A lab session pushing the lab's records to the lab's default branch | Not checked |
+| A lab session pushing the lab's records to the lab's default branch | Not checked on the platform. `lab.py` pushes there from a session branch as long as that branch holds no commit of its own, and refuses otherwise |
 
 ## 2. Opening a try session
 
@@ -45,12 +45,12 @@ The try already exists: `lab.py new-try` wrote its line in the map of tries and 
 
 One try, one session at a time. Before opening a second session on a try, make sure the first one has stopped: two sessions on one branch write over each other.
 
-The opening message is short, because everything else is committed on the branch: `AGENTS.md`, the skills, `EXPERIMENT_LANGUAGE.md`, and the plan with the brief under `This try`. The session's agent has seen nothing else, whatever model it is.
+The opening message is short, because everything else is committed on the branch: `AGENTS.md`, the skills, `EXPERIMENT_LANGUAGE.md`, and the plan with the brief under `This Try`. The session's agent has seen nothing else, whatever model it is.
 
 ```text
 You are working one try of an experiment. You are on its try branch and you push to this same branch.
 Read AGENTS.md at the repository root, then notes/02-probes/plan.md: the first plan, and under
-"This try" your brief.
+"This Try" your brief.
 
 Experiment: 02-probes
 Your try:   trl-fix-lr        (branch 02-probes/trl-fix-lr)

@@ -87,7 +87,7 @@ The terms a try meets. Use each word exactly as written; a synonym is read as a 
 2. **A technical failure is not a result.** Say so in the log entry and in the signal. Never write a `lesson` saying an idea failed before it ran cleanly. *Why:* a false refutation stops everyone after you from trying a good idea.
 3. **Push after every round that matters.** The state of the work is read from the branch, never from a conversation; the next round may be done by someone else.
 4. **No machine-specific paths** in code, configs or notes. Repo-relative paths only. Data is declared in the plan as `data_source: <repo>@<ref>:<path>`.
-5. **Secrets come only from environment variables** named in `.env.example`. Never a value in git, logs or notes.
+5. **Secrets come only from environment variables**, the ones the lab names in its `.env.example` and gives to the session's environment. Never a value in git, logs or notes.
 6. **Python is `uv`, and only `uv`:** `uv run`, `uv add`, `uv sync`.
 7. **Where heavy runs go:** {{FILL: the same answer as item 10 of §5 in the lab's `AGENTS.md`.}}
 8. **Data:** {{FILL: the same answer as item 11 of §5 in the lab's `AGENTS.md`.}}

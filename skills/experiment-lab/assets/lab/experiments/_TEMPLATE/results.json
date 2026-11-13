@@ -1,14 +1,13 @@
 {
-  "exp_name": "<exp-name>",
+  "experiment_name": "<experiment name>",
   "title": null,
-  "target_repo": "<target-repo>",
+  "experiment_repo": "<experiment repo>",
+  "repo_short_name": null,
   "base_branch": null,
-  "exp_branch": null,
   "base_commit": null,
+  "start_branch": null,
   "opened": null,
-  "exp_commit": null,
-  "timestamp": null,
-  "evaluation_version": null,
-  "metrics": null,
-  "verdict": "OPEN"
+  "closed": null,
+  "verdict": "OPEN",
+  "kept_try": null
 }

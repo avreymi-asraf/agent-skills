@@ -43,7 +43,7 @@ Two templates, for the two places an experiment lives. `start-branch/` is what t
 - `tries.md`, in the lab folder: the map of tries. One line per try: the try branch, its status, a comment of at most 100 characters. Kept this small on purpose: it is what a managing session reads, and a file per try grew into a second copy of the try's notes.
 - `lab-steps.md`, in the lab folder: one lab step record per lab step, with the answers to a try's questions.
 - `postmortem.md`, in the lab folder: verdict, the final conclusion as the lab step records show it together and why we stopped, why it went this way, what happened to each provisional claim, what happened to the Experiment Language, Sparks.
-- `results.json`, in the lab folder: written by the CLI. Its `verdict` is `OPEN` until `record-verdict`, and `evaluation_version` is what makes two numbers comparable.
+- `results.json`, in the lab folder: written by the CLI. It says who the experiment is (name, repo, base, start branch), its `verdict` (`OPEN` until `record-verdict`) and its kept try. It holds no numbers: each evaluation's metrics and `evaluation_version`, which is what makes two numbers comparable, are in `steps/<try name>-<short commit>/metrics.json`.
 
 A section in a template is a behavior. "For the lab" in every round entry is what makes the agent ask the question every round. When a behavior is wanted, look for the template field first.
 
@@ -51,7 +51,7 @@ A section in a template is a behavior. "For the lab" in every round entry is wha
 
 ## `scripts/lab.py`
 
-Mechanical steps only. It gives ids and names; writes the lab folder, the journal row and the lines of the map of tries and publishes them before it creates the start branch or a try branch; prints the map of tries; runs a command in a try's worktree with `.env`, `$LAB_ROOT` and `$EXP_DIR` set; saves a try's code change, runs the evaluation on it and records what it measured; completes the matrix row with the verdict. (The shipped `lab.py` still implements the earlier single-branch form; the loop skill's `references/commands.md` says what it has to do.) It does not choose a direction, fill a plan, compare with the baseline, or write to the Frontier, the Sparks or the Banlist: those carry judgment and are written by hand.
+Mechanical steps only. It gives ids and names; writes the lab folder, the journal row and the lines of the map of tries and publishes them before it creates the start branch or a try branch; prints the map of tries; runs a command in a try's worktree with `.env`, `$LAB_ROOT` and `$EXP_DIR` set; saves a try's code change, runs the evaluation on it and records what it measured; completes the matrix row with the verdict. It does not choose a direction, fill a plan, compare with the baseline, or write to the Frontier, the Sparks or the Banlist: those carry judgment and are written by hand.
 
 When adding a command, keep to that line. A command that refuses to continue until a condition holds is a gate, and belongs to the mistake in [What-the-loop-needs] 1. A command may say what it noticed (an experiment repo with no system page, a part cut from the context pack, the lab repo left to push): a printed line reaches the agent at the moment it matters and blocks nothing.
 

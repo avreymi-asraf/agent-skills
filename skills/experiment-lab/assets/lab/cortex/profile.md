@@ -124,7 +124,7 @@ uv run scripts/lab.py check-drift    # system pages whose monitored code changed
 ```
 
 - **Closed experiments.** No closed experiment (a row with a verdict in the journal's matrix) has a `provisional` claim left, and the pages its postmortem says it changed show it.
-- **Frontier and Banlist.** Frontier numbers match `results.json`, and numbers that are compared were measured with the same `evaluation_version`. Every Banlist entry names the `experiment` claim it rests on; none rests on a `quote` claim or on a technical failure. A Banlist entry whose "unless" condition has since changed; a Spark already done or made pointless.
+- **Frontier and Banlist.** Frontier numbers match the `metrics.json` of the lab step they name, and numbers that are compared were measured with the same `evaluation_version`. Every Banlist entry names the `experiment` claim it rests on; none rests on a `quote` claim or on a technical failure. A Banlist entry whose "unless" condition has since changed; a Spark already done or made pointless.
 - **System pages.** Read the diff `check-drift` points at and see what on the page is no longer so.
 
 Experiment folders are evidence: do not edit them. To check a claim against its experiment, read the postmortem and the lab step records in its lab folder; the plan and the log are in `notes/<experiment name>/` on the try branch the claim names (`uv run scripts/lab.py mount --exp <id> --try <try name>`). Append one line to `cortex/log.md`: `## [YYYY-MM-DD HH:MM] review | cortex — <what was fixed, how many items reported>`.

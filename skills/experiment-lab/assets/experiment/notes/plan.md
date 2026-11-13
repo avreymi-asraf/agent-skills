@@ -1,15 +1,15 @@
 ---
-exp_name: <exp-name>
+experiment_name: <experiment name>
 title: "<title>"
-date: YYYY-MM-DD
-target_repo: <target-repo>
+date: <date>
+experiment_repo: <experiment repo>
 base_branch: <base-branch>
-exp_branch: <exp-name>/main
+start_branch: <experiment name>/main
 linked_gaps: []      # e.g. G11 from cortex/gap_map.md
 inspired_by: []      # e.g. SPARK-03 from JOURNAL.md
 data_source: "<repo>@<ref>:<path>"  # e.g. data-repo@main:data/samples/v1 (never a local path)
 ---
-# Plan: `<exp-name>` — <title>
+# Plan: `<experiment name>` — <title>
 
 > This page is the **current** best description of how to realise the idea. On the start branch it is the first plan, written when the experiment is opened. Every try carries it, with its brief in section 5, and rewrites its own copy in place after every round that teaches something. The history is in `log.md`, next to this file.
 
