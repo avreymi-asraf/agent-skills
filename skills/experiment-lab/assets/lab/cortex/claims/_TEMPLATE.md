@@ -20,7 +20,7 @@ description: <the words someone planning a different experiment would search for
 ## Relations
 - supports::[[claims/<other>]] — <why>
 - contradicts::[[claims/<other>]] — <what exactly disagrees; then write the tension>
-<!-- A claim's sentence, evidence and conditions are never rewritten. When it stops holding, change `status` and add one line here:
+<!-- `verified` stays `unchecked`: the writer never sets it. How a claim is corrected, and when it no longer may be: `cortex/profile.md` §4. When a checked claim stops holding, change `status` and add one line here:
 - withdrawn::after `<exp-name>` round <n> — <why it did not hold>
 - superseded_by::[[claims/<newer>]] — <what the newer claim corrects>
 -->

@@ -67,7 +67,7 @@ The routing page: Current Frontier (best verified baseline per target and task, 
 The lab's memory, built with the `cortex` skill. Three layers, with different rules:
 
 - **Sources.** The experiments themselves (`experiments/<exp-name>/` and the branch), and what was read from outside (`cortex/sources/`: a note per source and the text that was actually read).
-- **Claims** (`cortex/claims/`). One sentence per file, with an anchor (`experiment`: name, round, commit; `quote`: the source's words; `stated`: the user), the conditions it holds under, and a status. A claim is never rewritten. An interim conclusion enters here as `provisional` and is settled when its experiment closes.
+- **Claims** (`cortex/claims/`). One sentence per file, with an anchor (`experiment`: name, round, commit; `quote`: the source's words; `stated`: the user), the conditions it holds under, and a status. A claim is corrected in place only at its blind verification; after that, and for an `experiment` claim from the start, it changes status and is never rewritten (the profile's §4). An interim conclusion enters here as `provisional` and is settled when its experiment closes.
 - **Synthesis.** `findings/` (what the lab knows about a topic, citing claims), `tensions/` (two claims that disagree), `gap_map.md` (open questions). These are rewritten whenever understanding changes. Also `index.md` and `log.md`.
 
 *Shows when wrong:* a findings page states as the lab's own result something only a paper reports. A claim is edited in place and the pages that cited it now say something nobody checked. Claims pile up and no findings page changes. A page of outside results grows that no gap asked for and no experiment uses. Provisional claims of closed experiments are still provisional.
@@ -82,7 +82,7 @@ The general `cortex` skill is copied into the lab unchanged; this file is the on
 
 ## The `cortex` skill, in the lab
 
-The operations on the lab's memory that are not part of an experiment: add a source, investigate a gap from outside sources, answer from what the lab knows, review. One skill for all of them (`/cortex review`, `/cortex investigate G4`), and one script, `.agents/skills/cortex/scripts/cortex.py`, that checks anchors and links and lists claims. The review pass runs from time to time in a fresh context: every experiment starts by reading this knowledge, so a wrong claim there steers all of them and nobody sees it happen.
+The operations on the lab's memory that are not part of an experiment: add a source, investigate a gap from outside sources, answer from what the lab knows, verify new claims, review. One skill for all of them (`/cortex review`, `/cortex investigate G4`), and one script, `.agents/skills/cortex/scripts/cortex.py`, that checks anchors and links and lists claims. The review pass runs from time to time in a fresh context: every experiment starts by reading this knowledge, so a wrong claim there steers all of them and nobody sees it happen.
 
 ## The two homes of an experiment
 

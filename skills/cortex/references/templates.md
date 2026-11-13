@@ -19,7 +19,7 @@ The default, for a reading knowledge base. Fill the first section in the owner's
 ## 2. Layout
 | Layer | Where | Notes |
 |---|---|---|
-| Sources | `../sources/`: `raw/` originals, `text/` extracted text, `<source-id>.md` notes | Never edited |
+| Sources | `../sources/`: `raw/` originals, `text/` the text read (written by `cortex.py store`), `<source-id>.md` notes | Never edited |
 | Claims | `claims/` | One per file |
 | Synthesis | `pages/` (concept, method, comparison), `tensions/`, `questions/` | Cite claims |
 | Map | `index.md` | One line per page, tension and question |
@@ -34,7 +34,7 @@ The default, for a reading knowledge base. Fill the first section in the owner's
 A claim moves from `provisional` to `confirmed` when: [a second independent source supports it | it was used and held | ...].
 
 ## 4. Checking
-`cortex.py check` passes before every commit. Blind verification of new claims: [always | for claims a page will cite | never].
+`cortex.py check` passes before every commit. Blind verification of new claims (`/cortex verify`): [always | for claims a page will cite | never].
 
 ## 5. Moments
 Fusion happens at the end of every `add`. A review runs [every ~20 claims | before a decision that leans on the cortex].
@@ -54,7 +54,7 @@ description: <search words: the terms someone looking for this would type>
 
 ## Evidence
 - quote::[[sources/<source-id>]] — <section, page or timestamp>
-  > <verbatim words from the stored text. Use [...] for an omission.>
+  > <verbatim words from the stored text in sources/text/. Use [...] for an omission.>
 - experiment::`<experiment name>` round <n> @ `<commit>` — <what was measured, and with what>
 - stated::<who>, YYYY-MM-DD — <in what context>
 
@@ -67,7 +67,7 @@ description: <search words: the terms someone looking for this would type>
 - refines::[[claims/<other>]] — <narrower conditions, or a more exact statement>
 ```
 
-One anchor kind per claim is the normal case; keep only the lines that apply. When the claim stops holding, change `status` and add one line to Relations. `check` requires it:
+One anchor kind per claim is the normal case; keep only the lines that apply. `verified` stays `unchecked` until a verifier other than the writer gives a verdict. At verification a `partial` is narrowed in place and verified again, and a `fail` is deleted. A claim that has passed is not rewritten: when it stops holding, change `status` and add one line to Relations. `check` requires it:
 
 ```md
 - superseded_by::[[claims/<newer>]] — <what the newer one corrects>
@@ -76,7 +76,7 @@ One anchor kind per claim is the normal case; keep only the lines that apply. Wh
 
 ## Source note: `sources/<source-id>.md`
 
-The note is what `quote::[[sources/<source-id>]]` points at. `check` looks for the quoted words in this file and in `sources/text/<source-id>.*`, so the text that was read must be in one of them.
+The note is what `quote::[[sources/<source-id>]]` points at. It describes the source; the source's words are in `sources/text/<source-id>.md` (and `<source-id>--<part>.md`), written by `cortex.py store`, and those files are the only place `check` looks for quoted words.
 
 ```md
 ---
@@ -86,7 +86,8 @@ origin: "<authors or organization>"
 published: YYYY-MM-DD | unknown
 captured: YYYY-MM-DD
 location: "<URL, or sources/raw/<file>>"
-read: full | partial (<which parts>) | abstract only
+read: full | partial (<which parts>) | abstract only | not obtained
+route: file | tool file | conversation, compared with a second fetch | none
 reliability: primary | secondary | informal | unknown
 ---
 # <Title>
@@ -96,7 +97,7 @@ reliability: primary | secondary | informal | unknown
 **Limits:** <single preprint, one dataset, no code, vendor-written, ...>
 
 ## Text
-<The extracted text, or: "Full text in `sources/text/<source-id>.md`". Long copyrighted text stays out of a public repo: keep the passages that claims quote, with their section names.>
+<"Stored in `sources/text/<source-id>.md`": the whole text, or the passages claims quote with the sentences that carry their conditions. Or, with `read: not obtained`: each route tried, when, and what stopped it. A lead has no claims until a later `add` stores its text.>
 ```
 
 ## Page: `pages/<idea>.md`

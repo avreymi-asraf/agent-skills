@@ -71,12 +71,13 @@ After `add` or `investigate`:
 
 ```md
 ## Cortex update
-- Source: <id>, read: <full | partial | abstract only>
-- Claims added: <n> (<m> verified pass, <k> partial and rewritten)
+- Source: <id>, read: <full | partial | abstract only | not obtained>, route: <file | tool file | conversation, compared | none>
+- Claims added: <n> (<m> verified pass, <k> narrowed and verified again, <d> deleted, <u> waiting for verification)
 - Pages changed: <files, or none>
 - Tensions opened or changed: <files, or none>
 - Left as claims only: <n>, because <nothing asks for them yet | ...>
 - Best next step: <one question to investigate, or none>
+- Pending: <each fresh-context step this session could not start (a `verify`, an `add`), with its brief written out; or none>
 ```
 
 After `review`, in the user's language:
@@ -85,3 +86,4 @@ After `review`, in the user's language:
 - **Needs you:** each open item as a question, with the two readings and the evidence for each.
 - **Patterns:** a fault that repeats, and what it suggests changing.
 - **Not checked:** what the pass could not reach.
+- **Pending:** fresh-context steps the pass could not start, with their briefs.
