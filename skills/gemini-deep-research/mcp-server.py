@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#   "mcp[cli]>=1.2.0",
+#   "mcp[cli]>=1.2.0,<2",
 #   "httpx>=0.27.0",
 # ]
 # ///
@@ -17,18 +17,18 @@ import httpx
 from mcp.server.fastmcp import FastMCP
 
 DEFAULT_API_BASE_URL = "https://generativelanguage.googleapis.com/v1alpha"
-DEFAULT_REGULAR_AGENT_ID = "deep-research-preview-04-2026"
-DEFAULT_MAX_AGENT_ID = "deep-research-max-preview-04-2026"
+AGENT_IDS = {
+    "regular": "deep-research-preview-04-2026",
+    "max": "deep-research-max-preview-04-2026",
+}
 
 mcp = FastMCP(
     "gemini-deep-research",
     instructions=(
         "Start and poll Google Gemini Deep Research interactions. "
-        "Use deep_research_start_regular for standard deep research, "
-        "deep_research_start_max for deeper and slower runs, and "
-        "deep_research_start_regular_with_files or deep_research_start_max_with_files "
-        "when file context is required. "
-        "Use deep_research_poll with the interaction ID returned by a start tool."
+        "Use deep_research_start (mode 'regular', or 'max' for a deeper and slower run; "
+        "file_uris when file context is required), then deep_research_poll with the "
+        "interaction ID it returned."
     ),
 )
 
@@ -69,9 +69,6 @@ def _validate_optional_list(values: list[str] | None, name: str) -> list[str]:
 
 def _validate_file_uris(file_uris: list[str] | None) -> list[str]:
     uris = _validate_optional_list(file_uris, "file_uris")
-    if not uris:
-        raise ValueError("file_uris must include at least one URI for file-aware research")
-
     invalid = [uri for uri in uris if ":" not in uri]
     if invalid:
         raise ValueError(
@@ -212,146 +209,35 @@ def _normalize_interaction_path(interaction_id: str) -> str:
 # -- MCP Tools ----------------------------------------------------------------
 
 @mcp.tool()
-def deep_research_start_regular(
+def deep_research_start(
     prompt: str,
-    additional_instructions: str | None = None,
-    file_search_stores: list[str] | None = None,
-) -> str:
-    """Start a regular deep research interaction and return interaction_id.
-
-    Args:
-        prompt: Main research request.
-        additional_instructions: Optional extra constraints for the researcher.
-        file_search_stores: Optional file-search store names for retrieval context.
-    """
-    try:
-        return _start_interaction(
-            prompt=prompt,
-            agent_id=DEFAULT_REGULAR_AGENT_ID,
-            additional_instructions=additional_instructions,
-            file_uris=None,
-            file_search_stores=file_search_stores,
-        )
-    except (ValueError, RuntimeError) as exc:
-        return f"Error: {exc}"
-
-
-@mcp.tool()
-def deep_research_start_max(
-    prompt: str,
-    additional_instructions: str | None = None,
-    file_search_stores: list[str] | None = None,
-) -> str:
-    """Start a max deep research interaction and return interaction_id.
-
-    Args:
-        prompt: Main research request.
-        additional_instructions: Optional extra constraints for the researcher.
-        file_search_stores: Optional file-search store names for retrieval context.
-    """
-    try:
-        return _start_interaction(
-            prompt=prompt,
-            agent_id=DEFAULT_MAX_AGENT_ID,
-            additional_instructions=additional_instructions,
-            file_uris=None,
-            file_search_stores=file_search_stores,
-        )
-    except (ValueError, RuntimeError) as exc:
-        return f"Error: {exc}"
-
-
-@mcp.tool()
-def deep_research_start_regular_with_files(
-    prompt: str,
-    file_uris: list[str],
-    additional_instructions: str | None = None,
-    file_search_stores: list[str] | None = None,
-) -> str:
-    """Start regular deep research with attached files and return interaction_id.
-
-    Args:
-        prompt: Main research request.
-        file_uris: URI list for files to include (example: file:///tmp/brief.pdf).
-        additional_instructions: Optional extra constraints for the researcher.
-        file_search_stores: Optional file-search store names for retrieval context.
-    """
-    try:
-        validated_file_uris = _validate_file_uris(file_uris)
-
-        return _start_interaction(
-            prompt=prompt,
-            agent_id=DEFAULT_REGULAR_AGENT_ID,
-            additional_instructions=additional_instructions,
-            file_uris=validated_file_uris,
-            file_search_stores=file_search_stores,
-        )
-    except (ValueError, RuntimeError) as exc:
-        return f"Error: {exc}"
-
-
-@mcp.tool()
-def deep_research_start_max_with_files(
-    prompt: str,
-    file_uris: list[str],
-    additional_instructions: str | None = None,
-    file_search_stores: list[str] | None = None,
-) -> str:
-    """Start max deep research with attached files and return interaction_id.
-
-    Args:
-        prompt: Main research request.
-        file_uris: URI list for files to include (example: file:///tmp/brief.pdf).
-        additional_instructions: Optional extra constraints for the researcher.
-        file_search_stores: Optional file-search store names for retrieval context.
-    """
-    try:
-        validated_file_uris = _validate_file_uris(file_uris)
-
-        return _start_interaction(
-            prompt=prompt,
-            agent_id=DEFAULT_MAX_AGENT_ID,
-            additional_instructions=additional_instructions,
-            file_uris=validated_file_uris,
-            file_search_stores=file_search_stores,
-        )
-    except (ValueError, RuntimeError) as exc:
-        return f"Error: {exc}"
-
-
-@mcp.tool()
-def deep_research_start_file_aware(
-    prompt: str,
-    file_uris: list[str],
     mode: str = "regular",
     additional_instructions: str | None = None,
+    file_uris: list[str] | None = None,
     file_search_stores: list[str] | None = None,
 ) -> str:
-    """Backward-compatible wrapper for file-aware deep research.
+    """Start a deep research interaction in the background and return its interaction_id.
 
     Args:
         prompt: Main research request.
-        file_uris: URI list for files to include (example: file:///tmp/brief.pdf).
-        mode: "regular" or "max" depth mode.
+        mode: "regular", or "max" for a deeper and slower run.
         additional_instructions: Optional extra constraints for the researcher.
+        file_uris: Optional URIs of files to attach (example: file:///tmp/brief.pdf).
         file_search_stores: Optional file-search store names for retrieval context.
     """
-    clean_mode = (mode or "").strip().lower()
-    if clean_mode == "max":
-        return deep_research_start_max_with_files(
+    try:
+        agent_id = AGENT_IDS.get((mode or "").strip().lower())
+        if agent_id is None:
+            raise ValueError("mode must be either 'regular' or 'max'")
+        return _start_interaction(
             prompt=prompt,
-            file_uris=file_uris,
+            agent_id=agent_id,
             additional_instructions=additional_instructions,
+            file_uris=_validate_file_uris(file_uris),
             file_search_stores=file_search_stores,
         )
-    if clean_mode == "regular":
-        return deep_research_start_regular_with_files(
-            prompt=prompt,
-            file_uris=file_uris,
-            additional_instructions=additional_instructions,
-            file_search_stores=file_search_stores,
-        )
-    return "Error: mode must be either 'regular' or 'max'"
+    except (ValueError, RuntimeError) as exc:
+        return f"Error: {exc}"
 
 
 @mcp.tool()
@@ -359,7 +245,7 @@ def deep_research_poll(interaction_id: str) -> str:
     """Poll an interaction status and return current state plus any result data.
 
     Args:
-        interaction_id: ID returned by a deep_research_start_* tool.
+        interaction_id: ID returned by deep_research_start.
     """
     try:
         path = _normalize_interaction_path(interaction_id)
