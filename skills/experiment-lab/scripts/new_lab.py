@@ -24,8 +24,7 @@ RENAMED = {
     "gitignore": ".gitignore",
     "env.example": ".env.example",
     "rejects.md": ".grow-autonomy/rejects.md",
-    # Stored under other names so no agent tool mistakes the scaffold for live instructions or a skill.
-    "lab-AGENTS.md": "AGENTS.md",
+    # Stored under another name so no agent tool loads the scaffold as a live skill.
     "loop-skill.md": ".agents/skills/experiment-lab-loop/SKILL.md",
 }
 # Scaffold folder -> folder in the lab: the loop skill's references, stored beside it for the same reason.

@@ -1,6 +1,6 @@
 # System guide
 
-What the lab is made of, why it is built this way, and how information moves through it. The terms are defined in [glossary.md](glossary.md); how each operation is done is in [operations.md](operations.md).
+What the lab is made of, why it is built this way, and how information moves through it. The terms are defined in the glossary, `AGENTS.md` §3; how each operation is done is in [operations.md](operations.md).
 
 ## 1. The idea behind it
 

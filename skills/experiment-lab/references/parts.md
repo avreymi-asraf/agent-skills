@@ -8,8 +8,8 @@ Holds the picture and nothing procedural:
 
 1. What the lab is, in one paragraph, and a pointer to `cortex/purpose.md`.
 2. How far to go comes with the request: small stays small, wide is carried through and ends with a report.
-3. Vocabulary, in short form: experiment repo, experiment, try, start branch, map of tries, session, reduce, note to the lab, lab step, lab kit, plan, round, log, conclusion, cortex, claim, evaluation and evaluation version, baseline, kept, Spark, Experiment Language, experiment name. One meaning each. The full glossary, with what each term is not, is the loop skill's `references/glossary.md`, and it is the authority.
-4. Where things live, as one table.
+3. Structure: the two kinds of repository, the tree of the lab and of an experiment repo, how the work and the knowledge move, and where things live as one table.
+4. The glossary: every term of the lab, one meaning each, with the exact form of every name and path and what each term is not. It is the authority, and the only copy: the loop skill and its references point here. A try's lab kit carries it too.
 5. A pointer to the loop skill, and when not to load it; a pointer to the `cortex` skill for work on the lab's knowledge base.
 6. What always holds: a short list, each item with its reason. The Experiment Language comes first. The last items are this lab's own (evaluation, where runs go, data).
 7. Attention: what to keep in the main context, what to hand to a subagent, what a brief must carry.
@@ -27,7 +27,7 @@ What the lab is for, the far goal, and how results are judged. The far goal is i
 
 ## The lab's `experiment-lab-loop` skill
 
-The only description of the loop. Its topics: the system (names, who may write what), find a direction (the one fixed step is crossing the idea with what the lab knows), open the experiment, open a try and work it in rounds, reduce, what to tell the lab, the lab step, managing many tries, close the experiment, and one worked example. Its `references/` hold the glossary, the system guide, each operation as what it finds and what it leaves, working from Claude Code cloud sessions, the evaluation as this lab does it, and the CLI's commands with what each does not do.
+The only description of the loop. Its topics: the system (names, who may write what), find a direction (the one fixed step is crossing the idea with what the lab knows), open the experiment, open a try and work it in rounds, reduce, what to tell the lab, the lab step, managing many tries, close the experiment, and one worked example. Its `references/` hold the system guide, each operation as what it finds and what it leaves, working from Claude Code cloud sessions, the evaluation as this lab does it, and the CLI's commands with what each does not do.
 
 It lives in `.agents/skills/experiment-lab-loop/` with a relative link from `.claude/skills/`, and the lab commits it on every try branch as part of the lab kit, so a try session working inside the experiment repo has it too.
 

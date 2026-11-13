@@ -30,7 +30,7 @@ There are two levels of sessions. A **try session** works one try and sees only 
 - **[Lab-step]**: one try reviewed, evaluated and told to the lab; how knowledge is asked for.
 - **[Manage-many-tries]**: the long-running session that holds the process and not the content.
 - **[Close-the-experiment]**: a decision made in the lab, from the lab step records.
-- **[References]**: the glossary, the system guide, the operations, cloud sessions, the evaluation API, the commands.
+- **[References]**: the system guide, the operations, cloud sessions, the evaluation API, the commands.
 - **[Example]**: one experiment from idea to close.
 
 How far to carry a request (one operation, guided step by step, or a whole experiment) is set by the request; see the lab's `AGENTS.md` §1, which also holds the rules that always hold. Companion skills: `cortex` for the operations on the lab's knowledge base (`add`, `investigate`, `ask`, `verify`, `review`), with this lab's layout and statuses in `cortex/profile.md`; `code-as-tools` when writing experiment code; `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
@@ -39,7 +39,7 @@ How far to carry a request (one operation, guided step by step, or a whole exper
 
 <The-system>
 
-The terms, with their exact forms, are in [glossary.md](references/glossary.md). Use them as written; a synonym is read as a different thing. The short form, with the running example (experiment repo `model-repo`, short name `model`):
+The terms, with their exact forms, are in the glossary: `AGENTS.md` §3, in the lab and in every try's lab kit. Use them as written; a synonym is read as a different thing. The short form, with the running example (experiment repo `model-repo`, short name `model`):
 
 | Thing | Name | Example |
 |---|---|---|
@@ -243,7 +243,7 @@ After closing, the lab folder does not change, except for a later evaluation add
 
 <References>
 
-- [glossary.md](references/glossary.md): every term, one meaning each, with the exact forms of names and paths. Read it before writing a plan, a log, a brief, a record or a report, and whenever a word could be read two ways.
+- The glossary is not here: it is `AGENTS.md` §3, every term with one meaning and the exact forms of names and paths. Read it before writing a plan, a log, a brief, a record or a report, and whenever a word could be read two ways.
 - [system-guide.md](references/system-guide.md): the idea behind the lab, its parts, who does what where, how information moves, and what the hosting does not enforce. Read it when a case is not covered by a rule.
 - [operations.md](references/operations.md): each operation as what it finds, its steps, and what it leaves; how the lab's records are published. Read it before opening a try, reducing, running a lab step, closing, or managing tries.
 - [claude-code-cloud.md](references/claude-code-cloud.md): try sessions, lab sessions and managing sessions in Claude Code cloud: the settings, the opening message, reading the lab, what was checked.

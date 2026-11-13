@@ -1,6 +1,6 @@
 # Operations
 
-How each operation is done. Every operation is written as what it **finds**, the **steps**, and what it **leaves**, so that a person or an agent can do it, and so that the next operation can be done by someone else who reads only the lab's records and the branches. Terms: [glossary.md](glossary.md). Why it is built this way: [system-guide.md](system-guide.md).
+How each operation is done. Every operation is written as what it **finds**, the **steps**, and what it **leaves**, so that a person or an agent can do it, and so that the next operation can be done by someone else who reads only the lab's records and the branches. Terms: the glossary in `AGENTS.md` §3. Why it is built this way: [system-guide.md](system-guide.md).
 
 Working a try (§3) needs only the experiment repo and is given in plain git. Every other operation is done in the lab, with the experiment repo at hand, and uses `uv run scripts/lab.py` ([commands.md](commands.md)).
 
