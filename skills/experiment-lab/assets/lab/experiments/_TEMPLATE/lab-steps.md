@@ -7,5 +7,5 @@
 * **Evaluation:** [Metrics and evaluation version, and how they stand against the baseline (same version or not) | not run, because ...]
 * **Conclusions:** [What this try shows about the experiment's idea, and what it does not show.]
 * **Answers:** [Answers to this try's `question` notes, each with who answered. The try reads them here. | none asked]
-* **Written to the lab:** [Claims by file name; findings pages, gaps, journal lines changed | nothing, and why.]
+* **Written to the lab:** [Claims by file name; topic pages, gaps, journal lines changed | nothing, and why.]
 * **Notes read up to:** `<sha>`

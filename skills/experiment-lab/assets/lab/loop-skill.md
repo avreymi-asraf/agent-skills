@@ -15,7 +15,7 @@ find a direction ─▶ open the experiment ────────────
                     open a try ──── a line in tries.md: live ──────▶   ├─ …/trl-fix-lr   rounds: implement → run → analyze
                     open a try ──── a line in tries.md: live ──────▶   ├─ …/trl-d-lr
                     reduce ──────── records: merged / dropped ─────▶   └─ …/trl          the one that remains
-claims, findings ◀─ lab step on a chosen try ◀── notes to the lab, evaluation ◀── any try branch
+claims, topics   ◀─ lab step on a chosen try ◀── notes to the lab, evaluation ◀── any try branch
 close ◀──────────── the lab step records, aggregated
 ```
 
@@ -90,7 +90,7 @@ The pack is a first look, not the sources: a part that did not fit ends at a lin
 - `cortex/gap_map.md` and `JOURNAL.md` → Active Sparks: is it one of the open questions, or does it open a better one?
 - `JOURNAL.md` → Experiment Matrix: is an experiment on this idea already open (`OPEN` in the Verdict column)? Then open a try in it; do not open a second experiment.
 - `JOURNAL.md` → Anti-Repeat Banlist: was it already refuted? Under which conditions?
-- `cortex/findings/`, `cortex/tensions/`, and the postmortems and lab step records in `experiments/`: what did earlier work learn that changes this idea? Follow a findings page down to the claims it cites: each says whether the lab saw it (`experiment`) or someone else reports it (`quote`), and under which conditions. `uv run .agents/skills/cortex/scripts/cortex.py claims --grep <term>` searches all claims by a word.
+- `cortex/topics/`, `cortex/tensions/`, and the postmortems and lab step records in `experiments/`: what did earlier work learn that changes this idea? Follow a topic page down to the claims it cites: each says whether the lab saw it (`experiment`) or someone else reports it (`quote`), and under which conditions. `uv run .agents/skills/cortex/scripts/cortex.py claims --grep <term>` searches all claims by a word.
 - `EXPERIMENT_LANGUAGE.md` on the kept try branch (the system page `cortex/systems/<repo>.md` names it): can the idea be said in the repo's Experiment Language? Which extension point does it go into, and which shared components does it use? Creativity belongs in the idea, not in a new vocabulary or a new codebase. If the idea does not fit, that is the first thing to settle: either changing the language is the idea, or that change is an experiment of its own that comes first. An experiment repo with no Experiment Language yet gets one from its first experiment, whose one job is to connect the pipeline end to end.
 
 Run `uv run scripts/lab.py sync-repos` and then `check-drift` when the base may have moved.
@@ -179,7 +179,7 @@ Most of what happens in a round stays in the log. The question for each thing yo
 |---|---|---|
 | The reward parser in this implementation rejects free-text answers | Log only | It is about this try's code. |
 | Learning rate 2e-5 diverged, 1e-5 is stable for this recipe | Log; a sibling learns it at a reduce | A setting of this idea. It becomes a lab matter only if it says something about the model or the data in general. |
-| The patient record contains outcome fields, so any prediction trained on it leaks | A `lesson` note → a claim, cited from `findings/`; the gap map; the system page's Data section | Every experiment that trains on records is affected. |
+| The patient record contains outcome fields, so any prediction trained on it leaks | A `lesson` note → a claim, cited from `topics/`; the gap map; the system page's Data section | Every experiment that trains on records is affected. |
 | Full fine-tuning of the base model does not fit the lab's GPU above batch 4 | A `lesson` note → the system page (environment notes) | Every experiment on this repo will hit it. A fact about the system, not a research finding. |
 | A paper reports that GRPO collapses in reward after many steps | A `source` note → a source and a `quote` claim | Knowledge about the field, whoever found it. The claim says what the source reports, under the source's conditions. |
 | A claim in the cortex does not match what this round saw | A `correction` note, with the evidence | The claim is settled in the lab, never edited from a try. |
@@ -200,7 +200,7 @@ A **lab step** is done in the lab on **one chosen try** ([operations.md](referen
 2. **Review the try**: its plan, its log, its code change against the experiment's base. Does the diff read as the idea? Did it run cleanly? Do the runs support what the log says?
 3. **Evaluate, when one is possible**: `lab.py evaluate --exp <id> --try <try name>` ([evaluation.md](references/evaluation.md)). With no `evaluate.py` in the repo the lab step has no number, and says so.
 4. **Write the conclusions into the lab**: a **lab step record** in the lab folder's `lab-steps.md` (the try, the commit, the evaluation's result, what this try shows about the idea and what it does not), and one change in the cortex per note:
-   - `lesson`: an **interim conclusion**. A claim in `cortex/claims/`: one sentence, `status: provisional`, anchor `experiment::` with the experiment, the try, the round and the commit, and the conditions. Work it into the findings page it changes, citing it; write a tension if it disagrees with a claim the lab holds; update the gap it touches.
+   - `lesson`: an **interim conclusion**. A claim in `cortex/claims/`: one sentence, `status: provisional`, anchor `experiment::` with the experiment, the try, the round and the commit, and the conditions. Work it into the topic page it changes, citing it; write a tension if it disagrees with a claim the lab holds; update the gap it touches.
    - `source`: the source and its `quote` claims (`cortex add`).
    - `correction`: what `cortex/profile.md` §4 says for the case: a tension, or the older claim withdrawn or superseded.
    - `question`: try to answer it, from the cortex and then from outside (`cortex investigate`), and write the answer in the lab step record, under `Answers`. Only what stays open goes to the user, and to the gap map.
@@ -208,7 +208,7 @@ A **lab step** is done in the lab on **one chosen try** ([operations.md](referen
 
 **Asking, from a try.** Any working copy reads the lab from its default branch (locally the lab's folder, after a pull; in a cloud session the lab is attached for reading). The cortex knows: use it, and cite the claim in the log. The cortex does not know and the outside world may: investigate, and write what was found as a `source` note, not into the cortex. Only the user knows, or it is a decision: write a `question` note, state the assumption the try continues under, and continue or stop as the brief says; the answer arrives in a lab step record (`lab-steps.md` in the experiment's lab folder).
 
-A lab step adds the try's part to the cortex; it is not the cortex's main supply, which is `cortex add` at any time. The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn`. Nothing is deleted, and the findings pages are rewritten freely to say what the lab now knows. A technical failure (OOM, missing credential, typo) is never a conclusion about the idea.
+A lab step adds the try's part to the cortex; it is not the cortex's main supply, which is `cortex add` at any time. The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn`. Nothing is deleted, and the topic pages are rewritten freely to say what the lab now knows. A technical failure (OOM, missing credential, typo) is never a conclusion about the idea.
 
 </Lab-step>
 
@@ -232,8 +232,8 @@ Closing is a decision made in the lab: the stopping point was reached, or the id
 2. **Write `postmortem.md`** in the lab folder, from the lab step records: what each try showed, what they show together, the verdict, why things went the way they did, what happened to each provisional claim, and one or two Sparks.
    - `HYPOTHESIS_SUPPORTED`: the idea worked, by this lab's own measure, `cortex/purpose.md` §3.
    - `HYPOTHESIS_REFUTED`: the idea ran cleanly and did not work. Add it to the Anti-Repeat Banlist as `[pattern] -> [why it failed] -> [unless condition X changes] ([[claims/<claim>]])`.
-   - `INFRA_INCONCLUSIVE`: a technical blocker prevented a real test. Nothing is written about the idea: no claim, no findings line, no Banlist entry. Claims from rounds that ran cleanly are still settled on their own evidence.
-3. **Settle the cortex.** `cortex.py claims --from <experiment name> --status provisional` lists what this experiment still owes: confirm or withdraw each, revise the findings pages that cited a withdrawn one, and drop "provisional" from the citations of confirmed ones. When the idea ran cleanly, write its final conclusion as a claim as well (`confirmed`, anchored to the try and commit it rests on): without it the experiment's main result is in no page. Update `gap_map.md` and `index.md`, and run the cortex check.
+   - `INFRA_INCONCLUSIVE`: a technical blocker prevented a real test. Nothing is written about the idea: no claim, no line in a topic page, no Banlist entry. Claims from rounds that ran cleanly are still settled on their own evidence.
+3. **Settle the cortex.** `cortex.py claims --from <experiment name> --status provisional` lists what this experiment still owes: confirm or withdraw each, revise the topic pages that cited a withdrawn one, and drop "provisional" from the citations of confirmed ones. When the idea ran cleanly, write its final conclusion as a claim as well (`confirmed`, anchored to the try and commit it rests on): without it the experiment's main result is in no page. Update `gap_map.md` and `index.md`, and run the cortex check.
 4. **Kept or not.** Decide which try branch later experiments should start from (it added or fixed a shared component, changed the Experiment Language, or holds the new best result), apart from the verdict, and write the reason in the postmortem. If kept, point the system page at it (`> Branch: <experiment name>/<try name>`, `Fingerprint: git:<sha>`).
 5. **Record it**: `uv run scripts/lab.py record-verdict --exp <id> --verdict <VERDICT> --kept <try name|none> --metric-delta "<delta or 'no metric'>" --summary "<one-line lesson>"`. It completes the journal row and sets every try that is still `live` to `closed`. By hand: copy the Sparks into Active Sparks, and update Current Frontier if a lab step gave a new best number.
 
@@ -261,7 +261,7 @@ A request: "try reinforcement-learning fine-tuning on the base model and see if 
 3. **Tries.** `new-try` twice, with briefs: `reward-outcome` and `reward-shaped`, competing. Each has a line in `tries.md` (`live`) and a pushed try branch with its brief in the plan; a try session is started on each.
 4. **`reward-outcome`.** Round 1: reward is flat, the parser rejects free text. That is about this try's code: `For the lab` says None. Round 2: reward rises on train and not on held-out patients, because the record still contains outcome fields. Every experiment that trains on records is affected, so the entry carries a `lesson` note with the commit, the run and the conditions. Signal `ready`.
 5. **`reward-shaped`** crashes on memory twice, then runs and shows no movement. Signal `failed`; the log says the last result was a real one.
-6. **Lab step on `reward-outcome`.** `inbox` shows the leak lesson. The repo has no `evaluate.py` yet, so the record says "evaluation: not run" and gives the conclusion. The lesson becomes a provisional claim anchored to `02-grpo`, try `reward-outcome`, round 2 and its commit, cited from the findings page on training data.
+6. **Lab step on `reward-outcome`.** `inbox` shows the leak lesson. The repo has no `evaluate.py` yet, so the record says "evaluation: not run" and gives the conclusion. The lesson becomes a provisional claim anchored to `02-grpo`, try `reward-outcome`, round 2 and its commit, cited from the topic page on training data.
 7. **Reduce.** `reward-shaped` is dropped into `reward-outcome`: no code enters, one log entry says what it tried and saw, and its line in the map says `dropped → reward-outcome`. The remaining try's plan is rewritten: render only fields known at prediction time. Its signal is `working`.
 8. **More rounds** on `reward-outcome`, then a second lab step on it. The stopping point's budget is reached; the decision to go on for one more try, and why, is in the lab step record.
 9. **Close.** The two lab step records are aggregated into the postmortem. `record-verdict --kept reward-outcome`: the experiment is kept for the leak-free rendering it added, the leak claim is confirmed, the system page names `02-grpo/reward-outcome`, and the lab is published.

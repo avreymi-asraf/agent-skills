@@ -65,8 +65,8 @@ A lab that has run for a while collects leftovers that later agents read as stat
 | The plan is never edited after the first round | The plan reads as a contract | Vocabulary, plan template |
 | Agents invent folders or files for their rounds | The templates have no home for what a round produces | Templates, `lab.py new-exp` |
 | The cortex fills with one experiment's settings | The two readers are not separated | Loop skill: what to tell the lab |
-| A findings page presents a paper's result as something the lab found; a Banlist entry rests on a paper | The anchor of a claim does not reach the page, or "finding" reads as "anything written in the cortex" | `cortex/profile.md` (anchors), findings template, vocabulary |
-| Claims pile up and no findings page changes | Fusion has no moment | `cortex/profile.md` (moments) |
+| A topic page presents a paper's result as something the lab found; a Banlist entry rests on a paper | The anchor of a claim does not reach the page, or the page does not say which kinds of source it rests on | `cortex/profile.md` (anchors), topic page template (`Rests on`), vocabulary |
+| Claims pile up and no topic page changes | Fusion has no moment | `cortex/profile.md` (moments) |
 | The cortex holds little beyond what the lab's own experiments showed; agents read outside only when a gap asks | The cortex is described as the lab's memory of its experiments, or a `quote` claim as a mere hypothesis | `AGENTS.md` vocabulary, `cortex/profile.md` §1 and §3, loop skill: find a direction |
 | Claims of a closed experiment are still provisional | Closing does not list them | Loop skill: close; postmortem template |
 | A lesson everyone needed is found only in a branch log | Same root, other direction; or the round entry has no "For the lab" line, or no lab step was run on that try | Log template, the map of tries |

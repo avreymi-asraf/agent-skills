@@ -30,7 +30,7 @@ The rules are meaning, not locks. The hosting does not stop anyone from pushing 
 
 | Part | Where | What it is for | Who writes it |
 |---|---|---|---|
-| Cortex | Lab, `cortex/` | The knowledge base of the field, as wide as the lab can make it: sources (mostly from outside), claims, findings pages, tensions, the gap map, system pages. The experiments are one source among the others | The cortex operations at any time (`add`, `investigate`, `review`); lab steps and the close for what an experiment showed |
+| Cortex | Lab, `cortex/` | The knowledge base of the field, as wide as the lab can make it: sources (mostly from outside), claims, topic pages, tensions, the gap map, system pages. The experiments are one source among the others | The cortex operations at any time (`add`, `investigate`, `review`); lab steps and the close for what an experiment showed |
 | Journal | Lab, `JOURNAL.md` | The path of the research, growing like a tree: the baselines, the Sparks, every experiment's row, the Anti-Repeat Banlist. Only what the lab did and decided | `lab.py` (rows), lab steps, and whoever closes an experiment |
 | Lab folder | Lab, `experiments/<repo short name>/<experiment name>/` | The experiment as the lab sees it: `results.json` (who it is, its verdict, its kept try), `postmortem.md` at close, and the map of tries | `lab.py`, lab steps, and whoever closes |
 | Map of tries | Lab, `<lab folder>/tries.md` | One line per try: try branch, status, a comment of at most 100 characters | `new-try`, reduces, lab steps, the close |
@@ -49,7 +49,7 @@ The rules are meaning, not locks. The hosting does not stop anyone from pushing 
 | Open a try | Lab | A line in the map (`live`); the pushed try branch, with the brief in its plan |
 | Work a try | Experiment repo, in a try session; the lab is read, never written | Commits and notes on the try branch, pushed; a signal |
 | Reduce | Lab | One live try with the chosen code and the synthesized notes; the others `merged` or `dropped` in the map |
-| Lab step | Lab | A lab step record; claims, findings pages, gap map, journal |
+| Lab step | Lab | A lab step record; claims, topic pages, gap map, journal |
 | Close | Lab | The postmortem, the verdict, settled claims, the kept try, no live tries |
 | Manage many tries | Lab, in a managing session | The map, kept current |
 | Delete branches of tries that left the map | Hosting, by a person (a cloud agent cannot) | A shorter branch list |
@@ -63,7 +63,7 @@ How far a lab session goes without asking is set by the request it was given, li
 **Up, by getting smaller.**
 
 ```
-round ──▶ log entry on the try branch ──▶ [lab step on that try] ──▶ lab step record ──▶ claim ──▶ findings page
+round ──▶ log entry on the try branch ──▶ [lab step on that try] ──▶ lab step record ──▶ claim ──▶ topic page
           (everything)             │                                  (a few lines)      (one sentence)
                                    └──▶ [reduce] ──▶ one entry in the remaining try's log
                                                       (unread notes to the lab carried, word for word)

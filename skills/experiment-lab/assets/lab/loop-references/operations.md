@@ -141,14 +141,14 @@ Commit code, log and plan together and push after every round that matters.
      * **Evaluation:** [metrics and evaluation version; against the baseline, same version or not | not run, because ...]
      * **Conclusions:** [what this try shows about the experiment's idea, and what it does not show]
      * **Answers:** [answers to the try's `question` notes, each with who answered | none asked]
-     * **Written to the lab:** [claims by file name; findings pages, gaps, journal lines changed | nothing]
+     * **Written to the lab:** [claims by file name; topic pages, gaps, journal lines changed | nothing]
      * **Notes read up to:** `3f9a2c1`
      ```
    - The cortex, one change per note, by kind (forms and statuses: `cortex/profile.md`):
 
      | Kind | What is written |
      |---|---|
-     | `lesson` | A claim: `status: provisional`, anchor `experiment::` with the experiment name, the try, the round and the commit. Then the findings page it changes, citing it; a tension if it disagrees with a claim the lab holds; the gap it touches. |
+     | `lesson` | A claim: `status: provisional`, anchor `experiment::` with the experiment name, the try, the round and the commit. Then the topic page it changes, citing it; a tension if it disagrees with a claim the lab holds; the gap it touches. |
      | `source` | The source (`cortex add`), and its `quote` claims. |
      | `correction` | What `cortex/profile.md` §4 says for the case: a tension while it is open which holds, or the claim withdrawn or superseded. |
      | `question` | Try to answer it: from the cortex (`ask`), then from outside (`cortex investigate`). Write the answer in the lab step record, under `Answers`. What stays open becomes a row in `cortex/gap_map.md` and is put to the user. |

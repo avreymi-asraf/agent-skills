@@ -1,13 +1,15 @@
 ---
 type: system
 anchor: code           # this page is grounded in the experiment repo's code (Fingerprint below), not in claims
-repo: <target-repo>
+repo: <experiment repo>
 status: fresh
 updated: YYYY-MM-DD
 ---
-# System Profile: `<target-repo>`
+# System Profile: `<experiment repo>`
 
-> Repo: <target-repo> | Fingerprint: git:<sha>
+> This page is about one of the lab's experiment repos, not about the field: how experiments on it are written. Knowledge about the field goes in `topics/`.
+
+> Repo: <experiment repo> | Fingerprint: git:<sha>
 > Monitored: <paths, comma separated>
 
 > Add `> Branch: <experiment name>/<try name>` when the shared components below live on a kept try branch and not on the default branch. Later experiments then start from that branch with `new-exp --base`.
@@ -43,7 +45,7 @@ Where an idea goes in. If an idea fits none of these, that is the first thing to
 [Run folder layout, file names and key names. Keep them stable so rounds and experiments can be compared.]
 
 ### Commands
-[How a round's command is run through `uv run scripts/lab.py run --exp <id> -- '<command>'`, with repo-relative paths and `.env` variables only.]
+[How a round's command is run through `uv run scripts/lab.py run --exp <id> --try <try name> -- '<command>'`, with repo-relative paths and `.env` variables only.]
 
 ### Data
 [Where the data comes from (`<repo>@<ref>:<path>`). What data may leave the machine, what may appear in logs, what is not leak-free.]
