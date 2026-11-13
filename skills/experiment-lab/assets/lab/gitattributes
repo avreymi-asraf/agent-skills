@@ -1,0 +1,4 @@
+# Records that only grow at the end, written by several sessions at once. When two sessions each add
+# lines, git keeps both (union) instead of stopping on a conflict. Used by `lab.py publish`.
+cortex/log.md                 merge=union
+experiments/**/lab-steps.md   merge=union

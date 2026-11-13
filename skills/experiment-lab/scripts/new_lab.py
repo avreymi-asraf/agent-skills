@@ -3,7 +3,7 @@
 # requires-python = ">=3.11"
 # dependencies = []
 # ///
-"""Create a research lab repository from this skill's scaffold (assets/lab).
+"""Create a research lab repository from this skill's scaffolds (assets/lab, and assets/experiment as start-branch/).
 
     uv run scripts/new_lab.py <destination> --name "<lab name>"
 
@@ -22,12 +22,28 @@ SCAFFOLD = Path(__file__).resolve().parent.parent / "assets" / "lab"
 # Scaffold path -> path in the lab, for files that cannot keep their real name inside a skill.
 RENAMED = {
     "gitignore": ".gitignore",
+    "gitattributes": ".gitattributes",
     "env.example": ".env.example",
     "rejects.md": ".grow-autonomy/rejects.md",
-    # Stored under other names so no agent tool mistakes the scaffold for live instructions or a skill.
-    "lab-AGENTS.md": "AGENTS.md",
+    # Stored under another name so no agent tool loads the scaffold as a live skill.
     "loop-skill.md": ".agents/skills/experiment-lab-loop/SKILL.md",
 }
+# Scaffold folder -> folder in the lab: the loop skill's references, stored beside it for the same reason.
+RENAMED_DIRS = {
+    "loop-references/": ".agents/skills/experiment-lab-loop/references/",
+}
+# The second scaffold: what one experiment's start branch holds (the try AGENTS.md, the first plan, an
+# empty log). The lab keeps it in this folder and writes it on a start branch when an experiment is opened.
+EXPERIMENT_SCAFFOLD = SCAFFOLD.parent / "experiment"
+START_BRANCH_DIR = "start-branch"
+
+
+def lab_path(rel: str) -> str:
+    """Where a scaffold file lands in the lab."""
+    for src, dst in RENAMED_DIRS.items():
+        if rel.startswith(src):
+            return dst + rel[len(src):]
+    return RENAMED.get(rel, rel)
 # Every skill the lab's own content names (AGENTS.md, the loop skill). A lab must be whole wherever it
 # is cloned, so it gets its own copy of each one that is installed next to this skill. When the scaffold
 # starts naming another skill, add it here.
@@ -42,9 +58,13 @@ def main() -> None:
     lab = args.destination.resolve()
 
     written, kept = [], []
-    for src in sorted(p for p in SCAFFOLD.rglob("*") if p.is_file()):
-        rel = src.relative_to(SCAFFOLD).as_posix()
-        dst = lab / RENAMED.get(rel, rel)
+    def files(root: Path) -> list:   # the scaffold's own files, without what running its scripts left behind
+        return [p for p in root.rglob("*") if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"]
+
+    sources = [(p, lab_path(p.relative_to(SCAFFOLD).as_posix())) for p in files(SCAFFOLD)]
+    sources += [(p, f"{START_BRANCH_DIR}/{p.relative_to(EXPERIMENT_SCAFFOLD).as_posix()}") for p in files(EXPERIMENT_SCAFFOLD)]
+    for src, rel in sorted(sources, key=lambda item: item[1]):
+        dst = lab / rel
         if dst.exists():
             kept.append(dst)
             continue
@@ -85,7 +105,7 @@ def main() -> None:
               "install them into the lab's .agents/skills/ and commit.")
     slots = []
     for path in sorted(lab.rglob("*.md")):
-        if {".targets", ".venv"} & set(path.parts):
+        if {".repos", ".venv"} & set(path.parts):
             continue
         for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if "{{FILL:" in line:

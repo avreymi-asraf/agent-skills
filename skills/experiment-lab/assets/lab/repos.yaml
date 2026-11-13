@@ -1,10 +1,10 @@
-# Target repos of this lab. `uv run scripts/lab.py sync-repos` clones or fetches them into .targets/repos/.
+# Experiment repos of this lab. `uv run scripts/lab.py sync-repos` clones or fetches them into .repos/clones/.
 # Use HTTPS urls so the lab clones the same way on a laptop and in a cloud session.
-# A new target repo is three things: an entry here, its system page (cortex/systems/<name>.md, written from
+# A new experiment repo is three things: an entry here, its system page (cortex/systems/<name>.md, written from
 # cortex/systems/_TEMPLATE.md by whoever adds the entry, before the first experiment), and a line in cortex/index.md.
 
 repos:
-  - name: your-repo                                  # folder name under .targets/repos/
+  - name: your-repo                                  # folder name under .repos/clones/
     url: https://github.com/your-org/your-repo.git   # placeholder urls are skipped by sync-repos
-    short_name: repo                                 # used in experiment names: <id>-repo-<worktree-name>
+    short_name: repo                                 # the repo's folder under experiments/ and .repos/worktrees/
     default_branch: main

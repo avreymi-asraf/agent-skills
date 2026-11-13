@@ -1,24 +1,24 @@
 # Lab Journal (`JOURNAL.md`)
 
-> The lab's routing page: the best verified baselines, the ideas waiting to be tried (Sparks), the index of all experiments, open and closed, and the Anti-Repeat Banlist of refuted ideas. Terms: `AGENTS.md` §2.
+> The path of the research: which directions the lab took and what each concluded (the matrix), what is best now (Frontier), where it may go next (Sparks), and where not to go again (Banlist). It grows like a tree, each experiment starting from earlier work, in the direction of the research, and it holds only what the lab did and decided. What is known about the field, from any source, is in `cortex/`. Terms: `AGENTS.md` §3.
 
 ## 1. Current Frontier (Best Verified Baselines)
 
-> One baseline per target repo and task, shared by all experiments. A number is written with the evaluation version it was measured with (`evaluation_version` from that experiment's `results.json`).
+> One baseline per experiment repo and task, shared by all experiments. A number is written with the evaluation version it was measured with (`evaluation_version` in that lab step's `metrics.json`).
 
-| Target Repo | Task / Benchmark | Best Branch / Commit | Metric | Evaluation Version | Provenance Experiment |
+| Experiment Repo | Task / Benchmark | Best Branch / Commit | Metric | Evaluation Version | Provenance Experiment |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ## 2. Active Sparks (Ideas Waiting to Be Tried)
 
-> `* **[SPARK-nn] (from [[<exp-name>]], a claim from outside, or the user; Priority; Gap):** the idea, and why it is worth an experiment.`
+> `* **[SPARK-nn] (from [[<experiment name>]], a claim from outside, or the user; Priority; Gap):** the idea, and why it is worth an experiment.`
 
 ## 3. Experiment Matrix (Chronological Index)
 
-> One row per experiment, written by `scripts/lab.py`: `new-exp` adds it with **OPEN** in the Verdict column, `record-verdict` completes it. A row that says OPEN is an experiment someone may be working on.
+> One row per experiment, written by `scripts/lab.py`: `new-exp` adds it with **OPEN** in the Verdict column, `record-verdict` completes it, with the kept try branch or `none`. Base is the branch and commit the experiment started from. A row that says OPEN is an experiment someone may be working on.
 
-| Exp | Opened | Closed | Target Repo (`Branch`) | Idea | Metric vs. Baseline | Verdict | One-Line Takeaway |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Experiment | Opened | Closed | Experiment Repo | Base | Idea | Metric vs. Baseline | Verdict | Kept Try | One-Line Takeaway |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 
 ## 4. Anti-Repeat Banlist
 

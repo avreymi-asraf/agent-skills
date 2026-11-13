@@ -17,7 +17,7 @@ Three kinds of agents work in a lab, and each has a different picture:
 | Agent | Has from the start | Gets only if |
 |---|---|---|
 | The one holding the request, at the lab root | `AGENTS.md`, the names of the skills | It loads the loop skill (the request is about an experiment); it opens `cortex/purpose.md`, `cortex/profile.md`, the system page |
-| One working inside a worktree | The lab's skills (copied in by `new-exp`), the target repo's own files | Someone tells it: the lab's `AGENTS.md` is not in the worktree |
+| One working a try, in a try session | The lab kit on its try branch (the try `AGENTS.md`, the lab's skills), `EXPERIMENT_LANGUAGE.md`, its plan with the brief | It attaches the lab for reading: the cortex, the journal, the lab step records of its experiment. The lab's `AGENTS.md` is not on its branch |
 | A subagent | Its brief | The brief carries it. It sees no conversation, no file already read |
 
 Most rejects on wide requests are found in the third row. The subagent did its piece correctly, and the reason for the piece never reached it.
@@ -32,11 +32,11 @@ Ask instead what the behavior is for, who needs it, and which part of the lab ca
 
 | The behavior is about | It usually belongs in |
 |---|---|
-| Something to ask in every round | A field in the log template (`Run plan`, `Told the lab`) |
+| Something to ask in every round | A field in the log template (`Run plan`, `For the lab`, `Signal`) |
 | Something decided when an experiment opens | The plan template |
 | Something settled when it closes | The postmortem template and the closing steps of the loop skill |
-| What is worth writing to the lab's memory, and how far it is trusted | `cortex/profile.md` and the claim and findings templates |
-| How code is written on a target | The system page (Experiment Language) |
+| What is worth writing to the cortex, and how far it is trusted | `cortex/profile.md` and the claim, topic page and source templates |
+| How code is written in an experiment repo | `EXPERIMENT_LANGUAGE.md` in the experiment repo (the Experiment Language) |
 | A mechanical step that keeps coming out wrong | `scripts/lab.py`: make the right path the easy one |
 | What a word means | The vocabulary in `AGENTS.md`, once, with an example |
 | Something the user wants always | "What always holds" in `AGENTS.md`, with its reason |
@@ -52,7 +52,7 @@ A lab leaves an unusually good trail, because its agents write their decisions d
 
 - **The request,** worded as it was given, and how much it left to the lab.
 - **Which agent decided:** the one holding the request, or a subagent. For a subagent, find the brief it was given.
-- **What it had read by then.** The experiment's `plan.md` and its history (`git log -p -- notes/<exp-name>/plan.md` on the experiment branch), the round entries in `log.md` (`Run plan`, `Decided`, `Told the lab`), the claims it wrote (`cortex.py claims --from <exp-name>`), `cortex/log.md`, the postmortem, the experiment's diff against its base. When session transcripts exist, `audit-agent-context` with traces shows which files were opened and in what order.
+- **What it had read by then.** The try's `plan.md` with its brief and its history (`git log -p -- notes/<experiment name>/plan.md` on the try branch), the round entries in `log.md` (`Run plan`, `Decided`, `For the lab`), the experiment's map of tries and lab step records, the claims written from it (`cortex.py claims --from <experiment name>`), `cortex/log.md`, the postmortem, the experiment's diff against its base. When session transcripts exist, `audit-agent-context` with traces shows which files were opened and in what order.
 
 Then name, in one sentence, what the agent believed that made its action look right. If you cannot, you are still looking at the symptom.
 
@@ -64,9 +64,10 @@ A wrong belief produces a family of mistakes; the one the user rejected only sur
 |---|---|---|
 | "An experiment is a test that passes or fails." | Closed as refuted after one failed run; a crash counted as a result; the plan never edited after day one; work stops dead at the stopping point | The vocabulary; a plan template that reads as a contract; a log template with no place for the kind of failure |
 | "The job is to produce a number." | Evaluation on leaked data; the best seed reported; numbers from two evaluation versions compared; a threshold tuned on held-out data | `purpose.md` §3 is empty or generic; data rules missing from the system page |
-| "This experiment is my codebase." | A private loader; a copied script per variant; a shared component forked; a diff that is mostly plumbing | The Experiment Language is not on the system page, or did not reach the subagent that wrote the code |
-| "The cortex is where things get written down." | One experiment's settings in a findings page; a claim per sentence of a paper; a page per source. Or the opposite: a lesson everyone needs, left in a branch log | `cortex/profile.md` §1 does not carry the loop's test; the log template has no `Told the lab` line |
-| "What is written in the cortex is known." | A paper's result presented as the lab's finding; a Banlist entry that rests on a quote; a plan built on a withdrawn claim; two contradicting results averaged into "mixed" | The anchor of a claim does not reach the page; the findings template has no `Rests on` line; nothing asks for a tension |
+| "This experiment is my codebase." | A private loader; a copied script per variant; a shared component forked; a diff that is mostly plumbing | `EXPERIMENT_LANGUAGE.md` is missing or vague, or did not reach the subagent that wrote the code |
+| "The cortex is where things get written down." | One experiment's settings in a topic page; a claim per sentence of a paper; a page per source. Or the opposite: a lesson everyone needs, left in a branch log | `cortex/profile.md` §1 does not say what is worth writing from each kind of source; the log template has no `For the lab` line |
+| "What is written in the cortex is known." | A paper's result presented as the lab's finding; a Banlist entry that rests on a quote; a plan built on a withdrawn claim; two contradicting results averaged into "mixed" | The anchor of a claim does not reach the page; the topic page template has no `Rests on` line; nothing asks for a tension |
+| "The cortex is the memory of our experiments." | Nothing added unless a gap asks; outside results treated as second-rate; directions that only follow the last experiment; a field the lab does not know | The vocabulary and `cortex/profile.md` §1 describe the cortex by the experiments; a `quote` anchor is called a hypothesis |
 | "A new direction is the next item on the list." | Ten experiments on one knob; never reading outside the lab; never questioning the task itself | The far goal is unwritten; every Spark is a follow-up, because that is what the postmortem asks for |
 | "Wide means finish." | No report of what was assumed; a direction chosen without crossing it with the cortex; a run that answers nothing left to burn GPU hours | `AGENTS.md` §1; nothing asks for a run plan |
 | "The user has to approve." | Approval asked at every step of a wide request | A level, a mode or an "ask before" left somewhere in the content |
@@ -79,8 +80,9 @@ A lab has more levels of memory than most systems, and each lesson belongs to on
 
 | True for | Written in |
 |---|---|
-| This experiment | `notes/<exp-name>/` on its branch: `plan.md`, `log.md` |
-| The research: a different experiment should know it | The cortex: a claim, and the findings page or gap it changes |
+| This try | `notes/<experiment name>/` on its try branch: `plan.md`, `log.md` |
+| This experiment | The lab step record of the try that showed it, in the lab folder's `lab-steps.md` |
+| The research: a different experiment should know it | The cortex: a claim, and the topic page or gap it changes |
 | How this lab works | The lab's own files: `AGENTS.md`, its `experiment-lab-loop` skill, the templates, `cortex/profile.md`, `lab.py` |
 | Any lab | The scaffold in this skill (`assets/lab/`), proposed to the user and changed here, not by re-copying over a living lab |
 | Anyone who uses `cortex`, `grow-autonomy` or a run skill | The source of that skill, proposed to the user. The copy in the lab's `.agents/skills/` is not edited |
