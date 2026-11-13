@@ -30,8 +30,8 @@ The rules are meaning, not locks. The hosting does not stop anyone from pushing 
 
 | Part | Where | What it is for | Who writes it |
 |---|---|---|---|
-| Cortex | Lab, `cortex/` | What the lab knows: sources, claims, findings pages, tensions, the gap map, system pages | Lab steps, the close, and the cortex operations (`add`, `investigate`, `review`) |
-| Journal | Lab, `JOURNAL.md` | Routing: the baselines, the Sparks, every experiment's row, the Anti-Repeat Banlist | `lab.py` (rows), lab steps, and whoever closes an experiment |
+| Cortex | Lab, `cortex/` | The knowledge base of the field, as wide as the lab can make it: sources (mostly from outside), claims, findings pages, tensions, the gap map, system pages. The experiments are one source among the others | The cortex operations at any time (`add`, `investigate`, `review`); lab steps and the close for what an experiment showed |
+| Journal | Lab, `JOURNAL.md` | The path of the research, growing like a tree: the baselines, the Sparks, every experiment's row, the Anti-Repeat Banlist. Only what the lab did and decided | `lab.py` (rows), lab steps, and whoever closes an experiment |
 | Lab folder | Lab, `experiments/<repo short name>/<experiment name>/` | The experiment as the lab sees it: `results.json` (who it is, its verdict, its kept try), `postmortem.md` at close, and the map of tries | `lab.py`, lab steps, and whoever closes |
 | Map of tries | Lab, `<lab folder>/tries/<try name>.md` | One try record per try: status, brief, answers, lab step records, how it ended. Lab step files (`evaluate.log`, `patch.diff`) sit beside it | `new-try`, reduces, lab steps, the close |
 | Tools | Lab, `scripts/lab.py`, `.agents/skills/` | Opening, listing, evaluating; the skills | Changed as a change to the lab |
@@ -72,6 +72,8 @@ round ──▶ log entry on the try branch ──▶ [lab step on that try] ─
 - A lab step reads one try and writes what it shows into the lab. The record names the commit it read up to, so the next lab step on that try reads only what is new.
 - A reduce keeps what the remaining try needs from the others and drops the rest on purpose. It carries the notes to the lab that no lab step has read yet, unchanged, and keeps two tries' contradicting lessons side by side when the evidence does not decide between them.
 - The close aggregates the lab step records into the experiment's conclusion.
+
+**In, from outside.** The cortex is not filled by the experiments alone, or mainly. Whatever is known about the field and may advance the research is added to it at any time (`cortex add`), by a lab session or by a person, with no gap or experiment behind it. What a try reads from outside reaches it as a `source` note.
 
 **Down, by reading the lab.** Anyone, in any working copy, reads the lab from its default branch: the cortex, the journal, the map, its own try record. Nothing is copied into experiment repos, so nothing goes stale there. Three cases when a try needs to know something:
 

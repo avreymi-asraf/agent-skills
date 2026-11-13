@@ -15,7 +15,7 @@ reliability: primary | secondary | informal | unknown
 
 **Limits:** [Single preprint, one dataset, a different domain from ours, no code, ...]
 
-**Read for:** [The gap or Spark that sent us here (`G<n>`, `SPARK-<nn>`), or "added without a question".]
+**Read for:** [The gap or Spark that sent us here (`G<n>`, `SPARK-<nn>`), or the topic of the field it adds to. A source needs no gap behind it.]
 
 ## Text
 [Stored in `sources/text/<source-id>.md` by `cortex.py store`: the whole text, or for long copyrighted text the passages claims quote, with the sentences that carry their conditions. Claims quote only that file. With `read: not obtained`: each route tried, when, and what stopped it; a lead has no claims.]

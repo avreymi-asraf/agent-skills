@@ -59,11 +59,11 @@ The skill fixes the three layers and the rules between them. Everything else is 
 
 A profile says:
 
-1. **What the synthesis is for**: the question a reader brings to this cortex. It is the test for what is worth writing. A reading knowledge base: "understand the field well enough to explain it and compare approaches". A research lab: "choose and do the next experiment". The same paper yields different claims and different pages under each.
+1. **What the synthesis is for**: the question a reader brings to this cortex. It is the test for what is worth writing. A reading knowledge base: "understand the field well enough to explain it and compare approaches". A research lab: "know the field of the research as widely as possible, so the research advances". The same paper yields different claims and different pages under each.
 2. **Layout**: where sources, claims and synthesis live and what the page types are called.
 3. **Anchors**: which kinds of anchor this cortex accepts and what each one earns ([Claims]).
 4. **Checking**: what must pass before a write counts: the script, and when a blind verification is required.
-5. **Moments**: when fusion happens here and who does it. In a knowledge base it is the end of each `add`. In a lab it is set by the experiment loop.
+5. **Moments**: when fusion happens here and who does it. In a knowledge base it is the end of each `add`. In a lab it is also at fixed moments of the experiment loop.
 
 A new cortex (`init`) starts from the default profile in [Templates](references/templates.md) and this layout:
 
@@ -291,9 +291,9 @@ A typed page that is grounded in something other than claims says so in its fron
 <Connecting-Skills>
 
 - **Prerequisites:** a way to read sources: a download in the shell, or a fetch or reader tool. A converter such as `pdf-to-markdown-mcp`, where it is installed, turns a PDF into text that can be stored. [Add] step 2 says what to do with whichever the session has.
-- **Companions:** `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its memory as a cortex, with its own profile; there the experiment loop decides when a claim is written and settled, and this skill gives the form and the operations.
+- **Companions:** `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its knowledge base of its field as a cortex, with its own profile; there the experiment loop decides when an experiment's claims are written and settled, and this skill gives the form and the operations.
 - **Prerequisites:** `pdf-to-markdown-mcp` when a source is a PDF: a quote can only be checked against extracted text.
-- **Companions:** `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its memory as a cortex, with its own profile; there the experiment loop decides when a claim is written and settled, and this skill gives the form and the operations.
+- **Companions:** `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its knowledge base of its field as a cortex, with its own profile; there the experiment loop decides when an experiment's claims are written and settled, and this skill gives the form and the operations.
 - **Successors:** `manage-skills` when this skill itself has to change. `grow-autonomy` when agents keep writing to a cortex in a way the user rejects: the cause is in what they understood, usually in the profile, not in the pages.
 
 </Connecting-Skills>

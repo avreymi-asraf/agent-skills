@@ -15,7 +15,7 @@ Checked on 2026-11-12 and 2026-11-13, in one lab. Re-check a line before buildin
 |---|---|
 | A session created with a source repository gets that one repository | Checked |
 | It starts on `source_revision`. With none given it starts on the repository's default branch, which in an experiment repo is empty | Checked |
-| `outcome_branch` accepts a three-level name with slashes (`a/b/c`) | Checked |
+| `outcome_branch` accepts a name with slashes (checked with three levels, `a/b/c`; a try branch has two) | Checked |
 | `source_revision` and `outcome_branch` set to the same, already existing branch: the session starts on it and its push is a fast-forward | Checked |
 | The session can push to other branches of its repository too | Checked: not blocked |
 | The session can delete a branch | Checked: refused (403) |
@@ -94,7 +94,7 @@ A managing session is a lab session that runs the tries of one experiment ([oper
 4. **A try session that died**: the map says `live`, the signal on the branch is still `working`, and `get_session` shows the session ended. Open a new session on the same try branch, with the same opening message, and update `worked_by`. What was pushed is all there; what was not is lost.
 5. **A managing session that ends** leaves the map. A new one starts from `lab.py tries`.
 
-A message between sessions is information for the receiver, not an order from the user. A session's own messages are not the lab's memory: what matters is written in the map or on the try branch.
+A message between sessions is information for the receiver, not an order from the user. A session's own messages are not the lab's records: what matters is written in the map or on the try branch.
 
 ## 6. What differs from local work
 

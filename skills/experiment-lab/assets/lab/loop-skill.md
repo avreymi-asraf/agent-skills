@@ -33,7 +33,7 @@ There are two levels of sessions. A **try session** works one try and sees only 
 - **[References]**: the glossary, the system guide, the operations, cloud sessions, the evaluation API, the commands.
 - **[Example]**: one experiment from idea to close.
 
-How far to carry a request (one operation, guided step by step, or a whole experiment) is set by the request; see the lab's `AGENTS.md` §1, which also holds the rules that always hold. Companion skills: `cortex` for the operations on the lab's memory (`add`, `investigate`, `ask`, `verify`, `review`), with this lab's layout and statuses in `cortex/profile.md`; `code-as-tools` when writing experiment code; `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
+How far to carry a request (one operation, guided step by step, or a whole experiment) is set by the request; see the lab's `AGENTS.md` §1, which also holds the rules that always hold. Companion skills: `cortex` for the operations on the lab's knowledge base (`add`, `investigate`, `ask`, `verify`, `review`), with this lab's layout and statuses in `cortex/profile.md`; `code-as-tools` when writing experiment code; `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
 
 </experiment-lab-loop>
 
@@ -94,7 +94,7 @@ The pack is a first look, not the sources: a part that did not fit ends at a lin
 
 Run `uv run scripts/lab.py sync-repos` and then `check-drift` when the base may have moved.
 
-**Going outside is part of this stage.** An open gap is often answered faster by reading than by running. Reading for a gap is `cortex investigate`: it starts from the gap's row, brings back sources and `quote` claims, and ends by updating that row. What comes back is what someone else reports. For this lab it is a hypothesis, and often the best source of the next idea: an experiment is what turns it into something the lab has seen.
+**Going outside is part of this stage, and of the lab's work at any time.** The cortex is the lab's knowledge base of its whole field, not a record of its experiments: most of what it holds comes from outside, and a claim from a paper matters as much as a claim from a round of ours. So read widely around the idea and add what you read (`cortex add`), whether or not a gap asked for it. An open gap is often answered faster by reading than by running: that is `cortex investigate`, which starts from the gap's row and ends by updating it. A `quote` claim says what a source reports under the source's conditions; whether it holds in this lab's setting is a question an experiment can answer.
 
 On a wide request, when experiments have closed since the cortex was last reviewed (`cortex/log.md`), hand a `cortex review` to a subagent before choosing: a direction chosen from a stale cortex is chosen badly.
 
@@ -180,7 +180,7 @@ Most of what happens in a round stays in the log. The question for each thing yo
 | Learning rate 2e-5 diverged, 1e-5 is stable for this recipe | Log; a sibling learns it at a reduce | A setting of this idea. It becomes a lab matter only if it says something about the model or the data in general. |
 | The patient record contains outcome fields, so any prediction trained on it leaks | A `lesson` note → a claim, cited from `findings/`; the gap map; the system page's Data section | Every experiment that trains on records is affected. |
 | Full fine-tuning of the base model does not fit the lab's GPU above batch 4 | A `lesson` note → the system page (environment notes) | Every experiment on this repo will hit it. A fact about the system, not a research finding. |
-| A paper reports that GRPO collapses in reward after many steps | A `source` note → a source and a `quote` claim | Someone else reports it; for the lab a hypothesis. |
+| A paper reports that GRPO collapses in reward after many steps | A `source` note → a source and a `quote` claim | Knowledge about the field, whoever found it. The claim says what the source reports, under the source's conditions. |
 | A claim in the cortex does not match what this round saw | A `correction` note, with the evidence | The claim is settled in the lab, never edited from a try. |
 | GRPO did not improve held-out reward in three reward designs | The lab step records, then the close: postmortem and Banlist | It decides whether anyone tries it again. One bad round does not say this yet. |
 | The run crashed on a missing token | Log only | A technical failure says nothing about the idea. |
@@ -207,7 +207,7 @@ A **lab step** is done in the lab on **one chosen try** ([operations.md](referen
 
 **Asking, from a try.** Any working copy reads the lab from its default branch (locally the lab's folder, after a pull; in a cloud session the lab is attached for reading). The cortex knows: use it, and cite the claim in the log. The cortex does not know and the outside world may: investigate, and write what was found as a `source` note, not into the cortex. Only the user knows, or it is a decision: write a `question` note, state the assumption the try continues under, and continue or stop as the brief says; the answer arrives in the try record.
 
-The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn`. Nothing is deleted, and the findings pages are rewritten freely to say what the lab now knows. A technical failure (OOM, missing credential, typo) is never a conclusion about the idea.
+A lab step adds the try's part to the cortex; it is not the cortex's main supply, which is `cortex add` at any time. The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn`. Nothing is deleted, and the findings pages are rewritten freely to say what the lab now knows. A technical failure (OOM, missing credential, typo) is never a conclusion about the idea.
 
 </Lab-step>
 

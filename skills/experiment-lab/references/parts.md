@@ -10,7 +10,7 @@ Holds the picture and nothing procedural:
 2. How far to go comes with the request: small stays small, wide is carried through and ends with a report.
 3. Vocabulary, in short form: experiment repo, experiment, try, start branch, map of tries, session, reduce, note to the lab, lab step, lab kit, plan, round, log, conclusion, cortex, claim, evaluation and evaluation version, baseline, kept, Spark, Experiment Language, experiment name. One meaning each. The full glossary, with what each term is not, is the loop skill's `references/glossary.md`, and it is the authority.
 4. Where things live, as one table.
-5. A pointer to the loop skill, and when not to load it; a pointer to the `cortex` skill for work on the lab's memory outside an experiment.
+5. A pointer to the loop skill, and when not to load it; a pointer to the `cortex` skill for work on the lab's knowledge base.
 6. What always holds: a short list, each item with its reason. The Experiment Language comes first. The last items are this lab's own (evaluation, where runs go, data).
 7. Attention: what to keep in the main context, what to hand to a subagent, what a brief must carry.
 8. Where what was learned is written, by who it is true for: the experiment's notes, the cortex, the lab's own files, or a proposal for the source of an outside skill. Short lines; the reasoning is in `grow-autonomy`.
@@ -61,29 +61,29 @@ Overview, then the Experiment Language: the mental model, the vocabulary, a tabl
 
 ## `JOURNAL.md`
 
-The routing page: Current Frontier (best verified baseline per experiment repo and task, each with its evaluation version), Active Sparks, the experiment matrix (one row per experiment from the moment it is opened, written by `lab.py`), the Anti-Repeat Banlist. Only a clean run puts an idea on the Banlist, and each entry says under which condition it would be worth trying again.
+The path of the research, growing like a tree in its direction, holding only what the lab did and decided: Current Frontier (best verified baseline per experiment repo and task, each with its evaluation version), Active Sparks, the experiment matrix (one row per experiment from the moment it is opened, written by `lab.py`), the Anti-Repeat Banlist. Only a clean run puts an idea on the Banlist, and each entry says under which condition it would be worth trying again.
 
 ## The cortex (`cortex/`)
 
-The lab's memory, built with the `cortex` skill. Three layers, with different rules:
+The lab's knowledge base of its field, built with the `cortex` skill: as wide a collection as the lab can build of what is known that may advance the research. Most of it comes from outside, and the lab's experiments are one kind of source among the others. Three layers, with different rules:
 
-- **Sources.** The experiments themselves (the lab folder with its try records, and the try branches), and what was read from outside (`cortex/sources/`: a note per source and the text that was actually read).
+- **Sources.** What was read from outside, of any kind (`cortex/sources/`: a note per source and the text that was actually read), and the experiments themselves (the lab folder with its try records, and the try branches).
 - **Claims** (`cortex/claims/`). One sentence per file, with an anchor (`experiment`: name, try, round, commit; `quote`: the source's words; `stated`: the user), the conditions it holds under, and a status. A claim is corrected in place only at its blind verification; after that, and for an `experiment` claim from the start, it changes status and is never rewritten (the profile's §4). An interim conclusion enters here as `provisional` and is settled when its experiment closes.
-- **Synthesis.** `findings/` (what the lab knows about a topic, citing claims), `tensions/` (two claims that disagree), `gap_map.md` (open questions). These are rewritten whenever understanding changes. Also `index.md` and `log.md`.
+- **Synthesis.** `findings/` (what is known about a topic, citing claims of every anchor), `tensions/` (two claims that disagree), `gap_map.md` (open questions). These are rewritten whenever understanding changes. Also `index.md` and `log.md`.
 
-*Shows when wrong:* a findings page states as the lab's own result something only a paper reports. A claim is edited in place and the pages that cited it now say something nobody checked. Claims pile up and no findings page changes. A page of outside results grows that no gap asked for and no experiment uses. Provisional claims of closed experiments are still provisional.
+*Shows when wrong:* a findings page states as the lab's own result something only a paper reports. A claim is edited in place and the pages that cited it now say something nobody checked. Claims pile up and no findings page changes. The cortex holds only what the lab's experiments showed, and nothing is added unless a gap asks. Provisional claims of closed experiments are still provisional.
 
 ## `cortex/profile.md`
 
-What makes this cortex a lab's: the question its synthesis serves (the next experiment, with the loop's test for what is worth writing), the layout, what each kind of anchor earns here (an `experiment` claim is what the lab saw; a `quote` claim is a hypothesis and cannot support a Banlist entry or a Frontier number), when claims are written and settled, the check command, and what a review looks at in this lab beyond the skill's own list (the journal, the experiments' results, drifted system pages).
+What makes this cortex a lab's: what it is for (knowing the field as widely as possible so the research advances; what is worth writing from outside and from an experiment), how it differs from the journal, the layout, what each kind of anchor says (where a claim comes from and how it is checked, not its rank; the journal's Banlist and Frontier rest on `experiment` claims because they record the lab's own path), when claims are written and settled, the check command, and what a review looks at in this lab beyond the skill's own list (the journal, the experiments' results, drifted system pages).
 
-The general `cortex` skill is copied into the lab unchanged; this file is the only place where the lab's memory is described as the lab's. A change to how agents write to the cortex goes here or into the templates beside it (`claims/_TEMPLATE.md`, `findings/_TEMPLATE.md`, `sources/_TEMPLATE.md`).
+The general `cortex` skill is copied into the lab unchanged; this file is the only place where the lab's knowledge base is described as the lab's. A change to how agents write to the cortex goes here or into the templates beside it (`claims/_TEMPLATE.md`, `findings/_TEMPLATE.md`, `sources/_TEMPLATE.md`).
 
 *Shows when wrong:* agents write to the cortex as to a general knowledge base: a claim for every sentence of a paper, a page per source. Or the profile restates the loop and the two copies drift.
 
 ## The `cortex` skill, in the lab
 
-The operations on the lab's memory that are not part of an experiment: add a source, investigate a gap from outside sources, answer from what the lab knows, verify new claims, review. One skill for all of them (`/cortex review`, `/cortex investigate G4`), and one script, `.agents/skills/cortex/scripts/cortex.py`, that checks anchors and links and lists claims. The review pass runs from time to time in a fresh context: every experiment starts by reading this knowledge, so a wrong claim there steers all of them and nobody sees it happen.
+The operations on the lab's knowledge base: add a source (the main way the cortex grows), investigate a gap from outside sources, answer from what the lab knows, verify new claims, review. One skill for all of them (`/cortex review`, `/cortex investigate G4`), and one script, `.agents/skills/cortex/scripts/cortex.py`, that checks anchors and links and lists claims. The review pass runs from time to time in a fresh context: every experiment starts by reading this knowledge, so a wrong claim there steers all of them and nobody sees it happen.
 
 ## The two homes of an experiment's work
 

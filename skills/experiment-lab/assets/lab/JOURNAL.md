@@ -1,6 +1,6 @@
 # Lab Journal (`JOURNAL.md`)
 
-> The lab's routing page: the best verified baselines, the ideas waiting to be tried (Sparks), the index of all experiments, open and closed, and the Anti-Repeat Banlist of refuted ideas. Terms: `AGENTS.md` §2.
+> The path of the research: which directions the lab took and what each concluded (the matrix), what is best now (Frontier), where it may go next (Sparks), and where not to go again (Banlist). It grows like a tree, each experiment starting from earlier work, in the direction of the research, and it holds only what the lab did and decided. What is known about the field, from any source, is in `cortex/`. Terms: `AGENTS.md` §2.
 
 ## 1. Current Frontier (Best Verified Baselines)
 

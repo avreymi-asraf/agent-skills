@@ -16,7 +16,7 @@ data_source: "<repo>@<ref>:<path>"  # e.g. data-repo@main:data/samples/v1 (never
 ## 1. The Idea
 * **Idea:** [What we want to try, in one or two sentences. This part is stable: if it has to be replaced, close the experiment and open a new one.]
 * **Why it is worth trying:** [The gap or Spark it answers, and how it serves `cortex/purpose.md`.]
-* **Crossed with what the lab knows:** [Findings, claims, tensions, earlier experiments and Banlist entries that bear on it, and what they change. Say which of them the lab saw and which are only reported by an outside source.]
+* **Crossed with what the lab knows:** [Findings, claims, tensions, earlier experiments and Banlist entries that bear on it, and what they change. Say for each where it comes from: an outside source, or an experiment of the lab; and whether its conditions match this experiment's.]
 * **Alternatives considered:** [Other directions that were weighed and why this one was chosen. For one that is worth an experiment of its own: the `SPARK-nn` it was given in `JOURNAL.md`.]
 
 ## 2. What We Know and How We Will Do It
