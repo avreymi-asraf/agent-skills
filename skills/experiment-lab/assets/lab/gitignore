@@ -1,0 +1,11 @@
+# Clones of target repos and experiment worktrees, managed by scripts/lab.py
+.targets/
+
+# Rebuilt by `lab.py context-pack`
+cortex/query_pack.md
+
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+.env

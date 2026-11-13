@@ -1,126 +1,49 @@
 ---
 name: gemini-deep-research
-description: Local MCP server for Google Gemini Deep Research interactions using explicit regular/max start tools, explicit file-capable variants, and status polling. Use when the user wants long-running Deep Research jobs with explicit start + poll control.
+description: Local MCP server that hands a research question to Google Gemini Deep Research and polls for the report. Use when the user wants a Gemini Deep Research run, a second and independent research pass next to your own, or a long background search that costs none of your own context.
 ---
 
 # Gemini Deep Research MCP
 
-This skill provides a local MCP server for Google Gemini Deep Research interactions.
+A local MCP server with two tools: start a Gemini Deep Research run, and poll it until the report is ready. The research is done by Google's agent, with its own search index, so it is independent of anything you find yourself.
 
-## Files
+## When to use it
 
-- `skills/gemini-deep-research/mcp-server.py`
+- The user asks for Gemini Deep Research by name.
+- A broad first survey of a topic, to run in the background while you do other work.
+- A second opinion on a question you researched yourself: the two runs share no sources and no reasoning.
 
-## Requirements
+It returns a finished report, not sources you can open and check. For work that must rest on documents you read yourself, do the reading yourself and use this only for leads.
+
+## Setup
 
 - `GOOGLE_API_KEY` must be set in the environment.
-- Optional: `GEMINI_API_BASE_URL` to override the default API base (`https://generativelanguage.googleapis.com/v1alpha`).
-
-## Run Manually
+- Optional: `GEMINI_API_BASE_URL` overrides the API base (default `https://generativelanguage.googleapis.com/v1alpha`).
 
 ```bash
 uv run skills/gemini-deep-research/mcp-server.py
 ```
 
-## Tools Exposed
+The agent ids are preview models (`deep-research-preview-04-2026`, `deep-research-max-preview-04-2026`) on a `v1alpha` API. If a start call fails with an unknown agent, the ids in `mcp-server.py` (`AGENT_IDS`) need updating.
 
-- `deep_research_start_regular(prompt, additional_instructions=None, file_search_stores=None)`
-- `deep_research_start_max(prompt, additional_instructions=None, file_search_stores=None)`
-- `deep_research_start_regular_with_files(prompt, file_uris, additional_instructions=None, file_search_stores=None)`
-- `deep_research_start_max_with_files(prompt, file_uris, additional_instructions=None, file_search_stores=None)`
-- `deep_research_start_file_aware(prompt, file_uris, mode="regular", additional_instructions=None, file_search_stores=None)`
-- `deep_research_poll(interaction_id)`
+## Tools
 
-## Usage Pattern
+- `deep_research_start(prompt, mode="regular", additional_instructions=None, file_uris=None, file_search_stores=None)`: starts a run in the background and returns `interaction_id`. `mode="max"` is deeper and slower. `file_uris` attaches documents; `file_search_stores` adds file-search stores.
+- `deep_research_poll(interaction_id)`: returns `status`, `done` and the raw response.
 
-1. Call one start tool and capture `interaction_id`.
-2. Poll with `deep_research_poll` until `done` is `true`.
-3. Read the `raw` field for final model output.
+## Usage
 
-> **Note:** Deep Research interactions typically take **~10 minutes** to complete. The agent can perform other tasks or answer unrelated questions while the research runs in the background. Poll periodically (e.g., every 30–60 seconds) to check status.
+1. Call `deep_research_start` and keep the `interaction_id`.
+2. A run takes about 10 minutes. Do other work meanwhile and poll every minute or so until `done` is `true`.
+3. If `status` is `failed` or `cancelled`, report that and stop. Otherwise read the report from `raw.outputs`.
 
-## How to Read Results
+## Reading the result
 
-`deep_research_poll` returns a JSON object with this structure:
+`raw.outputs` is a list of items in order:
 
-```json
-{
-  "interaction_id": "v1_...",
-  "status": "completed",
-  "done": true,
-  "raw": {
-    "id": "v1_...",
-    "status": "completed",
-    "outputs": [
-      {
-        "type": "thought",
-        "summary": [{"text": "**Mapping the Landscape**...", "type": "text"}],
-        "signature": ""
-      },
-      {
-        "type": "text",
-        "text": "# Final Report Title\n\nReport body in Markdown...",
-        "annotations": [
-          {"start_index": 2879, "end_index": 2891, "url": "https://...", "type": "url_citation"}
-        ]
-      }
-    ]
-  }
-}
-```
+- `type: "thought"`: progress notes ("Mapping the Landscape", ...). They show the run is alive; leave them out of what you present.
+- `type: "text"`: the report, in Markdown, in the `text` field. If there are several, join them in order.
 
-### Output Array (`raw.outputs`)
+A `text` item may carry `annotations`: `{start_index, end_index, url, type: "url_citation"}`, where the indexes are character positions in `text`.
 
-The `outputs` array contains **mixed content types** in order:
-
-| `type` | Purpose | How to Handle |
-|--------|---------|---------------|
-| `thought` | Research process updates (e.g., "Mapping the Landscape", "Preparing to Write") | These are *internal reasoning steps*. You may skip them when presenting the final answer, but they confirm progress during polling. |
-| `text` | The final Markdown report | This is the **primary deliverable**. Present this to the user. |
-
-**Important:** There may be multiple `thought` entries and one or more `text` entries. Always look for `type: "text"` to find the actual report.
-
-### Extracting the Report
-
-1. Filter `raw.outputs` for items where `type == "text"`.
-2. The `text` field contains the full Markdown report.
-3. If there are multiple `text` entries, concatenate them in order.
-
-### URL Citations (`annotations`)
-
-Text outputs may include an `annotations` array with URL citations:
-
-```json
-{
-  "start_index": 2879,
-  "end_index": 2891,
-  "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/...",
-  "type": "url_citation"
-}
-```
-
-- `start_index` / `end_index`: Character positions in the `text` string where the citation applies.
-- These are **grounded sources** from the web search. When presenting the report, you may:
-  - Present the report as-is (citations are inline by position).
-  - Optionally extract the cited URLs and append them as a "Sources" section.
-
-### Recommended Presentation Flow
-
-When `done == true` and `status == "completed"`:
-
-1. **Extract report text** from all `type: "text"` outputs.
-2. **Present the Markdown report** to the user directly.
-3. **Optionally extract URLs** from `annotations` and list them as sources.
-4. **Skip `thought` entries** in the final presentation (they are for debugging/progress only).
-
-If `status == "failed"` or `"cancelled"`, report the failure and do not attempt to parse outputs.
-
-## Notes
-
-- Deep Research interactions typically take **~10 minutes** to complete. The agent can perform other tasks or answer unrelated questions while the research runs in the background.
-- Input validation returns explicit `Error: ...` messages.
-- Regular mode defaults to `deep-research-preview-04-2026`; max mode defaults to `deep-research-max-preview-04-2026`.
-- Start requests use Deep Research `agent`, set `background=true`, and send `agent_config.type="deep-research"`.
-- Tools are sent using typed entries and include `file_search.file_search_store_names` when `file_search_stores` is provided.
-- File-aware requests require `file_uris` as URI-like strings.
-- This server intentionally keeps scope minimal: start interaction + poll status.
+**The cited URLs are Google redirect links** (`vertexaisearch.cloud.google.com/grounding-api-redirect/...`), not the sources themselves, and they can expire. Before a claim from the report goes into your own work with a link, open the redirect, take the real URL, and check that the page says what the report says. A claim you did not check is a lead from Gemini, and is presented as one.
