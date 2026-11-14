@@ -1,6 +1,7 @@
 ---
 name: experiment-lab
-description: Build and maintain a research lab repository - an autonomous system that runs experiments on external target repos, with a cortex (its memory: claims anchored to experiments and to outside sources, and findings on top), a journal, isolated git worktrees and a small CLI, all serving one loop (find a direction, plan, work in rounds, conclude). Use when the user wants to create a new lab, rebuild one, add a target repo to it, change how the lab works, or find out why it is not serving the experiment loop. Ships a scaffold (AGENTS.md, the lab's own experiment-lab-loop skill, templates, lab.py). Not for running an experiment inside an existing lab - the lab's own AGENTS.md and its experiment-lab-loop skill direct that work.
+description: >-
+  Build and maintain a research lab repository - an autonomous system that runs experiments on external target repos, with a cortex (its memory: claims anchored to experiments and to outside sources, and findings on top), a journal, isolated git worktrees and a small CLI, all serving one loop (find a direction, plan, work in rounds, conclude). Use when the user wants to create a new lab, rebuild one, add a target repo to it, change how the lab works, or find out why it is not serving the experiment loop. Ships a scaffold (AGENTS.md, the lab's own experiment-lab-loop skill, templates, lab.py). Not for running an experiment inside an existing lab - the lab's own AGENTS.md and its experiment-lab-loop skill direct that work.
 ---
 
 <experiment-lab>
