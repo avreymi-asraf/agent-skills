@@ -31,7 +31,7 @@ Use these forms when scaffolding or refactoring a dossier. Keep `brief.md` dense
 **Status:** active / monitoring / dormant / resolved
 **Created:** YYYY-MM-DD
 **Last Updated:** YYYY-MM-DD
-**Primary Jurisdiction:** <Israel/Knesset/Court/Municipality/...>
+**Primary Jurisdiction:** <Country/Legislature/Court/Agency/Municipality/...>
 
 ## Research Meta
 

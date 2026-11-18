@@ -51,8 +51,8 @@ Record:
 - projection and scale;
 - legend keys and line styles;
 - boundary status: legal, administrative, proposed, claimed or illustrative;
-- whether COGAT, military, municipal, NGO, cadastral or electoral layers are included;
-- Areas A/B/C, municipal jurisdictions, security corridors, evacuation zones, infrastructure routes or polling districts when relevant.
+- whether military, municipal, agency, NGO, cadastral or electoral layers are included;
+- administrative zones, municipal jurisdictions, security corridors, evacuation zones, infrastructure routes or polling districts when relevant.
 
 Compare at least two independently issued versions for consequential discrepancies. A map may accurately draw a layer while omitting a legally or operationally controlling layer.
 

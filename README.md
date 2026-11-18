@@ -64,13 +64,13 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | [`gemini-deep-research`](skills/gemini-deep-research) | Local MCP server that hands a research question to Google Gemini Deep Research (start + poll) for an independent, background research pass. |
 | [`grow-autonomy`](skills/grow-autonomy) | Grows an autonomous agent system (many tools, too large to keep in view, changing structure) so harder tasks can be handed to it: shapes what each agent understands and how attention is divided, fixes rejects at the root instead of with patch sentences, and keeps a reject journal. |
 | [`huji-slurm`](skills/huji-slurm) | Runs training and evaluation jobs on the Hebrew University CS Slurm clusters (phoenix, cinder) over SSH: login through the jump host, sbatch/srun/arrays, HUJI-only flags, quota-safe setup, checkpoint-and-requeue, agent-driven submit-and-poll. |
-| [`israeli-politics-public-affairs-investigator`](skills/israeli-politics-public-affairs-investigator) | Investigates and maintains living primary-source dossiers on Israeli politics and public affairs in a local Markdown vault, with Twitter/X lead auditing, official-record triangulation, visual artifact preservation, and thesis evolution. |
 | [`jira-workflow`](skills/jira-workflow) | Jira issue tracking workflow — search, read, create, update issues, plan implementations, and reference commit tickets. |
 | [`manage-mcp`](skills/manage-mcp) | Guides designing and implementing focused Model Context Protocol (MCP) tools and integrating them into agent skills. |
 | [`manage-skills`](skills/manage-skills) | Rules and quality patterns for creating, auditing, modifying, and improving Agent Skills (`SKILL.md`). |
 | [`notebook-observability`](skills/notebook-observability) | Uses Jupyter notebooks as live observability playgrounds for production systems and AI pipelines while keeping them in sync with real APIs. |
 | [`opencode-runtime-hooks`](skills/opencode-runtime-hooks) | Runtime architecture analysis and hook authoring guide for OpenCode sessions, agents, and tool execution lifecycle. |
 | [`pdf-to-markdown-mcp`](skills/pdf-to-markdown-mcp) | Local MCP server converting PDFs to Markdown using Gemini or Ollama vision models with high-fidelity equation and table extraction. |
+| [`politics-investigator`](skills/politics-investigator) | Investigates and maintains living primary-source dossiers on politics and public affairs in a local Markdown vault, with X lead auditing, official-record triangulation, visual artifact preservation, and thesis evolution. |
 | [`project-agent-systems`](skills/project-agent-systems) | Builds project-local agent, skill, MCP, and memory setups across OpenCode, Copilot, and Codex without polluting global settings. |
 | [`scripts`](skills/scripts) | Guides creation of operational Python (uv / PEP 723) and JS scripts for AWS/CDN environments with security and session handling. |
 | [`tasks`](skills/tasks) | Task runner automation using Python-native `invoke` and `uv` inline PEP 723 dependencies to replace legacy Makefiles. |
@@ -99,13 +99,13 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
     ├── gemini-deep-research/
     ├── grow-autonomy/
     ├── huji-slurm/
-    ├── israeli-politics-public-affairs-investigator/
     ├── jira-workflow/
     ├── manage-mcp/
     ├── manage-skills/
     ├── notebook-observability/
     ├── opencode-runtime-hooks/
     ├── pdf-to-markdown-mcp/
+    ├── politics-investigator/
     ├── project-agent-systems/
     ├── scripts/
     ├── tasks/
