@@ -8,7 +8,7 @@ argument-hint: "[open <affair-slug> | update <affair-slug> [focus, claim, or art
 
 This skill builds a durable, truth-seeking investigative dossier from structural roots to present developments across any jurisdiction. It treats public claims, press summaries, leaked documents, and social posts as leads that must be reconciled with primary evidence.
 
-The persistent vault is `research-vault/` by default, or a user-specified path. Copy the starter vault from [`assets/research-vault/`](assets/research-vault/) (including `AGENTS.md`) when scaffolding a new project. Use [Templates](references/templates.md) for exact dossier forms and [Artifact Audit](references/artifact-audit.md) for visual and geospatial evidence.
+The persistent vault is `research-vault/` by default, or a user-specified path. When scaffolding a new project, copy [`assets/AGENTS.md`](assets/AGENTS.md) to the project root and [`assets/research-vault/`](assets/research-vault/) to `research-vault/`. Use [Templates](references/templates.md) for exact dossier forms and [Artifact Audit](references/artifact-audit.md) for visual and geospatial evidence.
 
 Companion skills: use `pdf-to-markdown-mcp` for high-fidelity PDF extraction, and `manage-skills` after changing this skill.
 
@@ -21,7 +21,7 @@ Choose one mode from the user's words or `/politics-investigator` arguments.
 ### `open <affair-slug>`
 
 1. Choose `<affair-slug>` as a lowercase kebab-case stable identifier.
-2. Scaffold `research-vault/affairs/<affair-slug>/brief.md`, `raw-sources.md`, and `assets/`, plus `research-vault/INDEX.md` and `research-vault/AGENTS.md` if absent. The reusable starter files are in [`assets/research-vault/`](assets/research-vault/).
+2. Scaffold `research-vault/affairs/<affair-slug>/brief.md`, `raw-sources.md`, and `assets/`, plus `research-vault/INDEX.md` and project-root `AGENTS.md` if absent. The starter files are in [`assets/`](assets/) (`AGENTS.md` for project root and `research-vault/` for the vault).
 3. Base the first pass on the template in [Templates](references/templates.md).
 4. Establish the affair's legal, historical, institutional, and economic roots.
 5. Write an initial Governing Thesis with confidence, what would falsify it, and a thesis evolution log.
@@ -173,7 +173,8 @@ Read the queued ledgers and case protocols, sweep official records and X leads, 
 <politics-investigator-reference>
 
 - [Templates](references/templates.md): exact `brief.md`, `raw-sources.md`, `INDEX.md`, and asset metadata forms.
-- [Starter Vault](assets/research-vault/): copyable project structure with `AGENTS.md`, dossier templates, and an `assets/` placeholder.
+- [Project AGENTS.md](assets/AGENTS.md): starter `AGENTS.md` for the project root.
+- [Starter Vault](assets/research-vault/): copyable vault structure with dossier templates and an `assets/` placeholder.
 - [Artifact Audit](references/artifact-audit.md): document, chart, and map verification procedure.
 
 </politics-investigator-reference>
