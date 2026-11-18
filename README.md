@@ -70,6 +70,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | [`notebook-observability`](skills/notebook-observability) | Uses Jupyter notebooks as live observability playgrounds for production systems and AI pipelines while keeping them in sync with real APIs. |
 | [`opencode-runtime-hooks`](skills/opencode-runtime-hooks) | Runtime architecture analysis and hook authoring guide for OpenCode sessions, agents, and tool execution lifecycle. |
 | [`pdf-to-markdown-mcp`](skills/pdf-to-markdown-mcp) | Local MCP server converting PDFs to Markdown using Gemini or Ollama vision models with high-fidelity equation and table extraction. |
+| [`politics-investigator`](skills/politics-investigator) | Investigates and maintains living primary-source dossiers on politics and public affairs in a local Markdown vault, with X lead auditing, official-record triangulation, visual artifact preservation, and thesis evolution. |
 | [`project-agent-systems`](skills/project-agent-systems) | Builds project-local agent, skill, MCP, and memory setups across OpenCode, Copilot, and Codex without polluting global settings. |
 | [`scripts`](skills/scripts) | Guides creation of operational Python (uv / PEP 723) and JS scripts for AWS/CDN environments with security and session handling. |
 | [`tasks`](skills/tasks) | Task runner automation using Python-native `invoke` and `uv` inline PEP 723 dependencies to replace legacy Makefiles. |
@@ -104,6 +105,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
     ├── notebook-observability/
     ├── opencode-runtime-hooks/
     ├── pdf-to-markdown-mcp/
+    ├── politics-investigator/
     ├── project-agent-systems/
     ├── scripts/
     ├── tasks/
