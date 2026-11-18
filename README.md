@@ -64,6 +64,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | [`gemini-deep-research`](skills/gemini-deep-research) | Local MCP server that hands a research question to Google Gemini Deep Research (start + poll) for an independent, background research pass. |
 | [`grow-autonomy`](skills/grow-autonomy) | Grows an autonomous agent system (many tools, too large to keep in view, changing structure) so harder tasks can be handed to it: shapes what each agent understands and how attention is divided, fixes rejects at the root instead of with patch sentences, and keeps a reject journal. |
 | [`huji-slurm`](skills/huji-slurm) | Runs training and evaluation jobs on the Hebrew University CS Slurm clusters (phoenix, cinder) over SSH: login through the jump host, sbatch/srun/arrays, HUJI-only flags, quota-safe setup, checkpoint-and-requeue, agent-driven submit-and-poll. |
+| [`israeli-politics-public-affairs-investigator`](skills/israeli-politics-public-affairs-investigator) | Investigates and maintains living primary-source dossiers on Israeli politics and public affairs in a local Markdown vault, with Twitter/X lead auditing, official-record triangulation, visual artifact preservation, and thesis evolution. |
 | [`jira-workflow`](skills/jira-workflow) | Jira issue tracking workflow — search, read, create, update issues, plan implementations, and reference commit tickets. |
 | [`manage-mcp`](skills/manage-mcp) | Guides designing and implementing focused Model Context Protocol (MCP) tools and integrating them into agent skills. |
 | [`manage-skills`](skills/manage-skills) | Rules and quality patterns for creating, auditing, modifying, and improving Agent Skills (`SKILL.md`). |
@@ -98,6 +99,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
     ├── gemini-deep-research/
     ├── grow-autonomy/
     ├── huji-slurm/
+    ├── israeli-politics-public-affairs-investigator/
     ├── jira-workflow/
     ├── manage-mcp/
     ├── manage-skills/
