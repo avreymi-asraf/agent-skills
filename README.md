@@ -68,6 +68,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
 | [`manage-mcp`](skills/manage-mcp) | Guides designing and implementing focused Model Context Protocol (MCP) tools and integrating them into agent skills. |
 | [`manage-skills`](skills/manage-skills) | Rules and quality patterns for creating, auditing, modifying, and improving Agent Skills (`SKILL.md`). |
 | [`notebook-observability`](skills/notebook-observability) | Uses Jupyter notebooks as live observability playgrounds for production systems and AI pipelines while keeping them in sync with real APIs. |
+| [`observation-and-analysis-server`](skills/observation-and-analysis-server) | Shows experiment data to people and agents at once with the `observation-server` tool (`uvx`): views declared in `observation-and-analysis/<view>/view.yaml` become HTML pages, REST endpoints and MCP tools, each stamped with repository provenance. Observe (records, agent traces, artifacts) and Analyze (metrics, confusion, spans, diffs, curves) panels, a token-based design system, static export, a sub-agent handoff contract and a verification gate. |
 | [`opencode-runtime-hooks`](skills/opencode-runtime-hooks) | Runtime architecture analysis and hook authoring guide for OpenCode sessions, agents, and tool execution lifecycle. |
 | [`pdf-to-markdown-mcp`](skills/pdf-to-markdown-mcp) | Local MCP server converting PDFs to Markdown using Gemini or Ollama vision models with high-fidelity equation and table extraction. |
 | [`politics-investigator`](skills/politics-investigator) | Investigates and maintains living primary-source dossiers on politics and public affairs in a local Markdown vault, with X lead auditing, official-record triangulation, visual artifact preservation, and thesis evolution. |
@@ -103,6 +104,7 @@ npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
     ├── manage-mcp/
     ├── manage-skills/
     ├── notebook-observability/
+    ├── observation-and-analysis-server/
     ├── opencode-runtime-hooks/
     ├── pdf-to-markdown-mcp/
     ├── politics-investigator/
