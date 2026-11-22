@@ -1,0 +1,60 @@
+# observation-and-analysis/<view>/view.yaml: a starter. Delete what the view does not need.
+# Paths are relative to the repository root. Every analyzer and its params: `observation catalog`.
+
+title: <what this view is about, as a person would say it>
+description: >
+  <One or two sentences: the data, and the question this view answers.>
+mode: hybrid                       # observe | analyze | hybrid: which tab opens first
+labels: [<label>, <label>]         # class or entity labels in reading order; fixes colour and matrix order
+
+datasets:
+  run:                             # a name you choose; panels refer to it
+    path: <runs/.../predictions.jsonl>
+    id_field: <field that names a record>
+  # baseline:
+  #   path: <runs/.../predictions.jsonl>
+  #   ref: <branch or tag>         # read the file as it is on another git ref
+
+# traces:
+#   agent: {path: <runs/.../traces.jsonl>}
+
+# artifacts:
+#   prompt: {path: <prompts/prompt.md>, title: Prompt}
+
+# visuals:
+#   <id>: {title: <title>, image: <runs/.../plot.png>, data: <runs/.../plot.json>}
+
+panels:
+  # ── Observe: the data as it is ─────────────────────────────────────────────
+  - id: records
+    title: <Predictions>
+    analyzer: dataset_overview
+    dataset: run
+    params: {highlight: [<id field>, <gold field>, <pred field>, <text field>]}
+  # - {id: traces, title: Agent traces, analyzer: trace_index, params: {traces: agent}}
+  # - {id: prompt, title: The prompt, analyzer: artifact, params: {artifact: prompt}}
+
+  # ── Analyze: one panel per question ────────────────────────────────────────
+  - id: headline
+    title: <This run against the baseline>
+    analyzer: kpi
+    dataset: run
+    params: {gold: <gold field>, pred: <pred field>, baseline: {accuracy: <number>}}
+    # or: baseline_dataset: baseline
+  - id: confusion
+    title: <Where the labels are confused>
+    analyzer: confusion
+    dataset: run
+    span: half
+    note: Click a cell to read the cases in it.
+    params: {gold: <gold field>, pred: <pred field>}
+  - id: by-slice
+    title: <Accuracy by ...>
+    analyzer: slices
+    dataset: run
+    span: half
+    params: {by: <field>, gold: <gold field>, pred: <pred field>}
+  # - {id: evidence, analyzer: spans, dataset: run, params: {text: <text field>, gold_spans: <field>, pred_spans: <field>}}
+  # - {id: runs, analyzer: diff, params: {left: baseline, right: run, key: <id field>, gold: <gold field>, pred: <pred field>}}
+  # - {id: training, analyzer: curves, dataset: <metrics dataset>, params: {x: step, y: [train_loss, eval_loss], series: run}}
+  # - {id: figures, analyzer: visuals}

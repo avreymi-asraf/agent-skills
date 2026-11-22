@@ -7,6 +7,8 @@ description: Use Jupyter notebooks as live observability playgrounds for product
 
 <notebook-observability>
 Use Jupyter notebooks (such as Colab or local `.ipynb` files) as a live visual observability layer for production systems instead of treating them as throwaway scratchpads. This pattern keeps the notebook aligned with the real code path so you can inspect internal state, test configurations, and visualize deep loops on real hardware without creating a separate wrapper codebase.
+
+Companion skill: `observation-and-analysis-server`. A notebook probes live code while it runs; once results are on disk (predictions, traces, metrics) and should be read by people and by agents, declare a view for them with that skill instead of building a viewer in the notebook.
 </notebook-observability>
 
 <alignment-rule>
