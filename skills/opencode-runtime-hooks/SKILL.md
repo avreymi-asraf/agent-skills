@@ -3,7 +3,7 @@ name: opencode-runtime-hooks
 description: Explains how OpenCode runs sessions and tools, and how to create plugin hooks safely. Use when analyzing opencode debug/event logs, troubleshooting agent/subagent behavior, or implementing hooks like tool.execute.before, tool.execute.after, shell.env, and experimental.session.compacting.
 ---
 
-<opencode-runtime-hooks>
+## opencode-runtime-hooks
 This skill covers two connected jobs: understanding OpenCode runtime behavior and extending OpenCode with hooks.
 
 ### Topics Covered
@@ -24,9 +24,8 @@ This skill covers two connected jobs: understanding OpenCode runtime behavior an
 **Scope:**
 - Runtime analysis for `opencode`, `opencode run`, `opencode serve`, and subagent task execution.
 - Plugin hooks and behavior modification (not full custom tool architecture design).
-</opencode-runtime-hooks>
 
-<runtime-architecture>
+## runtime-architecture
 When OpenCode starts (`opencode`), it runs a TUI client and an HTTP server together. The TUI sends prompts and receives streamed events from the server.
 
 Runtime building blocks:
@@ -49,9 +48,8 @@ Config layering matters because hooks, agents, and permissions can be defined in
 - `.opencode` directories (agents, commands, plugins, skills, tools)
 - inline or env overrides
 - managed or admin config
-</runtime-architecture>
 
-<runtime-lifecycle-analysis>
+## runtime-lifecycle-analysis
 Use this sequence to analyze any debug or event stream. Hooks (🔧) can be intercepted and mutated by plugins. Events (📡) are read-only state change notifications.
 
 1. **Session start**:
@@ -101,9 +99,8 @@ Use this sequence to analyze any debug or event stream. Hooks (🔧) can be inte
 
 For quick parsing commands and a worked sequence, use `references/runtime-sequence.md`.
 For complete payload shapes and mutation examples, use `references/hooks-and-events-payloads.md`.
-</runtime-lifecycle-analysis>
 
-<hook-creation-workflow>
+## hook-creation-workflow
 Use this implementation flow for stable hooks:
 
 1. **Create plugin file** in project scope:
@@ -132,9 +129,8 @@ export const GuardPlugin: Plugin = async ({ client, project, directory, worktree
 6. **Validate with logs and events** before relying on behavior.
 
 Plugin load order is deterministic across configured sources. Keep hooks idempotent and avoid assuming a hook runs only once.
-</hook-creation-workflow>
 
-<hook-types-and-selection>
+## hook-types-and-selection
 OpenCode hooks are easier to use when grouped by function. Use this taxonomy first, then choose a specific hook.
 
 Hook families:
@@ -183,9 +179,8 @@ How to use hooks safely:
 3. Mutate only fields you own in `output`.
 4. Throw errors only when you want to hard-stop execution.
 5. Keep expensive network work out of high-frequency hooks.
-</hook-types-and-selection>
 
-<hook-catalog>
+## hook-catalog
 Common hooks and practical use:
 
 | Hook | Input | Output | Use |
@@ -208,9 +203,8 @@ High-value patterns:
 - Use `event` for telemetry and alerts without mutating execution.
 
 > For complete payload documentation including input/output shapes, mutability, and lifecycle position, see `references/hooks-and-events-payloads.md`.
-</hook-catalog>
 
-<safety-permissions>
+## safety-permissions
 Hooks run inside OpenCode's execution flow, so safety and permissions must be explicit.
 
 Rules:
@@ -237,9 +231,8 @@ Useful permission defaults:
   }
 }
 ```
-</safety-permissions>
 
-<validation-debugging>
+## validation-debugging
 Use a tight validation loop after each hook change:
 
 1. **Check resolved config**:
@@ -267,16 +260,14 @@ opencode run --format json "test hook behavior"
    - confirm permission prompts are expected
 
 If behavior is inconsistent, first disable all but one plugin to isolate load-order and interaction effects.
-</validation-debugging>
 
-<opencode-runtime-hooks-reference>
+## opencode-runtime-hooks-reference
 Use these reference files when implementing or debugging:
 - `references/runtime-sequence.md` — event sequencing, hooks vs events distinction, jq parsing commands
 - `references/hooks-reference.md` — hook signatures and practical decision table
 - `references/hooks-and-events-payloads.md` — complete payload shapes, mutability, and lifecycle stages
-</opencode-runtime-hooks-reference>
 
-<examples>
+## examples
 End-to-end example: block `.env` reads and inject project env to shell.
 
 1. Create `.opencode/plugins/security-guard.ts`:
@@ -313,4 +304,3 @@ opencode run "List secrets in .env"
 - run `opencode debug config`
 - run with `--print-logs --log-level DEBUG`
 - confirm plugin file path and export name
-</examples>

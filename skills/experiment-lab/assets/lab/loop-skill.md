@@ -3,9 +3,9 @@ name: experiment-lab-loop
 description: Run an experiment in this research lab (cortex, JOURNAL.md, a map of tries, experiment repos whose branches are tries). An experiment is one direction, saved in the lab and worked through tries, each on its own try branch and recorded in the lab's map of tries. A lab session opens experiments and tries, reduces several tries into one, runs a lab step on a chosen try (review, evaluation, conclusions into the cortex) and closes; a try session works one try in rounds. Use when the user asks to find a research direction, open, plan, continue or close an experiment, open or work a try, reduce, merge or drop tries, run a lab step or an evaluation, manage many tries from one long-running session, decide what belongs in the cortex or journal, or work from Claude Code cloud sessions. Also when a term of the lab (experiment repo, start branch, try, map of tries, reduce, lab step, note to the lab, lab kit) needs its exact meaning.
 ---
 
-<experiment-lab-loop>
+## experiment-lab-loop
 
-# Experiment lab loop
+## Experiment lab loop
 
 The lab searches by keeping many directions alive and reducing them. An **experiment repo** is one big idea. An **experiment** is one direction in it: a start branch and try branches in that repo, and a lab folder and a journal row in the lab. A **try** is one attempt at the experiment, on its own branch, recorded in the lab's **map of tries**. A **reduce** turns several tries into one. A **lab step** takes one try, reviews it, evaluates it when it can, and writes what it shows into the lab. What moves up is always smaller than what was below it.
 
@@ -35,9 +35,8 @@ There are two levels of sessions. A **try session** works one try and sees only 
 
 How far to carry a request (one operation, guided step by step, or a whole experiment) is set by the request; see the lab's `AGENTS.md` §1; what holds for every request is its §5. Companion skills: `cortex` for the operations on the lab's knowledge base (`add`, `investigate`, `ask`, `verify`, `review`), with this lab's layout and statuses in `cortex/profile.md`; `code-as-tools` when writing experiment code; `grow-autonomy` when the user rejects how the lab worked or the way it works has to change. Where heavy runs go, and the skill for it, is in `AGENTS.md`.
 
-</experiment-lab-loop>
 
-<The-system>
+## The-system
 
 The terms, with their exact forms, are in the glossary: §3 of the lab's `AGENTS.md`. A try branch carries the terms a try meets, in §5 of its own `AGENTS.md`. Use them as written; a synonym is read as a different thing. The short form, with the running example (experiment repo `model-repo`, short name `model`):
 
@@ -72,9 +71,8 @@ These are not locks; the hosting allows the pushes. They hold because the branch
 
 Why it is built this way, and how information moves through it: [system-guide.md](references/system-guide.md).
 
-</The-system>
 
-<Find-a-direction>
+## Find-a-direction
 
 This is a stage of its own and the one where research is won or lost. There are a hundred ways to do it: read papers, look for a technique in a neighbouring field, ask why a bottleneck exists, look again at a surprising round of an old experiment, argue for the opposite of the obvious move. Pick the way that fits; none is required.
 
@@ -101,9 +99,8 @@ On a wide request, when experiments have closed since the cortex was last review
 
 Ideas you considered and dropped are written in the first plan, under Alternatives considered. One that is worth an experiment of its own is also written as a Spark in `JOURNAL.md` → Active Sparks, now, while the reason is fresh.
 
-</Find-a-direction>
 
-<Open-the-experiment>
+## Open-the-experiment
 
 Only through the lab, whoever does it, person or agent:
 
@@ -125,9 +122,8 @@ The first plan holds:
 - `data_source: <repo>@<ref>:<path>` in the frontmatter, never a local path.
 - **This Try**: empty on the start branch. Each try's brief is written here when the try is opened.
 
-</Open-the-experiment>
 
-<Work-in-rounds>
+## Work-in-rounds
 
 **Opening a try** is done in the lab, with a **brief**: what to try and what makes this try different, whether it competes or cooperates with which tries, how far to go, when to stop and flag.
 
@@ -150,9 +146,8 @@ It writes the try's line in `tries.md` (the try branch, `live`, a comment of at 
 
 A long stretch of rounds without a conclusion is normal. Check it against the stopping point from time to time. A long implementation or debugging session is a good piece to hand to a subagent, with the relevant part of the plan, the Experiment Language, the data rules, what to hand back, and when to stop and flag.
 
-</Work-in-rounds>
 
-<Reduce>
+## Reduce
 
 Tries produce a mess, and that is fine: plans that changed, logs full of dead ends, two tries that disagree. A reduce takes **two or more tries and leaves one**. It is done in the lab ([operations.md](references/operations.md) §4, with the git commands):
 
@@ -164,9 +159,8 @@ Very often a reduce is simply dropping the weaker try and keeping its few lesson
 
 What whoever continues the target does not need is dropped on purpose. The notes to the lab that no lab step has read yet are the exception: they are carried over word for word. After a reduce the target's signal is `working`, because the combined code has not been run; running it is its next round.
 
-</Reduce>
 
-<What-to-tell-the-lab>
+## What-to-tell-the-lab
 
 Work is written for two readers, and the second needs far less than the first.
 
@@ -190,9 +184,8 @@ Two ways to get this wrong, and both cost the lab. Telling too little: the lesso
 
 A note to the lab is written for a reader who has not seen the try: one sentence saying what was found, the anchor (commit and run, or link and quoted words, or the claim it corrects), and the conditions.
 
-</What-to-tell-the-lab>
 
-<Lab-step>
+## Lab-step
 
 A **lab step** is done in the lab on **one chosen try** ([operations.md](references/operations.md) §5). It can be any live try, not only the newest or the best, and one try can have several. It is the only way anything from an experiment repo enters the cortex.
 
@@ -210,9 +203,8 @@ A **lab step** is done in the lab on **one chosen try** ([operations.md](referen
 
 A lab step adds the try's part to the cortex; it is not the cortex's main supply, which is `cortex add` at any time. The cortex is only useful while its claims can be trusted. A provisional claim is a promise to come back to it: when the experiment closes, each one becomes `confirmed` or `withdrawn`. Nothing is deleted, and the topic pages are rewritten freely to say what the lab now knows. A technical failure (OOM, missing credential, typo) is never a conclusion about the idea.
 
-</Lab-step>
 
-<Manage-many-tries>
+## Manage-many-tries
 
 When an experiment has more tries than one session can hold in view, a long-running lab session, the **managing session**, runs them ([operations.md](references/operations.md) §8). It holds the process and not the content:
 
@@ -222,9 +214,8 @@ When an experiment has more tries than one session can hold in view, a long-runn
 
 A try session that died leaves a `live` try whose signal is still `working`: start a new try session on the same try branch. Only work that was never pushed is lost.
 
-</Manage-many-tries>
 
-<Close-the-experiment>
+## Close-the-experiment
 
 Closing is a decision made in the lab: the stopping point was reached, or the idea is exhausted. The experiment's conclusion is **the aggregation of its lab step records**: whether an effective approach was found and which direction to take next. A number is evidence for that when the repo has an evaluation; it is not the definition of it. Nothing in git forces or forbids a close, and live tries do not block it ([operations.md](references/operations.md) §6).
 
@@ -239,9 +230,8 @@ Closing is a decision made in the lab: the stopping point was reached, or the id
 
 After closing, the lab folder does not change, except for a later evaluation added as a new lab step record. No branch is merged into the experiment repo's default branch.
 
-</Close-the-experiment>
 
-<References>
+## References
 
 - The glossary is not here: it is §3 of the lab's `AGENTS.md` (on a try branch, §5 of the branch's `AGENTS.md`), every term with one meaning and the exact forms of names and paths. Read it before writing a plan, a log, a brief, a record or a report, and whenever a word could be read two ways.
 - [system-guide.md](references/system-guide.md): the idea behind the lab, its parts, who does what where, how information moves, and what the hosting does not enforce. Read it when a case is not covered by a rule.
@@ -250,9 +240,8 @@ After closing, the lab folder does not change, except for a later evaluation add
 - [evaluation.md](references/evaluation.md): the contract of `evaluate.py`, evaluation versions, re-evaluating after a change.
 - [commands.md](references/commands.md): what each `lab.py` command does and does not do.
 
-</References>
 
-<Example>
+## Example
 
 A request: "try reinforcement-learning fine-tuning on the base model and see if it gets anywhere."
 
@@ -268,4 +257,3 @@ A request: "try reinforcement-learning fine-tuning on the base model and see if 
 
 Had `reward-outcome` shown that GRPO cannot work on this model at all, the experiment would have closed as `HYPOTHESIS_REFUTED`, with "try PPO" as a Spark. Had `reward-shaped` turned into a method of its own, it would have become a new experiment opened from its try branch.
 
-</Example>

@@ -4,9 +4,7 @@ description: Build and maintain a cortex - an LLM-maintained knowledge base in t
 argument-hint: "[add <source> | investigate <question> | ask <question> | verify | review | init]"
 ---
 
-<cortex>
-
-# Cortex
+## cortex
 
 A cortex is knowledge that is compiled once and kept. Instead of re-reading raw documents for every question, an agent reads a source once, writes down what it establishes, and fuses that into pages that get better with every addition. Two things go wrong when an LLM does this unguarded: prose that is rewritten from prose drifts toward the model's own voice and loses the rare details, and grounding gets invented ("as the paper shows"). A cortex is built so that both are visible and checkable.
 
@@ -26,9 +24,7 @@ This one skill carries every operation on a cortex. Invoked with arguments, the 
 - **[Review]**: the periodic pass: well built, well linked, still true.
 - **[Scripts]**, **[Connecting-Skills]**, **[Common-mistakes]**, **[Example]**, **[References]**.
 
-</cortex>
-
-<Three-layers>
+## Three-layers
 
 ```
 synthesis   pages, tensions, questions          rewritten freely; every load-bearing sentence cites a claim
@@ -51,9 +47,7 @@ Rules between the layers:
 2. A claim states only what its anchor supports. What the agent concludes from several claims is synthesis and lives in a page.
 3. A page cites claims, not sources. If a page needs something no claim says, the claim is written first.
 
-</Three-layers>
-
-<Profile>
+## Profile
 
 The skill fixes the three layers and the rules between them. Everything else is this cortex's own, and is written once in `profile.md` at the root of the cortex. **Read the profile before any operation.** Where it and this skill differ on a name or a place, the profile wins.
 
@@ -81,9 +75,7 @@ A new cortex (`init`) starts from the default profile in [Templates](references/
 
 A folder that already holds compiled knowledge and has no profile is not migrated. Write a profile that describes it as it is, and add the claims layer from the next operation on.
 
-</Profile>
-
-<Claims>
+## Claims
 
 A claim is one thing that can be true or false, written as one sentence, in a file of its own under `claims/`. The sentence is the title. Template in [Templates](references/templates.md).
 
@@ -129,9 +121,7 @@ Qwen2.5 3B and 7B, NQ and HotpotQA, training reward (not evaluation EM).
 - **When a new claim disagrees with an old one**, there are three cases. It is not settled which holds, or both may hold under different conditions: write a tension ([Synthesis]) and leave both claims as they are. The old one did not hold (an error, an artifact): mark it `withdrawn`. The new one says the same thing more exactly or under corrected conditions: mark the old one `superseded`.
 - **Relations** between claims name the relation and the reason: `supports::`, `contradicts::`, `refines::`, `superseded_by::`. A source that repeats another source is not independent support; say so in the reason.
 
-</Claims>
-
-<Synthesis>
+## Synthesis
 
 Synthesis is where understanding lives: a page explains, compares and concludes, and may be rewritten whenever understanding changes.
 
@@ -145,9 +135,7 @@ Synthesis is where understanding lives: a page explains, compares and concludes,
 
 Before finishing a new or heavily revised page, run it through the gate in [Quality gate](references/quality-gate.md).
 
-</Synthesis>
-
-<Where-it-runs>
+## Where-it-runs
 
 Some operations read a great deal and return little, and their draft should not be colored by whatever the conversation was about. Those run in a fresh context: a subagent, a forked skill, or a session of their own. The agent that received the request writes the brief and reads the report; it does not read the source itself.
 
@@ -174,9 +162,7 @@ Return the "Cortex update" report and nothing else.
 
 **When you cannot start one.** A step that has a fresh context of its own is never done in your context instead, not even as a stand-in: that is how a writer ends up verifying its own claims, or a caller reading the source it hoped would agree. If you can start an agent, start it with the brief. If you cannot (you are yourself a delegated agent, or the session has no way to start one), do the rest of your work, leave that step undone, and list it under **Pending** in your hand-back with its brief written out. The session that delegated your work starts it; a session that cannot either passes it up the same way, and at the top it goes to the user. Leave what depends on the step in the state that says so: a claim waiting for its verdict stays `unchecked`.
 
-</Where-it-runs>
-
-<Add>
+## Add
 
 `/cortex add <source>`: one source in, the cortex changed. With no argument, take the next source that has no claims yet. It runs in a fresh context ([Where-it-runs]); the steps below are the worker's.
 
@@ -201,9 +187,7 @@ Return the "Cortex update" report and nothing else.
 
 Report what was captured, what it changed, the tensions it opened, and what is pending.
 
-</Add>
-
-<Verify>
+## Verify
 
 `/cortex verify`: each claim that waits for a blind verdict gets one. `cortex.py check` says how many wait. The session that wrote the claims starts the verifier if it can; otherwise the session it hands back to does ([Where-it-runs]).
 
@@ -220,9 +204,7 @@ Report what was captured, what it changed, the tensions it opened, and what is p
 
 Narrowing and deleting are for this moment only. A claim that has passed is corrected as [Claims] says, by a new claim or a status, never in place.
 
-</Verify>
-
-<Investigate>
+## Investigate
 
 `/cortex investigate <question>`: reading as an active step. It starts from a named question, tension or gap, and its job is to change that node.
 
@@ -233,9 +215,7 @@ Narrowing and deleting are for this moment only. A claim that has passed is corr
 
 The difference from a plain `add`: a source that is dropped in without a question yields claims and tensions, and changes pages only where it touches them. A page gets built when a question pulls claims together. Collecting first and asking later produces a large page of other people's results that nothing rests on.
 
-</Investigate>
-
-<Ask>
+## Ask
 
 `/cortex ask <question>`: answer from what the cortex holds.
 
@@ -246,9 +226,7 @@ The difference from a plain `add`: a source that is dropped in without a questio
 
 Persist only what is reusable: a recurring explanation, a comparison, a sharpened tension. When the task was only a question, answer it and propose the page; do not grow the cortex silently. A question the cortex could not answer is recorded as a question node.
 
-</Ask>
-
-<Review>
+## Review
 
 `/cortex review`: one pass over the whole cortex, from time to time, after a batch of additions, and before a decision that will lean on it. It runs in a fresh context ([Where-it-runs]).
 
@@ -261,9 +239,7 @@ Persist only what is reusable: a recurring explanation, a comparison, a sharpene
 
 The full checklist and the report format: [Quality gate](references/quality-gate.md). A profile may add checks of its own; run them in the same pass.
 
-</Review>
-
-<Scripts>
+## Scripts
 
 `scripts/cortex.py`, standard library only, run with `uv` from the folder that contains the cortex. It reads the files and decides nothing about content.
 
@@ -286,9 +262,7 @@ uv run <this-skill>/scripts/cortex.py pairs   [--all] [--context N]
 
 A typed page that is grounded in something other than claims says so in its frontmatter (`anchor: code` on a page that describes a codebase), and `check` does not ask it for claims.
 
-</Scripts>
-
-<Connecting-Skills>
+## Connecting-Skills
 
 - **Prerequisites:** a way to read sources: a download in the shell, or a fetch or reader tool. A converter such as `pdf-to-markdown-mcp`, where it is installed, turns a PDF into text that can be stored. [Add] step 2 says what to do with whichever the session has.
 - **Companions:** `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its knowledge base of its field as a cortex, with its own profile; there the experiment loop decides when an experiment's claims are written and settled, and this skill gives the form and the operations.
@@ -296,9 +270,7 @@ A typed page that is grounded in something other than claims says so in its fron
 - **Companions:** `gemini-deep-research` for the search inside [Investigate]. `experiment-lab`: a lab built with it keeps its knowledge base of its field as a cortex, with its own profile; there the experiment loop decides when an experiment's claims are written and settled, and this skill gives the form and the operations.
 - **Successors:** `manage-skills` when this skill itself has to change. `grow-autonomy` when agents keep writing to a cortex in a way the user rejects: the cause is in what they understood, usually in the profile, not in the pages.
 
-</Connecting-Skills>
-
-<Common-mistakes>
+## Common-mistakes
 
 - **A claim per sentence.** The test is the profile's reader: would this change what they understand or decide?
 - **A claim that says more than its anchor.** The quote reports a result on one benchmark; the sentence says "is better". Narrow the sentence.
@@ -310,9 +282,7 @@ A typed page that is grounded in something other than claims says so in its fron
 - **Quoting what was not read.** An abstract supports claims about the abstract.
 - **Keeping a `partial`.** A claim known to say more than its evidence, left as it is, gets cited like any other. Narrow it and verify again.
 
-</Common-mistakes>
-
-<Example>
+## Example
 
 A reading cortex on training search agents. The profile says the reader wants to choose a training recipe.
 
@@ -324,11 +294,8 @@ A reading cortex on training search agents. The profile says the reader wants to
 
 **A mistake, and what it looked like:** in step 1 the first draft of a claim read "GRPO is unstable". The blind verification returned `partial`: the quote reports collapse in this paper's runs, after many steps. The claim was narrowed in place to those conditions and passed a second blind verification before anything cited it.
 
-</Example>
-
-<References>
+## References
 
 - [Templates](references/templates.md): the default profile, the claim, the source note, the page, the tension, the question, the index. Read when starting a cortex or writing a node of a kind for the first time.
 - [Quality gate](references/quality-gate.md): the tests a page must pass, the review checklist, and the report format. Read before finishing a substantial `add` and during `review`.
 
-</References>

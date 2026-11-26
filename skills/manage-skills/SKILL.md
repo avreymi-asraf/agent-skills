@@ -2,14 +2,12 @@
 name: manage-skills
 description: Update, create, fix or improve Agent Skills (SKILL.md files). MUST be read before editing any SKILL.md file. Use when the user asks to update, modify, fix, create, improve, or review any skill — even if they point directly to the skill file path.
 ---
-<manage-skills>
-
-Managing Agent Skills
+## manage-skills
 
 Skills are markdown files that teach agents how to perform specific tasks. This skill guides you through creating and updating them, ensuring consistency, high actionability, and readability.
 
 ### Topics Covered
-- **Use [Skill-File-Structure]** to learn how directories and SKILL.md arestructured.
+- **Use [Skill-File-Structure]** to learn how directories and SKILL.md are structured.
 - **Use [Examples]** to see concrete implementations.
 - **Use [Writing-Descriptions]** to write effective trigger conditions (WHAT and WHEN).
 - **Use [Core-Authoring-Principles]** for the primary rules of skill-writing (progressive disclosure, brevity).
@@ -23,9 +21,7 @@ Skills are markdown files that teach agents how to perform specific tasks. This 
 
 For broader architectural patterns, consult [Common Patterns](Common Patterns.md).
 
-</manage-skills>
-
-<Skill-File-Structure>
+## Skill-File-Structure
 
 ### Directory Layout
 
@@ -48,21 +44,19 @@ skill-name/
 | Personal | ~/dotfiles/skills/skill-name/ | Available across all your projects |
 | Project | .cl/skills/skill-name/ | Shared with anyone using the repository |
 
-
-## SKILL.md Structure
-Each skill requires a `SKILL.md` with a YAML frontend and a markdown body that include a list of html topics.
+### SKILL.md Structure
+Each skill requires a `SKILL.md` with a YAML frontend and a markdown body made of topics. Each topic is a level-2 markdown header (`## Topic-Name`) followed by its content.
 the YAML iclude 2 things:
 - name: the name of the skill, it should be unique and not too long.
 - description: a brief description of the skill, what it does and when to use it. this is very important for the agent to decide when to use the skill, so it should be specific and include trigger terms.
 
 A skill is a list of paragraphs about a specific domain, their function is to teach an agent about a new domain that they don't know. The paragraphs can be very broad and give an explanation about the domain and also contain more specific topics or workflows or error patterns \ examples of using the skill \ common mistakes. One of the most important things is to choose the right paragraphs and the right level of freedom for each paragraph. You can also use references to keep the skill the required length, and keep the paragraph relevant.
-Each paragraph is written in html tags like this: <topic name> </topic name>
+Each paragraph is a level-2 header (`## Topic-Name`) and runs until the next `## ` header. Do not use HTML/XML-style tags (`<tag>`) to delimit topics. Use `###` and deeper headers for sub-sections inside a topic.
 Within the paragraph, write what you need in an efficient way.
 
 The first topic is like the name of the skill and is very important - it contains an explanation about the skill itself, an expansion of what is in which paragraph and a broader explanation about the domain that needs to be explained.
 If the opening section is weak, the rest of the skill may never be used. Write it last, once you know the whole skill.
 There is no need to explain obvious things - syntax, famous things in programming. Think carefully about what needs to be explained and what not.
-
 
 ```markdown
 ---
@@ -70,27 +64,24 @@ name: your-skill-name
 description: Brief description of what this skill does and when to use it
 ---
 
-<your-skill-name>
-explain about the skill, its purpose, and the broader domain it covers. what the is in the skill and how the paragraphs are organized. link to reference files if needed.
+## your-skill-name
+explain about the skill, its purpose, and the broader domain it covers. what is in the skill and how the topics are organized. link to reference files if needed.
 
-</your-skill-name>
-<topic_1>
+## Topic-1
 Detailed instructions on a specific topic. Link to reference files for more info.
 write it as markdown, use code blocks, lists, and formatting as needed to make it clear and actionable for the agent.
 
-</topic_1>
-<topic_2>
+## Topic-2
 ...
-</topic_2>
-<your-skill-name-scripts>
+
+## your-skill-name-scripts
 Even though scripts are included in the topics, collect them and explain again what they do.
-</your-skill-name-scripts>
-<your-skill-name-reference>
+
+## your-skill-name-reference
 If you have reference files, explain what they are and how to use them. link to them in the relevant topics. Even though they are included in the topics.
-</your-skill-name-reference>
-<examples>
-Write a integreted example of using the skill, that includes the different topics and reference files. make it as concrete as possible, and not abstract. you can also include common mistakes in the example and how to fix them. look the sction about examples
-</examples>
+
+## Examples
+Write an integrated example of using the skill, that includes the different topics and reference files. make it as concrete as possible, and not abstract. you can also include common mistakes in the example and how to fix them. look at the section about examples
 ```
 
 | Field | Requirements | Purpose |
@@ -99,16 +90,15 @@ Write a integreted example of using the skill, that includes the different topic
 | `description` | Max 1024 chars, non-empty | Helps agent decide when to apply the skill |
 
 Use [Common Patterns](Common Patterns.md) for writing patterns.
-</Skill-File-Structure>
 
-<Examples>
+## Examples
 Concrete examples of using this skill's tools and workflows.
 
 **Example: A Good Opening Section**
 Instead of a single sentence, provide context and explicitly link to all subsequent topics so the agent knows exactly where to look:
 
 ```markdown
-<csv-parser>
+## csv-parser
 Parses complex CSV files with nested structures.
 
 ### Topics Covered
@@ -116,10 +106,9 @@ Parses complex CSV files with nested structures.
 - **Use [Error-Handling]** for dealing with malformed rows.
 - **Use [Scripting]** for the `parse_csv.py` automated tool.
 - Reference [Formatting Rules](reference.md) for output standards.
-</csv-parser>
 ```
-</Examples>
-<Writing-Descriptions>
+
+## Writing-Descriptions
 
 The description is **critical** — the agent uses it to decide when to apply the skill.
 
@@ -134,11 +123,9 @@ The description is **critical** — the agent uses it to decide when to apply th
 3. **Include both WHAT and WHEN**:
    - WHAT: What the skill does (specific capabilities)
    - WHEN: When the agent should use it (trigger scenarios)
-</Writing-Descriptions>
----
 
-<Core-Authoring-Principles>
-## Understanding the Skill
+## Core-Authoring-Principles
+### Understanding the Skill
 
 Before making changes, make sure you understand:
 
@@ -165,11 +152,9 @@ The context window is shared. Every token competes for space. The agent is alrea
 | **Medium** (templates) | Preferred pattern with variation | Report generation |
 | **Low** (specific scripts) | Fragile, consistency critical | Database migrations |
 
-</Core-Authoring-Principles>
+## Connecting-Skills
 
-<Connecting-Skills>
-
-## Connecting Skills — The Most Important Authoring Move
+### Connecting Skills — The Most Important Authoring Move
 
 A skill is never an island. The single biggest factor in whether a skill actually gets used is how well it is **wired into the rest of the ecosystem**. An agent rarely finishes a task with one skill — it moves through a chain of them. If a skill does not tell the agent where to go next, the agent stalls mid-workflow even when the right skill already exists.
 
@@ -187,9 +172,7 @@ Rules for connecting:
 
 A skill with no inbound or outbound links is a red flag: it usually means the skill is mis-scoped, or the surrounding skills were never updated to point at it.
 
-</Connecting-Skills>
-
-<Scripting>
+## Scripting
 
 When a skill needs automation or tooling, use scripts. Scripts are explicit, portable, and easy to audit. Place them in `scripts/` and invoke them from the skill instructions.
 
@@ -199,9 +182,7 @@ When a skill needs automation or tooling, use scripts. Scripts are explicit, por
 - **Versatile and Modular**: Think of scripts as versatile and modular tools that will allow for extensive work. Build them to handle complex logic, error handling, or multi-step processes that are too brittle for simple command strings.
 - See the [scripts skill](../scripts/SKILL.md) for how to write and structure auxiliary scripts correctly.
 
-</Scripting>
-
-<Anti-Patterns-and-Common-Mistakes>
+## Anti-Patterns-and-Common-Mistakes
 
 - **Windows paths**: Use `scripts/helper.py`, not `scripts\helper.py`
 - **Too many options**: Provide one default approach, mention alternatives only when clearly needed
@@ -209,10 +190,8 @@ When a skill needs automation or tooling, use scripts. Scripts are explicit, por
 - **Inconsistent terminology**: Pick one term and use it throughout
 - **Vague names**: Use `processing-pdfs`, not `helper` or `utils`
 - **Island skills**: a skill with no links to related skills. Always name its prerequisites, successors, and companions, and add it to the dependency map (see [Connecting-Skills])
-</Anti-Patterns-and-Common-Mistakes>
 
-
-<Creating-a-New-Skill>
+## Creating-a-New-Skill
 
 When creating a new skill, follow these steps:
 1. **Discovery**: Gather purpose, location, triggers, constraints, existing patterns
@@ -220,10 +199,8 @@ When creating a new skill, follow these steps:
 3. **Implement**: Create directory, write SKILL.md with frontmatter, create supporting files
 4. **Connect**: Wire it into the ecosystem — name its prerequisite/successor/companion skills and add it to the dependency map / routing table (see [Connecting-Skills])
 5. **Verify**: Run the checklist below
-</Creating-a-New-Skill>
----
 
-<Updating-an-Existing-Skill>
+## Updating-an-Existing-Skill
 
 When updating, the most important thing is **keeping consistency and quality**.
 
@@ -233,9 +210,7 @@ When updating, the most important thing is **keeping consistency and quality**.
 4. **Stay under 300 lines** — if adding content, trim elsewhere
 5. **Verify**: Run the checklist below
 
-</Updating-an-Existing-Skill>
-
-<Verifying-Workflows-and-Processes>
+## Verifying-Workflows-and-Processes
 
 When a skill describes a process or workflow, **you must verify it yourself** before finalising. Do not assume a process is correct just because it was written — go through every step and confirm it works end-to-end.
 
@@ -244,10 +219,8 @@ When a skill describes a process or workflow, **you must verify it yourself** be
 3. **Check for errors** — does each step produce the expected output for the next step?
 4. **Check for clarity** — would an agent unfamiliar with the domain understand every instruction? Rewrite anything ambiguous.
 5. **Fix issues in place** — don't add a warning note. Correct the process directly so it is accurate and clear.
-</Verifying-Workflows-and-Processes>
 
-
-<Checklist>
+## Checklist
 
 ### Core Quality
 - [ ] Description is specific and includes trigger terms (both WHAT and WHEN)
@@ -271,14 +244,11 @@ When a skill describes a process or workflow, **you must verify it yourself** be
 - [ ] Changes match existing style and voice
 - [ ] No "pile of fixes" — root cause addressed
 - [ ] New content integrated into existing sections
-</Checklist>
 
-
-<Common-sections>
+## Common-sections
 
 - **checklist**: For specific workflows, states, or for the system.
 - **anti-patterns-and-common-mistakes**: A grouped list of common mistakes. Keep it practical.
 - **examples**: An integrated example that will teach the agent how to work.
 - **testing**: How to verify that the logic or tool works correctly.
 
-</Common-sections>

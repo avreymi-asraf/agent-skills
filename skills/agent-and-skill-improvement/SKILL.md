@@ -2,7 +2,7 @@
 name: agent-and-skill-improvement
 description: Maintains and improves agent files (identity, memory, tools) and skill files (SKILL.md). Load when completing a task that produced learnings, when the user corrects a mistake, when updating agent behavior, when logging work, when improving or updating domain knowledge in a skill, or when the user explicitly asks to update agent files, memory, tools, or skills.
 ---
-<agent-and-skill-improvement>
+## agent-and-skill-improvement
 
 Agent & Skill Improvement System
 
@@ -22,11 +22,9 @@ This skill governs how an agent maintains and evolves two categories of files:
 - **Use [Examples]** for concrete scenarios.
 - **Use [Update-Checklist]** before finalizing any change.
 
-</agent-and-skill-improvement>
+## What-Goes-Where
 
-<What-Goes-Where>
-
-## Classifying Information — Agent Files vs. Skills
+### Classifying Information — Agent Files vs. Skills
 
 The most important decision is: **where does this information belong?**
 
@@ -53,11 +51,9 @@ Ask: **Is this about what happened or is needed in this project, or is this abou
 | "Multi-stage Docker builds separate build and runtime deps" | **Skill** | Concept knowledge |
 | "Stop being verbose in code reviews" | **Agent** | Behavioral rule |
 
-</What-Goes-Where>
+## Agent-File
 
-<Agent-File>
-
-## Agent File — Core Identity & Behavior
+### Agent File — Core Identity & Behavior
 
 Defines who the agent is: personality, behavioral rules, and principles. Loaded every session.
 
@@ -75,11 +71,9 @@ Content must read as a coherent identity document. When adding a behavioral rule
 3. Remove what it replaces — delete superseded rules entirely.
 4. Never append a "Notes" or "Warnings" section.
 
-</Agent-File>
+## Tools-File
 
-<Tools-File>
-
-## Tools File — Project-Specific Tool Knowledge
+### Tools File — Project-Specific Tool Knowledge
 
 Captures how tools behave in this specific project — quirks, flags, workflows, and fixes discovered while working here.
 
@@ -97,11 +91,9 @@ Organize by tool or command. Each section is a clean, unified guide:
 3. Merge related tips into one clear statement.
 4. Remove outdated entries — replace contradicted content.
 
-</Tools-File>
+## Memory-File
 
-<Memory-File>
-
-## Memory File — Project Activity & Knowledge
+### Memory File — Project Activity & Knowledge
 
 Two purposes: **short-term activity log** and **long-term project knowledge base**.
 
@@ -126,11 +118,9 @@ Curated project-specific facts that persist across sessions.
 4. Merge with related facts — update existing entries rather than adding new lines.
 5. Never just append to the bottom.
 
-</Memory-File>
+## Skill-Improvement
 
-<Skill-Improvement>
-
-## Skill Files — Domain Knowledge & Concepts
+### Skill Files — Domain Knowledge & Concepts
 
 Skills teach agents about topics and domains. Unlike agent files, skills are **not project-specific** — they capture essential knowledge about a concept that is true everywhere.
 
@@ -166,11 +156,9 @@ When a concept deserves its own skill:
 3. Write for any project, not just the current one.
 4. Connect it — name the skills it depends on, feeds into, and pairs with, and add it to the project's dependency map / routing table so the agent can discover it.
 
-</Skill-Improvement>
+## Integration-Principles
 
-<Integration-Principles>
-
-## Integration Principles — Adding New Information
+### Integration Principles — Adding New Information
 
 New information must be **integrated integrally**, not added as patchwork. This applies to all files — agent, memory, tools, and skills.
 
@@ -187,11 +175,9 @@ New information must be **integrated integrally**, not added as patchwork. This 
 - Do not duplicate information across files.
 - Do not preserve outdated content "just in case."
 
-</Integration-Principles>
+## File-Constraints
 
-<File-Constraints>
-
-## File Constraints — Size Limits & Reorganization
+### File Constraints — Size Limits & Reorganization
 
 **HARD LIMIT**: No file may exceed **300 lines** (agent, memory, tools, or skill files).
 
@@ -207,11 +193,9 @@ Every edit is an opportunity to:
 
 After every edit, the file must be **better organized than before**, not just longer.
 
-</File-Constraints>
+## Update-Workflow
 
-<Update-Workflow>
-
-## Update Workflow — End-to-End Process
+### Update Workflow — End-to-End Process
 
 1. **Classify**: Is this about identity/behavior (Agent), tool usage (Tools), a project fact/event (Memory), or domain knowledge (Skill)?  Use [What-Goes-Where] if unsure.
 2. **Check if the file exists** — if not, create it with a clean initial structure.
@@ -222,11 +206,9 @@ After every edit, the file must be **better organized than before**, not just lo
 7. **Verify line count** — ensure the file stays under 300 lines. Trim if needed.
 8. **Run the checklist** below.
 
-</Update-Workflow>
+## Examples
 
-<Examples>
-
-## Concrete Scenarios
+### Concrete Scenarios
 
 **Scenario 1: User corrects behavior**
 User: "Stop summarizing changes — I can see the diff."
@@ -248,9 +230,7 @@ You learn that Kubernetes liveness probes should not check external dependencies
 Finished migrating a database schema.
 → **Memory file**, short-term log. Add: "2026-04-16: Completed users table migration to v3."
 
-</Examples>
-
-<Update-Checklist>
+## Update-Checklist
 
 ### Before Finalizing Any Edit
 
@@ -265,4 +245,3 @@ Finished migrating a database schema.
 - [ ] The file is better organized after the edit than before.
 - [ ] Project-specific info is in agent files; concept knowledge is in skills.
 
-</Update-Checklist>
