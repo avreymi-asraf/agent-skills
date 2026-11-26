@@ -3,9 +3,7 @@ name: grow-autonomy
 description: Grow an autonomous agent system - one that uses many tools, is too large for any single agent or person to keep in view, needs different skills for different tasks, and keeps changing its structure - so that harder and harder tasks can be handed to it. Use when introducing or changing a behavior in such a system, when its work was rejected and something has to change, when deciding what each agent, forked skill or workflow step needs to know, or when the user's intent and the written content may not mean the same thing. Changes go to the root of what agents understand and of how attention is divided, never as patch sentences. Every reject is recorded in a reject journal.
 ---
 
-<grow-autonomy>
-
-# Grow autonomy
+## grow-autonomy
 
 The user is growing an autonomous agent system: for research, for investing, for running a product or a company. "Autonomous" describes the system, in four ways:
 
@@ -38,9 +36,7 @@ You come to this work through one of two entrances: the user wants the system to
 
 These are ways of thinking, with some suggested ways of working. Use judgment; it is not a procedure to run step by step. The one fixed step is the reject journal.
 
-</grow-autonomy>
-
-<Autonomy-comes-with-the-request>
+## Autonomy-comes-with-the-request
 
 Every request carries its own measure of how much is left to the system. "Rename this column" leaves almost nothing. "Review the portfolio and prepare next quarter's changes" leaves nearly everything. The user sets this, request by request, and it jumps around: a wide request can be followed by a tiny one in the same hour.
 
@@ -52,9 +48,7 @@ Every request carries its own measure of how much is left to the system. "Rename
 
 The user decides what to ask for. Your part is to say honestly where you expect a wide request to break, and to learn from where it does.
 
-</Autonomy-comes-with-the-request>
-
-<Picture-and-attention>
+## Picture-and-attention
 
 An agent acts on its picture of the job: what the work is for, what good looks like, why things are the way they are. A rule without a reason gets followed where its sentence fits and nowhere else.
 
@@ -82,9 +76,7 @@ The structure will change, so say each thing once, in a place named for its subj
 
 [Attention](references/attention.md) covers how to divide work and what each tool gives an agent. [Information flow](references/information-flow.md) shows how to map what reaches an agent for a given task, and how to test the map.
 
-</Picture-and-attention>
-
-<Shared-meaning>
+## Shared-meaning
 
 Three readers have to agree: the user, who has the system in their head; you, who turn what they say into content; and the agent that will read that content cold. Meaning can slip at each handoff. The user may not be writing in their first language, or may think in one language while the content is written in another. A phrase can be unclear. Worse, it can be clear to both sides in two different ways.
 
@@ -100,9 +92,7 @@ Some ways to keep the meaning in one piece:
 
 All of this holds between agents too. A brief is also read cold.
 
-</Shared-meaning>
-
-<Instilling-a-behavior>
+## Instilling-a-behavior
 
 The user wants the system to gain something: "from now on, every buy proposal says what would prove it wrong." The shallow way is to add that sentence to the instructions. That is a plaster applied before the wound. The agent will comply where the sentence fits and miss everywhere else, because it has a rule and no reason.
 
@@ -117,9 +107,7 @@ A behavior holds when it follows from how the agent understands the work. So sta
 
 Then let the system work, and look closely at the first results. The rejects show which part of the picture didn't land, and they are handled the same way.
 
-</Instilling-a-behavior>
-
-<Rejects-and-root-causes>
+## Rejects-and-root-causes
 
 A reject is the most valuable thing this work produces. It shows a gap between what an agent understood and what was needed. Write it in the journal first ([Reject-journal]), then look for the cause.
 
@@ -143,9 +131,7 @@ A good fix leaves no trace of the incident; it reads as if it was always there. 
 
 A rule and a plaster can be the same words. A rule states something the user wants always and gives a reason the agent can apply to cases the rule didn't name. A plaster records an incident and gives no reason.
 
-</Rejects-and-root-causes>
-
-<Neighbors>
+## Neighbors
 
 The mistake the user rejected is one sample from a family. A wrong belief produces many mistakes; this one only happened to surface first. So the question for any change is: does it also cover the neighbors, the cases nobody has seen yet?
 
@@ -163,9 +149,7 @@ Don't write the neighbors into the content as rules. That is the same pile of pl
 
 This is what makes wide requests possible. On a small request the user sees every mistake. On a wide one nobody reads every step, so the mistakes that matter are exactly the ones nobody saw.
 
-</Neighbors>
-
-<Levels-of-memory>
+## Levels-of-memory
 
 A system keeps only what gets written down, and there are several places to write, which differ in who they are true for. A lesson at the wrong level is lost or does harm. Too low, and it dies with the session or stays in one task's notes. Too high, and one system's habit is imposed on everyone.
 
@@ -185,9 +169,7 @@ So ask of every lesson, from a reject or from ordinary work: **for whom is this 
 
 This is part of finishing any piece of work, not only of handling a reject. Before closing, go over what was learned and place each thing at its level. Then tell the user what was written where, and what is proposed for a level you do not change yourself.
 
-</Levels-of-memory>
-
-<Reject-journal>
+## Reject-journal
 
 Every reject handled with this skill gets an entry in the system's reject journal, opened when the reject arrives and before anything is fixed, then filled in as the cause is found. The entry holds the request and the reject in the user's own words, what the agent had, the belief, the root, the neighbors, the change, and how the change was checked. "Root: unknown" is an honest entry.
 
@@ -197,9 +179,7 @@ What it gives: a root that returns shows an earlier fix that missed. Rejects tha
 
 Format, location and how to read it: [Reject journal](references/reject-journal.md).
 
-</Reject-journal>
-
-<With-audit-agent-context>
+## With-audit-agent-context
 
 `audit-agent-context` is a general tool. It audits the content of any repo for any agent setup: it collects every instruction, doc, comment and prompt, records how an agent gets to each one, and reports contradictions, stale facts and gaps. Asked for traces, it also reads past agent sessions and shows what actually reached the agent. It knows nothing about this system's far goal. This skill does.
 
@@ -210,9 +190,7 @@ So the audit measures, and this skill supplies the intent and decides what to do
 - Its report lists a fix per problem. Don't apply them one by one. Group the problems by shared root and fix the roots, as with any reject.
 - Its collected data records, per file, how an agent could reach it. That is raw material for [Information flow](references/information-flow.md).
 
-</With-audit-agent-context>
-
-<References>
+## References
 
 - [Attention](references/attention.md): dividing work between agents; what a skill, a forked skill, a subagent and a workflow each give the agent inside them; protocols for briefs and reports; keeping knowledge in place while the structure changes. Read it before designing or changing who does what.
 - [Information flow](references/information-flow.md): for a given task, map what reaches the agent and how, and test the map with a real agent. Read it when tracing a reject or checking a change.
@@ -221,9 +199,7 @@ So the audit measures, and this skill supplies the intent and decides what to do
 
 For a research lab built with `experiment-lab`: where that skill is installed, its `references/growing-a-lab.md` carries this method in a lab's own terms (which part of a lab carries what, the beliefs behind the failures labs usually show, the journal entry with a lab's fields). Read it when maintaining a lab, and come back here for what it leaves out.
 
-</References>
-
-<Examples>
+## Examples
 
 Three cases, from three kinds of systems, are worked through in [Examples](references/examples.md). Read the one closest to the work at hand when seeing the whole line of work in a real case would help.
 
@@ -231,4 +207,3 @@ Three cases, from three kinds of systems, are worked through in [Examples](refer
 - **Running a shop, instilling a behavior.** "The system closes customer tickets by itself." The word "closes" meant two different things, and three agents each needed a different part of the picture.
 - **Investing, a wide request, a reject.** A portfolio review proposes selling a hedge. Every agent did its piece correctly; the reason the position exists was lost in the handoff. The fix is in the brief and the report schema.
 
-</Examples>

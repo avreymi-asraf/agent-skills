@@ -4,7 +4,7 @@ description: Investigate, verify, and maintain living primary-source dossiers on
 argument-hint: "[open <affair-slug> | update <affair-slug> [focus, claim, or artifact] | refactor <affair-slug>] [vault path]"
 ---
 
-<politics-investigator>
+## politics-investigator
 
 This skill builds a durable, truth-seeking investigative dossier from structural roots to present developments across any jurisdiction. It treats public claims, press summaries, leaked documents, and social posts as leads that must be reconciled with primary evidence.
 
@@ -12,9 +12,7 @@ The persistent vault is `research-vault/` by default, or a user-specified path. 
 
 Companion skills: use `pdf-to-markdown-mcp` for high-fidelity PDF extraction, and `manage-skills` after changing this skill.
 
-</politics-investigator>
-
-<action-modes>
+## action-modes
 
 Choose one mode from the user's words or `/politics-investigator` arguments.
 
@@ -43,9 +41,7 @@ Consolidate the living dossier without losing citations, raw quotations, artifac
 
 Preserve the `Roots -> Trajectory -> Current State` structure. Split only orthogonal axes into clearly linked subsections, merge duplicates, and move all raw evidence to `raw-sources.md` or `assets/`.
 
-</action-modes>
-
-<vault-and-continuity>
+## vault-and-continuity
 
 Read `INDEX.md`, then `affairs/<slug>/brief.md`, before every update. Read `raw-sources.md` only when a citation or exact quotation needs checking.
 
@@ -56,9 +52,7 @@ Read `INDEX.md`, then `affairs/<slug>/brief.md`, before every update. Read `raw-
 
 Preserve external URLs and capture dates in source records. A local file does not replace a citation; every finding needs a source and retrieval date.
 
-</vault-and-continuity>
-
-<investigation-loop>
+## investigation-loop
 
 Use a deliberate `Gather -> Ingest Full Source -> Mine Leads -> Re-Query` loop.
 
@@ -73,9 +67,7 @@ Use a deliberate `Gather -> Ingest Full Source -> Mine Leads -> Re-Query` loop.
 
 Stop only when the remaining queue contains genuinely unavailable records or newly bounded follow-up questions. Never convert absence of evidence into proof of a claim.
 
-</investigation-loop>
-
-<source-grading>
+## source-grading
 
 Use these tiers consistently.
 
@@ -89,17 +81,13 @@ Apply a `T1/T2/T3` tag and a confidence note to every significant claim. An offi
 
 **Anti-Echo Rule:** ten outlets repeating one anonymous brief are one weak Tier 3 lead, not ten confirmations.
 
-</source-grading>
-
-<twitter-and-x>
+## twitter-and-x
 
 You can use X (Twitter) to surface leads, draft documents, official letters, budget tables, court filings, maps, and specialist critiques—searching in relevant local languages and English.
 
 Treat all posts as leads, never proof. Trace claims back to Tier 1 primary records, and archive disappearing posts or attached artifacts locally per [Artifact Audit](references/artifact-audit.md).
 
-</twitter-and-x>
-
-<visual-evidence>
+## visual-evidence
 
 Any relevant downloaded image, document scan, chart, PDF page, or map belongs in `assets/` and must be logged in `raw-sources.md`.
 
@@ -114,9 +102,7 @@ For each artifact:
 
 Follow [Artifact Audit](references/artifact-audit.md). Do not rely on hotlinks or leave media available only in a conversation.
 
-</visual-evidence>
-
-<zero-append-fusion>
+## zero-append-fusion
 
 Rewrite the existing analytical prose. Never tack dated news bullets onto the bottom of `brief.md`.
 
@@ -132,23 +118,17 @@ Each update should:
 
 Use grounded labels: `Confirmed`, `Corroborated`, `Disputed`, `Inferred`, `Unverified`, or `Not established`.
 
-</zero-append-fusion>
-
-<quantitative-checks>
+## quantitative-checks
 
 Where the affair concerns elections, budget passage, coalition survival, or policy deadlines and real-money prediction markets are available, record market-implied probability, timestamp, venue, contract wording, and order-book depth. Treat it as one data point, not an oracle. Check whether its settlement rules match the factual question.
 
 For charts and datasets, distinguish nominal from real values, raw counts from rates, one-off from annualized figures, and the publication revision from the underlying vintage.
 
-</quantitative-checks>
-
-<git-workflow>
+## git-workflow
 
 Work directly on `main` in the research vault, commit dossier updates cleanly, and push immediately (`git push`) so the shared state stays current.
 
-</git-workflow>
-
-<examples>
+## examples
 
 **Open:**
 
@@ -168,13 +148,10 @@ Download the chart, extract its exact series and baseline, retrieve the treasury
 
 Read the queued ledgers and case protocols, sweep official records and X leads, download new filings or maps, update the thesis, commit on `main`, and push.
 
-</examples>
-
-<politics-investigator-reference>
+## politics-investigator-reference
 
 - [Templates](references/templates.md): exact `brief.md`, `raw-sources.md`, `INDEX.md`, and asset metadata forms.
 - [Project AGENTS.md](assets/AGENTS.md): starter `AGENTS.md` for the project root.
 - [Starter Vault](assets/research-vault/): copyable vault structure with dossier templates and an `assets/` placeholder.
 - [Artifact Audit](references/artifact-audit.md): document, chart, and map verification procedure.
 
-</politics-investigator-reference>

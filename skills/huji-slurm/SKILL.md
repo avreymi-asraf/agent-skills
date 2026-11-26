@@ -3,7 +3,7 @@ name: huji-slurm
 description: Runs training and evaluation jobs on the Hebrew University CS (HUJI CSE) Slurm clusters, mainly phoenix (and cinder), from a local machine or an agent over SSH. Covers login through the bava jump host with OTP, sbatch/srun/job arrays, HUJI-only flags (--killable, GPU groups gg:g0/g4/g10, vmem), lab limits (slimits), home-quota-safe uv/HF/W&B setup on /cs/labs, checkpoint-and-requeue training, and agent-driven submit-and-poll. Use whenever a job is to run on phoenix, phoenix-gw, cinder, or "the HUJI/CS cluster", when writing an sbatch script or #SBATCH header for it, choosing a GPU there, debugging a pending/killed job (Reasons, AssocGrpGRES), or moving a training run off Colab onto Slurm.
 ---
 
-<huji-slurm>
+## huji-slurm
 
 The HUJI CSE system team runs several Slurm clusters. **phoenix** is the main GPU cluster (62 nodes, ~370 GPUs from rtx2080 up to h200); **cinder** holds phoenix nodes older than 7 years under the same policy. Jobs are submitted only from a gateway node `<cluster>-gw` (e.g. `phoenix-gw`). Most of the Slurm here is standard, but several flags exist **only at HUJI** and will fail or mean something else on any other cluster: `--killable`, the `gg:<group>:N` and `vmem:` gres, and the helper commands `slimits`, `susage`, `ssqueue`, `ssacct`, `ssinfo`.
 
@@ -26,9 +26,7 @@ Sources: [Slurm](https://wiki.cs.huji.ac.il/wiki/Slurm), [Phoenix cluster policy
 
 Related skills: `colab-cli` is the alternative (and fallback) GPU target. Whatever workflow the project uses to decide *what* runs (e.g. `experiment-lab-loop`) hands off here for *where and how* it runs. Use `code-as-tools` for the training code itself.
 
-</huji-slurm>
-
-<Access-and-SSH>
+## Access-and-SSH
 
 Two ways in ([Connecting Remotely](https://wiki.cs.huji.ac.il/wiki/Connecting_Remotely)):
 
@@ -59,9 +57,7 @@ The human runs `ssh -fN phoenix` once (types OTP + password). After that, `ssh p
 
 Do not run heavy work on `phoenix-gw` itself; it is a submission node. Public servers (`river`) cap CPU time at 40 min.
 
-</Access-and-SSH>
-
-<Storage-and-Environment>
+## Storage-and-Environment
 
 | Path | Quota | Snapshots | Use for |
 |---|---|---|---|
@@ -92,9 +88,7 @@ Clone repos under `$LAB` so `uv sync` creates `.venv` there. Install uv itself w
 
 **Containers:** Docker does not run; Singularity does (`module load singularity`, `singularity exec --nv docker://<image> <cmd>`). Building images needs root, so build elsewhere. Shared images are in `/cs/containers`. Prefer uv; use a container only when a dependency cannot be installed with uv.
 
-</Storage-and-Environment>
-
-<Requesting-Resources>
+## Requesting-Resources
 
 Every job declares CPUs, RAM, time and GPUs. Too little gets the job killed or swapping; too much delays its start (backfill) and lowers the priority of all your and your lab's jobs.
 
@@ -115,9 +109,7 @@ Every job declares CPUs, RAM, time and GPUs. Too little gets the job killed or s
 - **bf16 trap:** g0 also holds rtx2080 (10 G) and rtx6000 (24 G), both Turing with no bf16/FlashAttention-2. For bf16 training on g0 ask for a type (`gpu:a5000:1`, `gpu:l4:1`, `gpu:a10:1`).
 - **Sizing for LLM fine-tuning (estimate):** LoRA/QLoRA on a 7–8B model fits one 24 G Ampere g0 card; bf16 LoRA on 8B, or anything 13B+, wants g4 (l40s 45G); 70B or full fine-tuning needs g10 or multiple g4 cards. Measure peak memory with a short `srun` before a long run.
 
-</Requesting-Resources>
-
-<Accounts-Limits-and-Killable>
+## Accounts-Limits-and-Killable
 
 - **Account = lab.** Each PI's lab has a Slurm account limited to the CPUs/RAM/GPUs the lab contributed (e.g. 2 nodes × 2 g0 GPUs → at most 4 g0 GPUs in use at once). `slimits` shows usage vs limit; `susage` shows the cluster and per-user usage.
 - **Priority** is separate from limits. It is mostly fairshare (past CPU time, 7-day half-life), plus job age and QOS. All labs have equal priority; paying more buys higher limits, not priority.
@@ -125,9 +117,7 @@ Every job declares CPUs, RAM, time and GPUs. Too little gets the job killed or s
 - **Killable jobs** (`--killable`, HUJI-only): no lab limit, lowest priority, can be killed at any time by a normal job. Courses, projects and labs that contributed nothing run **only** as killable. `--killable` sets the account and QOS itself, so do not also pass `-A`/`--qos`. Add `--requeue` so a killed job goes back to the queue — and then the script must resume from a checkpoint ([Training-Job-Pattern]).
 - **Lab etiquette:** one non-killable job for the run that matters, killable for sweeps and debugging; vacate resources when lab-mates ask.
 
-</Accounts-Limits-and-Killable>
-
-<Training-Job-Pattern>
+## Training-Job-Pattern
 
 A training job on Slurm must survive being killed and restarted. Templates are in [Job Templates](references/job-templates.md).
 
@@ -139,9 +129,7 @@ A training job on Slurm must survive being killed and restarted. Templates are i
 6. **Many runs:** use one `--array=0-N%P` job, picking the config by `$SLURM_ARRAY_TASK_ID` — never a loop of `sbatch`.
 7. **Results back home:** copy metrics and small outputs to your machine (`rsync` through the SSH master, e.g. into `./outputs/<run-name>/`), then run your evaluation/post-processing step locally. Leave large checkpoints on `/cs/labs` unless needed.
 
-</Training-Job-Pattern>
-
-<Agent-Driven-Runs>
+## Agent-Driven-Runs
 
 The scheduler is shared; HUJI asks that no one loop over `sbatch` or `squeue`/`watch`.
 
@@ -164,9 +152,7 @@ EOF
 
 `sbatch --parsable` may print `<id>;<cluster>`; keep the part before `;`. For end-of-job notice use `--mail-type=END,FAIL` and for pipelines `--dependency=afterok:$JOB` instead of polling. `sbatch --wait` blocks until the job ends and returns its exit code; it suits short jobs only, because a dropped SSH session loses the wait (the job keeps running). States to act on: `PENDING` (read the Reason — see [Commands](references/commands.md)), `PREEMPTED`/`REQUEUED` (killable, normal), `OUT_OF_MEMORY`, `TIMEOUT`, `FAILED`. Cluster outages, OOM from a wrong `--mem`, or a missing `.env` are infrastructure failures: fix and rerun, never report them as a result of the run.
 
-</Agent-Driven-Runs>
-
-<First-Login-Checklist>
+## First-Login-Checklist
 
 Run once when access arrives, then remove the *verify* marks in this skill and record the answers wherever the project keeps infrastructure notes:
 
@@ -179,9 +165,7 @@ Run once when access arrives, then remove the *verify* marks in this skill and r
 7. Submit a 5-minute `--killable --requeue` test of the train template; `scontrol requeue <id>` it and confirm it resumes from its checkpoint.
 8. Whether killed jobs get a warning signal before termination (affects checkpoint frequency).
 
-</First-Login-Checklist>
-
-<Anti-Patterns-and-Common-Mistakes>
+## Anti-Patterns-and-Common-Mistakes
 
 - **`--gres=gpu:2` on phoenix** → rejected. Use `gpu:<type>:2` or `gg:<group>:2`.
 - **pip/uv/HF caches in `~`** → "Disk quota exceeded" in minutes (6–9 G home). Set the cache variables first.
@@ -195,9 +179,7 @@ Run once when access arrives, then remove the *verify* marks in this skill and r
 - **Training on `phoenix-gw` or `river`** → killed, and against policy.
 - **Applying these flags on HURCS or another university's cluster** → `--killable`, `gg:`, `slimits` are HUJI CSE-only.
 
-</Anti-Patterns-and-Common-Mistakes>
-
-<huji-slurm-reference>
+## huji-slurm-reference
 
 - [references/phoenix-hardware.md](references/phoenix-hardware.md) — full phoenix and cinder node tables, GPU totals per type and group, policy dates. Read when choosing a GPU type or a node feature.
 - [references/job-templates.md](references/job-templates.md) — `train.sbatch` (single GPU, killable, resumable), job-array sweep, interactive debug `srun`, CPU-only preprocessing. Copy and fill in placeholders.
@@ -205,9 +187,7 @@ Run once when access arrives, then remove the *verify* marks in this skill and r
 
 No scripts: every action is one Slurm or SSH command, documented in the references.
 
-</huji-slurm-reference>
-
-<examples>
+## examples
 
 **Moving a QLoRA fine-tuning run from Colab to phoenix (after the checklist passed).**
 
@@ -219,4 +199,3 @@ No scripts: every action is one Slurm or SSH command, documented in the referenc
 6. Mistake caught: the first job died with `OUT_OF_MEMORY` at 20 min — a resource error, not evidence about the method. Rerun with `--mem=48g`.
 7. When `COMPLETED`, `rsync -a phoenix:/cs/labs/<supervisor>/<login>/checkpoints/qlora-8b/metrics/ ./outputs/qlora-8b/` and run your evaluation step locally. (A non-interactive `ssh` does not source `~/lab_env.sh`, so write the full path rather than `$LAB`.)
 
-</examples>

@@ -3,7 +3,7 @@ name: tasks
 description: Guides the creation and management of Python-native task runner scripts using `invoke` and `uv`. Uses PEP 723 inline dependencies to replace Makefiles without requiring external virtual environments. Use when the user wants to automate local jobs, replace a Makefile, set up project scripts, or orchestrate CLI execution in a Python-centric ecosystem.
 ---
 
-<tasks>
+## tasks
 This skill covers how to write, structure, and execute `tasks.py` scripts using Python's `invoke` library alongside `uv`. Makefiles have quirks like tab requirements, strange conditional syntaxes, and poor cross-platform support. In Python-heavy projects, using `invoke` with `uv` and PEP 723 inline dependencies provides a cleaner, self-contained, and more robust alternative.
 
 The skill is organized into several key topics:
@@ -11,17 +11,15 @@ The skill is organized into several key topics:
 - **File Structure**: The standard template every `tasks.py` should follow.
 - **Task Formatting**: How to format task code so it is clear, showing exactly what command runs with what variables.
 - **Best Practices**: Rules for command execution, handling output, environments, and path resolving.
-</tasks>
 
-<core-principles>
+## core-principles
 1. **Zero External Setup**: The script must bring its own dependencies. By using `uv` and PEP 723 inline dependency declarations (`# /// script`), the script is 100% self-contained. No user should ever have to manually run `pip install invoke`.
 2. **Explicit CLI Usage**: The module docstring must clearly show how to run the tasks using `uv run tasks.py <task>`.
 3. **Environment Defaults**: Arguments map seamlessly to `os.getenv` defaults for CI/CD or local overrides.
 4. **Context Propagation**: Always pass the `c` (Context) object as the first argument to tasks and execute commands via `c.run()`.
 5. **Clear and Easy to Understand Code**: The code must be highly readable. A user opening the script must instantly see what variables exist, the exact command being constructed, and how it is run.
-</core-principles>
 
-<task-formatting>
+## task-formatting
 To ensure the code is clear and easy to understand, format each task explicitly. Separate the command construction from its execution so that anyone reading the code can immediately see the command, how it runs, and what variables are used.
 
 **Format Guidelines:**
@@ -47,9 +45,8 @@ def build_image(c, registry="my-registry", tag="latest"):
     with c.cd(ROOT_DIR):
         c.run(cmd, pty=True)
 ```
-</task-formatting>
 
-<file-structure>
+## file-structure
 Every `tasks.py` script must follow this exact structure:
 
 ```python
@@ -106,9 +103,8 @@ if __name__ == "__main__":
     from invoke import Program
     Program().run()
 ```
-</file-structure>
 
-<best-practices>
+## best-practices
 ### Task Definitions
 - Decorate target functions with `@task`. 
 - The first argument must always be `c` or `ctx`.
@@ -134,17 +130,14 @@ Default variables mapped via `os.getenv` allows functionality identical to stand
 
 ### Path Resolving
 NEVER use string concatenation or assume the Current Working Directory (CWD) is correctly aligned to the script location. Always resolve root paths relative to the script using `pathlib.Path` as shown in the File Structure topic.
-</best-practices>
 
-<tasks-scripts>
+## tasks-scripts
 Utility scripts for tasks are usually embedded directly within the project's own repository (e.g., in `scripts/` directories) and called by the `tasks.py` script via `c.run("scripts/my-script.sh")`. The `tasks.py` acts as the primary orchestrator that triggers these target-specific shell or Python scripts.
-</tasks-scripts>
 
-<tasks-reference>
+## tasks-reference
 There are no external reference files for this skill. The primary documentation for execution resides directly in the `tasks.py` module docstring of the project. The skill file is fully self-contained.
-</tasks-reference>
 
-<examples>
+## examples
 Here is an integrated example of replacing a standard Docker build/push Makefile flow with a `tasks.py` script:
 
 ```python
@@ -204,4 +197,3 @@ if __name__ == "__main__":
     from invoke import Program
     Program().run()
 ```
-</examples>
