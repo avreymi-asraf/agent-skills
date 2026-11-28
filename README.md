@@ -14,19 +14,19 @@ Install skills directly into your local project:
 
 ```bash
 # Add skills interactively
-npx skills add avrymi-asraf/agent-skills
+npx skills add avreymi-asraf/skills
 
 # List all available skills in this repo
-npx skills add avrymi-asraf/agent-skills --list
+npx skills add avreymi-asraf/skills --list
 
 # Install a specific skill (e.g. cortex)
-npx skills add avrymi-asraf/agent-skills --skill cortex
+npx skills add avreymi-asraf/skills --skill cortex
 
 # Install multiple specific skills
-npx skills add avrymi-asraf/agent-skills --skill cortex code-as-tools coding-principles
+npx skills add avreymi-asraf/skills --skill cortex code-as-tools coding-principles
 
 # Install all skills non-interactively
-npx skills add avrymi-asraf/agent-skills --all
+npx skills add avreymi-asraf/skills --all
 ```
 
 ### 2. Global Installation
@@ -34,7 +34,7 @@ npx skills add avrymi-asraf/agent-skills --all
 Install globally to make skills available across all projects on your machine:
 
 ```bash
-npx skills add avrymi-asraf/agent-skills -g
+npx skills add avreymi-asraf/skills -g
 ```
 
 ### 3. Target Specific Agents
@@ -42,7 +42,7 @@ npx skills add avrymi-asraf/agent-skills -g
 Specify which agent environment to install to (e.g. Claude Code, Cursor, OpenCode, Codex):
 
 ```bash
-npx skills add avrymi-asraf/agent-skills --agent claude-code cursor
+npx skills add avreymi-asraf/skills --agent claude-code cursor
 ```
 
 ---
